@@ -1,6 +1,7 @@
 import XCTest
-@testable import swift_configurationTests
+@testable import SwiftConfigurationTests
 
 XCTMain([
-     testCase(swift_configurationTests.allTests),
+    testCase(ConfigurationNodeTest.allTests),
+    testCase(ConfigurationManagerTest.allTests),
 ])

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import Foundation
 
 public class ConfigurationManager {
@@ -21,15 +22,16 @@ public class ConfigurationManager {
 
     public init() {}
 
-    public func loadCommandlineArguments(keyPrefix: String = "--", separator: String = "__") {
-        // drop first since it's always the executable
-        let argv = CommandLine.arguments.dropFirst()
-        var index = 0
+    @discardableResult
+    public func loadCommandlineArguments(keyPrefix: String = "--", separator: String = "__") -> ConfigurationManager {
+        let argv = CommandLine.arguments
+
+        // skip first since it's always the executable
+        var index = 1
 
         while index + 1 < argv.count {
-            if let range = argv[index].range(of: keyPrefix),
-                range.lowerBound == argv[index].startIndex {
-                let key = argv[index].replacingOccurrences(of: separator, with: ConfigurationNode.separator)
+            if let range = argv[index].range(of: keyPrefix), range.lowerBound == argv[index].startIndex {
+                let key = argv[index].substring(from: range.upperBound).replacingOccurrences(of: separator, with: ConfigurationNode.separator)
 
                 guard let _ = root[key] else {
                     root[key] = ConfigurationNode(rawValue: argv[index + 1])
@@ -40,9 +42,12 @@ public class ConfigurationManager {
 
             index = index + 1
         }
+
+        return self
     }
 
-    public func loadEnvironmentVariables(separator: String = "__") {
+    @discardableResult
+    public func loadEnvironmentVariables(separator: String = "__") -> ConfigurationManager {
         let envVars = ProcessInfo.processInfo.environment
         print(envVars)
 
@@ -54,19 +59,27 @@ public class ConfigurationManager {
                 continue
             }
         }
+
+        return self
     }
 
-    public func loadFile(_ fileName: String, fileType: FileType? = nil) throws {
+    @discardableResult
+    public func loadFile(_ fileName: String, fileType: FileType? = nil) throws -> ConfigurationManager {
         let data = try Data(contentsOf: URL(fileURLWithPath: fileName))
 
-        // Only accept JSON dictionaries, not JSON raw values (not even arrays)
+        // Only accept JSON dictionaries, not JSON raw values (not even raw arrays)
         if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
             root.merge(overwrite: ConfigurationNode(rawValue: dict))
         }
+
+        return self
     }
 
-    public func loadDictionary(_ dict: [String: Any]) {
+    @discardableResult
+    public func loadDictionary(_ dict: [String: Any]) -> ConfigurationManager {
         root.merge(overwrite: ConfigurationNode(rawValue: dict))
+
+        return self
     }
 
     public func getValue(for key: String) -> Any? {

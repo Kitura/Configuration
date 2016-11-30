@@ -15,18 +15,19 @@
  */
 
 class ConfigurationNode {
+    /// Hierarchy separator used when accessing fields via subscript
     static let separator: String = "."
 
     private var content: Any?
 
     private var children: [String: ConfigurationNode] = [:]
 
-    init(rawValue: Any? = nil) {
-        self.rawValue = rawValue
+    private var isLeaf: Bool {
+        return children.isEmpty
     }
 
-    var isLeaf: Bool {
-        return children.isEmpty
+    init(rawValue: Any? = nil) {
+        self.rawValue = rawValue
     }
 
     /// Serialize/deserialize tree at current node to/from Foundation types
@@ -50,9 +51,11 @@ class ConfigurationNode {
 
             if let dict = newValue as? [String: Any] {
                 for (key, value) in dict {
-                    let child = ConfigurationNode()
-                    child.rawValue = value
-                    children[key] = child
+                    let node = ConfigurationNode(rawValue: value)
+
+                    // use subscript to catch case when key contains
+                    // separator character(s)
+                    self[key] = node
                 }
             }
             else {
@@ -63,8 +66,13 @@ class ConfigurationNode {
 
     /// Shallow depth-first merge; copy class instance references instead of deep copy
     func merge(overwrite other: ConfigurationNode) {
-        // if either node is leaf, no need to do anything since current node is overriding
-        if !isLeaf && !other.isLeaf {
+        if isLeaf && content == nil {
+            // self is empty
+            // shallow copy other
+            content = other.content
+            children = other.children
+        }
+        else if !isLeaf && !other.isLeaf {
             for (key, child) in other.children {
                 if let myChild = children[key] {
                     // recursively merge/overwrite
@@ -121,7 +129,7 @@ class ConfigurationNode {
             }
         }
     }
-
+    
     private func clear() {
         content = nil
         children.removeAll()
