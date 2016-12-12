@@ -1,0 +1,15 @@
+{
+    "env": "<default>",
+    "OAuth": {
+        "name": "facebook",
+        "configuration": {
+            "clientID": "<default>",
+            "clientSecret": "<default>",
+            "profileFields": ["displayName", "emails", "id", "name"],
+            "profileURL": "https://graph.facebook.com/v2.6/me",
+            "scope": ["email"],
+            "state": true
+        }
+    },
+    "port": "<default>"
+}

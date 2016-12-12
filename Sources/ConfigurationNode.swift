@@ -18,10 +18,15 @@ class ConfigurationNode {
     /// Hierarchy separator used when accessing fields via subscript
     static let separator: String = "."
 
+    // TODO
+    // Look into parsing [{},{}] into array of nodes
+    /// Value of node
     private var content: Any?
 
+    /// Children of node
     private var children: [String: ConfigurationNode] = [:]
 
+    /// Whether or not node has children, or is a leaf value
     private var isLeaf: Bool {
         return children.isEmpty
     }
@@ -86,25 +91,25 @@ class ConfigurationNode {
         }
     }
 
-    /// index may be hierarchical
-    subscript(index: String) -> ConfigurationNode? {
+    /// path may be object path or simple key
+    subscript(path: String) -> ConfigurationNode? {
         get {
-            // check if it's a hierarchical index
-            if let range = index.range(of: ConfigurationNode.separator) {
-                let firstKey = index.substring(to: range.lowerBound)
-                let restOfKeys = index.substring(from: range.upperBound)
+            // check if it's an object path
+            if let range = path.range(of: ConfigurationNode.separator) {
+                let firstKey = path.substring(to: range.lowerBound)
+                let restOfKeys = path.substring(from: range.upperBound)
 
                 return children[firstKey]?[restOfKeys]
             }
             else {
-                return children[index]
+                return children[path]
             }
         }
         set {
-            // check if it's a hierarchical index
-            if let range = index.range(of: ConfigurationNode.separator) {
-                let firstKey = index.substring(to: range.lowerBound)
-                let restOfKeys = index.substring(from: range.upperBound)
+            // check if it's an object path
+            if let range = path.range(of: ConfigurationNode.separator) {
+                let firstKey = path.substring(to: range.lowerBound)
+                let restOfKeys = path.substring(from: range.upperBound)
 
                 // check if child node at first key exists
                 if let child = children[firstKey] {
@@ -125,7 +130,7 @@ class ConfigurationNode {
             else {
                 // index is same index
                 // update node reference in children
-                children[index] = newValue
+                children[path] = newValue
             }
         }
     }

@@ -22,25 +22,26 @@ public class ConfigurationManager {
 
     public init() {}
 
+    // values are added in this format:
+    // <keyPrefix><path>=<value>
     @discardableResult
-    public func loadCommandlineArguments(keyPrefix: String = "--", separator: String = "__") -> ConfigurationManager {
+    public func loadCommandlineArguments(keyPrefix: String = "--", separator: String = ".") -> ConfigurationManager {
         let argv = CommandLine.arguments
 
         // skip first since it's always the executable
-        var index = 1
+        for index in 1..<argv.count {
+            // check if arg starts with keyPrefix
+            if let prefixRange = argv[index].range(of: keyPrefix), prefixRange.lowerBound == argv[index].startIndex {
+                if let breakRange = argv[index].range(of: "=") {
+                    let path = argv[index][prefixRange.upperBound..<breakRange.lowerBound].replacingOccurrences(of: separator, with: ConfigurationNode.separator)
+                    let value = argv[index].substring(from: breakRange.upperBound)
 
-        while index + 1 < argv.count {
-            if let range = argv[index].range(of: keyPrefix), range.lowerBound == argv[index].startIndex {
-                let key = argv[index].substring(from: range.upperBound).replacingOccurrences(of: separator, with: ConfigurationNode.separator)
-
-                guard let _ = root[key] else {
-                    root[key] = ConfigurationNode(rawValue: argv[index + 1])
-                    index = index + 2
-                    continue
+                    guard let _ = root[path] else {
+                        root[path] = ConfigurationNode(rawValue: value)
+                        continue
+                    }
                 }
             }
-
-            index = index + 1
         }
 
         return self
@@ -65,7 +66,16 @@ public class ConfigurationManager {
 
     @discardableResult
     public func loadFile(_ fileName: String, fileType: FileType? = nil) throws -> ConfigurationManager {
-        let data = try Data(contentsOf: URL(fileURLWithPath: fileName))
+        let pathURL: URL
+
+        if fileName.isAbsolutePath {
+            pathURL = URL(fileURLWithPath: fileName)
+        }
+        else {
+            pathURL = URL(fileURLWithPath: executableRelativePath).appendingPathComponent(fileName)
+        }
+
+        let data = try Data(contentsOf: pathURL)
 
         // Only accept JSON dictionaries, not JSON raw values (not even raw arrays)
         if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
@@ -82,12 +92,12 @@ public class ConfigurationManager {
         return self
     }
 
-    public func getValue(for key: String) -> Any? {
-        return root[key]?.rawValue
+    public func getValue(for path: String) -> Any? {
+        return root[path]?.rawValue
     }
 
-    public func setValue(for key: String, as value: Any) {
-        root[key] = ConfigurationNode(rawValue: value)
+    public func setValue(for path: String, as value: Any) {
+        root[path] = ConfigurationNode(rawValue: value)
     }
 
     public func getConfigs() -> Any? {
