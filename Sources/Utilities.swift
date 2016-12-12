@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-let pathSeparator = "/"
-
-extension String {
-    var isAbsolutePath: Bool {
-        return self.hasPrefix(pathSeparator)
-    }
-}
-
 let executableRelativePath = CommandLine.arguments[0]

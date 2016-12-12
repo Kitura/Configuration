@@ -16,7 +16,7 @@
 
 import Foundation
 
-public class ConfigurationManager {
+open class ConfigurationManager {
     /// Internal tree representation of all config values
     let root = ConfigurationNode()
 
@@ -66,10 +66,12 @@ public class ConfigurationManager {
 
     @discardableResult
     public func loadFile(_ fileName: String, fileType: FileType? = nil) throws -> ConfigurationManager {
+        // get NSString representation to access some path APIs
+        let fn = NSString(string: fileName)
         let pathURL: URL
 
-        if fileName.isAbsolutePath {
-            pathURL = URL(fileURLWithPath: fileName)
+        if fn.isAbsolutePath {
+            pathURL = URL(fileURLWithPath: fn.expandingTildeInPath)
         }
         else {
             pathURL = URL(fileURLWithPath: executableRelativePath).appendingPathComponent(fileName)
@@ -107,4 +109,11 @@ public class ConfigurationManager {
 
 public enum FileType: String {
     case JSON = "json"
+}
+
+public enum SourceType: String {
+    case Argv = "argv"
+    case Env = "env"
+    case File = "file"
+    case Literal = "literal"
 }
