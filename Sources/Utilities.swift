@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-let pathSeparator = "/"
-
-extension String {
-    var isAbsolutePath: Bool {
-        return self.hasPrefix(pathSeparator)
-    }
-}
-
+// Relative path (from PWD) to the executable
+// Needed to look up file paths if they are relative
 let executableRelativePath = CommandLine.arguments[0]
