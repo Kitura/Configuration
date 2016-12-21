@@ -14,129 +14,158 @@
  * limitations under the License.
  */
 
-class ConfigurationNode {
-    /// Hierarchy separator used when accessing fields via subscript
-    static let separator: String = "."
+enum ConfigurationNode {
+    static let separator = ":"
 
-    // TODO
-    // Look into parsing [{},{}] into array of nodes
-    /// Value of node
-    private var content: Any?
+    case any(Any)
+    case array([ConfigurationNode])
+    case dictionary([String: ConfigurationNode])
+    case null
 
-    /// Children of node
-    private var children: [String: ConfigurationNode] = [:]
-
-    /// Whether or not node has children, or is a leaf value
-    private var isLeaf: Bool {
-        return children.isEmpty
-    }
-
-    init(rawValue: Any? = nil) {
+    init(rawValue: Any?) {
+        self = .null
         self.rawValue = rawValue
     }
 
-    /// Serialize/deserialize tree at current node to/from Foundation types
     var rawValue: Any? {
         get {
-            if isLeaf {
-                return content
-            }
-            else {
-                var dict: [String: Any] = [:]
-
-                for (key, node) in children {
-                    dict[key] = node.rawValue
-                }
-
-                return dict
+            switch self {
+            case .any(let nodeAny):
+                return nodeAny
+            case .array(let nodeArray):
+                return nodeArray.map { $0.rawValue }
+            case .dictionary(let nodeDictionary):
+                var dictionary: [String: Any] = [:]
+                nodeDictionary.forEach { dictionary[$0] = $1.rawValue }
+                return dictionary
+            case .null:
+                return nil
             }
         }
         set {
-            clear()
-
-            if let dict = newValue as? [String: Any] {
-                for (key, value) in dict {
-                    let node = ConfigurationNode(rawValue: value)
-
-                    // use subscript to catch case when key contains
-                    // separator character(s)
-                    self[key] = node
-                }
+            if let valueArray = newValue as? [Any?] {
+                self = .array(valueArray.map { ConfigurationNode(rawValue: $0) })
+            }
+            else if let valueDictionary = newValue as? [String: Any] {
+                valueDictionary.forEach { self[$0] = ConfigurationNode(rawValue: $1) }
+            }
+            else if let value = newValue {
+                self = .any(value)
             }
             else {
-                content = newValue
+                self = .null
             }
         }
     }
 
-    /// Shallow depth-first merge; copy class instance references instead of deep copy
-    func merge(overwrite other: ConfigurationNode) {
-        if isLeaf && content == nil {
-            // self is empty
-            // shallow copy other
-            content = other.content
-            children = other.children
-        }
-        else if !isLeaf && !other.isLeaf {
-            for (key, child) in other.children {
-                if let myChild = children[key] {
-                    // recursively merge/overwrite
-                    myChild.merge(overwrite: child)
+    mutating func merge(overwrittenBy other: ConfigurationNode) {
+        // do deep overwrite if both are dictionary types
+        // otherwise, overwrite self with other
+        switch (self, other) {
+        case (.dictionary(var this), .dictionary(let that)):
+            that.forEach { (thatKey, thatNode) in
+                if var thisNode = this[thatKey] {
+                    // key exists in both
+                    // do merge overwrite recursively
+                    thisNode.merge(overwrittenBy: thatNode)
+                    this[thatKey] = thisNode
                 }
                 else {
-                    // no entry for key exists in self; add it
-                    children[key] = child
+                    // key does not exist in self
+                    // insert it into self
+                    this[thatKey] = thatNode
                 }
             }
+
+            self = .dictionary(this)
+        default:
+            self = other
         }
     }
 
-    /// path may be object path or simple key
     subscript(path: String) -> ConfigurationNode? {
         get {
+            var firstKey = path
+            var restOfKeys: String? = nil
+
             // check if it's an object path
             if let range = path.range(of: ConfigurationNode.separator) {
-                let firstKey = path.substring(to: range.lowerBound)
-                let restOfKeys = path.substring(from: range.upperBound)
+                firstKey = path.substring(to: range.lowerBound)
+                restOfKeys = path.substring(from: range.upperBound)
+            }
 
-                return children[firstKey]?[restOfKeys]
+            var node: ConfigurationNode? = nil
+
+            switch self {
+            case .array(let nodeArray):
+                if let index = Int(firstKey),
+                    nodeArray.startIndex...nodeArray.endIndex ~= index {
+                    node = nodeArray[index]
+                }
+            case .dictionary(let nodeDictionary):
+                node = nodeDictionary[firstKey]
+            default:
+                node = nil
+            }
+
+            if let restOfKeys = restOfKeys {
+                return node?[restOfKeys]
             }
             else {
-                return children[path]
+                return node
             }
         }
         set {
+            guard let newNode = newValue else {
+                // do nothing
+                return
+            }
+
+            var firstKey = path
+            var restOfKeys: String? = nil
+
             // check if it's an object path
             if let range = path.range(of: ConfigurationNode.separator) {
-                let firstKey = path.substring(to: range.lowerBound)
-                let restOfKeys = path.substring(from: range.upperBound)
+                firstKey = path.substring(to: range.lowerBound)
+                restOfKeys = path.substring(from: range.upperBound)
+            }
 
-                // check if child node at first key exists
-                if let child = children[firstKey] {
-                    child[restOfKeys] = newValue
+            switch self {
+            case .array(var nodeArray):
+                if let index = Int(firstKey),
+                    nodeArray.startIndex...nodeArray.endIndex ~= index {
+                    if let restOfKeys = restOfKeys {
+                        nodeArray[index][restOfKeys] = newNode
+                    }
+                    else {
+                        nodeArray[index] = newNode
+                    }
+
+                    self = .array(nodeArray)
+                }
+            case .dictionary(var nodeDictionary):
+                if let restOfKeys = restOfKeys {
+                    nodeDictionary[firstKey]?[restOfKeys] = newNode
                 }
                 else {
-                    // child node doesn't exist
-                    // create one
-                    let child = ConfigurationNode()
-
-                    // insert newValue by recursion
-                    child[restOfKeys] = newValue
-
-                    // append to children
-                    children[firstKey] = child
+                    nodeDictionary[firstKey] = newNode
                 }
-            }
-            else {
-                // index is same index
-                // update node reference in children
-                children[path] = newValue
+
+                self = .dictionary(nodeDictionary)
+            default:
+                // insert node, overwrite self
+                var node = ConfigurationNode.null
+
+                if let restOfKeys = restOfKeys {
+                    node[restOfKeys] = newNode
+                }
+                else {
+                    node = newNode
+                }
+
+                let nodeDictionary = [firstKey: node]
+                self = .dictionary(nodeDictionary)
             }
         }
-    }
-    
-    private func clear() {
-        content = nil
-        children.removeAll()
     }
 }

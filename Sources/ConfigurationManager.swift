@@ -16,9 +16,9 @@
 
 import Foundation
 
-open class ConfigurationManager {
+public class ConfigurationManager {
     /// Internal tree representation of all config values
-    let root = ConfigurationNode()
+    var root = ConfigurationNode.null
 
     public init() {}
 
@@ -65,7 +65,7 @@ open class ConfigurationManager {
     }
 
     @discardableResult
-    public func loadFile(_ fileName: String, fileType: FileType? = nil) throws -> ConfigurationManager {
+    public func loadFile(_ fileName: String) throws -> ConfigurationManager {
         // get NSString representation to access some path APIs
         let fn = NSString(string: fileName)
         let pathURL: URL
@@ -79,9 +79,11 @@ open class ConfigurationManager {
 
         let data = try Data(contentsOf: pathURL)
 
+        print(String(data: data, encoding: .utf8)!)
+
         // Only accept JSON dictionaries, not JSON raw values (not even raw arrays)
         if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-            root.merge(overwrite: ConfigurationNode(rawValue: dict))
+            root.merge(overwrittenBy: ConfigurationNode(rawValue: dict))
         }
 
         return self
@@ -89,7 +91,7 @@ open class ConfigurationManager {
 
     @discardableResult
     public func loadDictionary(_ dict: [String: Any]) -> ConfigurationManager {
-        root.merge(overwrite: ConfigurationNode(rawValue: dict))
+        root.merge(overwrittenBy: ConfigurationNode(rawValue: dict))
 
         return self
     }
@@ -105,15 +107,4 @@ open class ConfigurationManager {
     public func getConfigs() -> Any? {
         return root.rawValue
     }
-}
-
-public enum FileType: String {
-    case JSON = "json"
-}
-
-public enum SourceType: String {
-    case Argv = "argv"
-    case Env = "env"
-    case File = "file"
-    case Literal = "literal"
 }

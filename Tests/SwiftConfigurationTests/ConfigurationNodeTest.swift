@@ -21,11 +21,13 @@ class ConfigurationNodeTest: XCTestCase {
     static var allTests : [(String, (ConfigurationNodeTest) -> () throws -> Void)] {
         return [
             ("testRawValue", testRawValue),
+            ("testSubscript", testSubscript),
+            ("testMergeOverwrite", testMergeOverwrite),
         ]
     }
 
     func testRawValue() {
-        let root = ConfigurationNode()
+        var root = ConfigurationNode.null
 
         root.rawValue = nil
         XCTAssertNil(root.rawValue)
@@ -41,18 +43,18 @@ class ConfigurationNodeTest: XCTestCase {
     }
 
     func testSubscript() {
-        let root = ConfigurationNode()
+        var root = ConfigurationNode.null
 
         root["sub1.sub2.sub3"] = ConfigurationNode(rawValue: "Hello world")
         XCTAssertEqual(root["sub1.sub2.sub3"]?.rawValue as? String, "Hello world")
     }
 
     func testMergeOverwrite() {
-        let root = ConfigurationNode()
-        let other = ConfigurationNode()
+        var root = ConfigurationNode.null
+        var other = ConfigurationNode.null
 
         other.rawValue = "Hello world"
-        root.merge(overwrite: other)
+        root.merge(overwrittenBy: other)
         XCTAssertEqual(root.rawValue as? String, "Hello world")
 
         root.rawValue = ["sub1": "sub1"]
@@ -60,8 +62,8 @@ class ConfigurationNodeTest: XCTestCase {
             "sub1": "Hello world",
             "sub2": "sub2"
         ]
-        root.merge(overwrite: other)
-        XCTAssertEqual(root["sub1"]?.rawValue as? String, "sub1")
+        root.merge(overwrittenBy: other)
+        XCTAssertEqual(root["sub1"]?.rawValue as? String, "Hello world")
         XCTAssertEqual(root["sub2"]?.rawValue as? String, "sub2")
     }
 }

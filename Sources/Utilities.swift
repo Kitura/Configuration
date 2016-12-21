@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
+// Relative path (from PWD) to the executable
+// Needed to look up file paths if they are relative
 let executableRelativePath = CommandLine.arguments[0]

@@ -38,7 +38,7 @@ class ConfigurationManagerTest: XCTestCase {
 
         do {
             try manager.loadFile(fileURL.path)
-            XCTAssertEqual(manager.getValue(for: "OAuth.configuration.state") as? Bool, true)
+            XCTAssertEqual(manager.getValue(for: "OAuth:configuration:state") as? Bool, true)
         }
         catch {
             XCTFail("Cannot read file")
