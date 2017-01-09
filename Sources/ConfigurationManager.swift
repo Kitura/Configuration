@@ -36,10 +36,7 @@ public class ConfigurationManager {
                     let path = argv[index][prefixRange.upperBound..<breakRange.lowerBound].replacingOccurrences(of: separator, with: ConfigurationNode.separator)
                     let value = argv[index].substring(from: breakRange.upperBound)
 
-                    guard let _ = root[path] else {
-                        root[path] = ConfigurationNode(rawValue: value)
-                        continue
-                    }
+                    root[path] = ConfigurationNode(rawValue: value)
                 }
             }
         }
@@ -50,15 +47,11 @@ public class ConfigurationManager {
     @discardableResult
     public func loadEnvironmentVariables(separator: String = "__") -> ConfigurationManager {
         let envVars = ProcessInfo.processInfo.environment
-        print(envVars)
 
         for (key, value) in envVars {
             let index = key.replacingOccurrences(of: separator, with: ConfigurationNode.separator)
 
-            guard let _ = root[index] else {
-                root[index] = ConfigurationNode(rawValue: value)
-                continue
-            }
+            root[index] = ConfigurationNode(rawValue: value)
         }
 
         return self
@@ -78,8 +71,6 @@ public class ConfigurationManager {
         }
 
         let data = try Data(contentsOf: pathURL)
-
-        print(String(data: data, encoding: .utf8)!)
 
         // Only accept JSON dictionaries, not JSON raw values (not even raw arrays)
         if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
