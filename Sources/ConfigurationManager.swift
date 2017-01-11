@@ -31,15 +31,22 @@ public class ConfigurationManager {
         // skip first since it's always the executable
         for index in 1..<argv.count {
             // check if arg starts with keyPrefix
-            if let prefixRange = argv[index].range(of: keyPrefix), prefixRange.lowerBound == argv[index].startIndex {
-                if let breakRange = argv[index].range(of: "=") {
-                    let path = argv[index][prefixRange.upperBound..<breakRange.lowerBound].replacingOccurrences(of: separator, with: ConfigurationNode.separator)
-                    let value = argv[index].substring(from: breakRange.upperBound)
+            if let prefixRange = argv[index].range(of: keyPrefix),
+                prefixRange.lowerBound == argv[index].startIndex,
+                let breakRange = argv[index].range(of: "=") {
+                let path = argv[index][prefixRange.upperBound..<breakRange.lowerBound].replacingOccurrences(of: separator, with: ConfigurationNode.separator)
+                let value = argv[index].substring(from: breakRange.upperBound)
 
-                    root[path] = ConfigurationNode(rawValue: value)
-                }
+                root[path] = ConfigurationNode(rawValue: value)
             }
         }
+
+        return self
+    }
+
+    @discardableResult
+    public func loadDictionary(_ dict: [String: Any]) -> ConfigurationManager {
+        root.merge(overwrittenBy: ConfigurationNode(rawValue: dict))
 
         return self
     }
@@ -74,15 +81,49 @@ public class ConfigurationManager {
 
         // Only accept JSON dictionaries, not JSON raw values (not even raw arrays)
         if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-            root.merge(overwrittenBy: ConfigurationNode(rawValue: dict))
+            self.loadDictionary(dict)
         }
 
         return self
     }
 
     @discardableResult
-    public func loadDictionary(_ dict: [String: Any]) -> ConfigurationManager {
-        root.merge(overwrittenBy: ConfigurationNode(rawValue: dict))
+    public func loadRemoteResource(_ urlString: String) throws -> ConfigurationManager {
+        guard let url = URL(string: urlString) else {
+            return self
+        }
+
+        // help from http://stackoverflow.com/a/31563134
+        // in order to make dataTask synchronous
+        let request = URLRequest(url: url)
+        let semaphore = DispatchSemaphore(value: 0)
+        var dataOptional: Data? = nil
+        var httpResponseOptional: HTTPURLResponse? = nil
+        var errorOptional: Error? = nil
+
+        URLSession.shared.dataTask(with: request) { (responseData, response, error) -> Void in
+            dataOptional = responseData
+            httpResponseOptional = response as? HTTPURLResponse
+            errorOptional = error
+            semaphore.signal()
+            }.resume()
+
+        let _ = semaphore.wait(timeout: .distantFuture)
+
+        if let error = errorOptional {
+            throw error
+        }
+
+        guard let httpResponse = httpResponseOptional,
+            let data = dataOptional,
+            let type = httpResponse.allHeaderFields["Content-Type"] as? String else {
+                return self
+        }
+
+        if type.hasPrefix("application/json"),
+            let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            self.loadDictionary(dict)
+        }
 
         return self
     }
@@ -97,5 +138,14 @@ public class ConfigurationManager {
 
     public func getConfigs() -> Any? {
         return root.rawValue
+    }
+
+    public subscript(path: String) -> Any? {
+        get {
+            return root[path]?.rawValue
+        }
+        set {
+            root[path] = ConfigurationNode(rawValue: newValue)
+        }
     }
 }

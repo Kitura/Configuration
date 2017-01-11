@@ -25,33 +25,41 @@ SwiftConfiguration has many methods to load configuration data:
 
 1. From environment variables:
 
-```swift
-manager.loadEnvironmentVariables()
-```
+    ```swift
+    manager.loadEnvironmentVariables()
+    ```
 
 2. From a JSON file:
 
-```swift
-manager.loadFile("config.json")
-```
+    ```swift
+    manager.loadFile("config.json")
+    ```
 
-3. From command line arguments
+3. From command line arguments:
 
-```swift
-manager.loadCommandLineArguments()
-```
+    ```swift
+    manager.loadCommandLineArguments()
+    ```
 
-Then, to use it in your executable, do:
+    Then, to use it in your executable, do:
+    
+    ```
+    ./myApp --host=localhost:8090
+    ```
 
-```
-./myApp --host=localhost:8090
-```
+4. From a raw dictionary:
 
-4. Load a dictionary
+    ```swift
+    manager.loadDictionary(myDictionary)
+    ```
 
-```swift
-manager.loadDictionary(myDictionary)
-```
+5. From a remote location over HTTP:
+    
+    ```swift
+    manager.loadRemoteResource("http://example.com/config")
+    ```
+    
+    **NOTE:** You MUST include the protocol scheme, i.e., `http://`, in the URL string
 
 You can chain these methods so that configuration data can be obtained from multiple sources. Each subsequent method can possible overwrite the values loaded earlier. For instance:
 
