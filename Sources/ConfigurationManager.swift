@@ -18,7 +18,7 @@ import Foundation
 
 public class ConfigurationManager {
     /// Internal tree representation of all config values
-    var root = ConfigurationNode.null
+    var root = ConfigurationNode.dictionary([:])
 
     public init() {}
 
@@ -137,7 +137,7 @@ public class ConfigurationManager {
         return self
     }
 
-    public func getConfigs() -> Any? {
+    public func getConfigs() -> Any {
         return root.rawValue
     }
 
@@ -146,7 +146,11 @@ public class ConfigurationManager {
             return root[path]?.rawValue
         }
         set {
-            root[path] = ConfigurationNode(rawValue: newValue)
+            guard let rawValue = newValue else {
+                return
+            }
+
+            root[path] = ConfigurationNode(rawValue: rawValue)
         }
     }
 }

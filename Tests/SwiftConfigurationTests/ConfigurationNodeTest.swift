@@ -27,31 +27,28 @@ class ConfigurationNodeTest: XCTestCase {
     }
 
     func testRawValue() {
-        var root = ConfigurationNode.null
-
-        root.rawValue = nil
-        XCTAssertNil(root.rawValue)
-
-        root.rawValue = [:]
-        XCTAssertNil(root.rawValue)
+        var root = ConfigurationNode.dictionary([:])
 
         root.rawValue = "Hello world"
         XCTAssertEqual(root.rawValue as? String, "Hello world")
+
+        root.rawValue = [0, "1", "hello world"]
+        XCTAssertEqual(root["2"]?.rawValue as? String, "hello world")
 
         root.rawValue = ["hello": "world"]
         XCTAssertEqual(root["hello"]?.rawValue as? String, "world")
     }
 
     func testSubscript() {
-        var root = ConfigurationNode.null
+        var root = ConfigurationNode.dictionary([:])
 
         root["sub1.sub2.sub3"] = ConfigurationNode(rawValue: "Hello world")
         XCTAssertEqual(root["sub1.sub2.sub3"]?.rawValue as? String, "Hello world")
     }
 
     func testMergeOverwrite() {
-        var root = ConfigurationNode.null
-        var other = ConfigurationNode.null
+        var root = ConfigurationNode.dictionary([:])
+        var other = ConfigurationNode.dictionary([:])
 
         other.rawValue = "Hello world"
         root.merge(overwrittenBy: other)
