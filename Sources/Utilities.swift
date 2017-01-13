@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corporation 2016
+ * Copyright IBM Corporation 2017
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,31 @@
  * limitations under the License.
  */
 
-// Relative path (from PWD) to the executable
+import Foundation
+
+// Relative path (from PWD) to the executable's folder
 // Needed to look up file paths if they are relative
-let executableRelativePath = CommandLine.arguments[0]
+let executableFolderAbsolutePath = URL(fileURLWithPath: CommandLine.arguments[0]).appendingPathComponent("..").standardized.path
+
+func deserialize(data: Data, type: DataType) throws -> [String: Any]? {
+    switch type {
+    case .JSON:
+        return try JSONSerialization.jsonObject(with: data) as? [String: Any]
+    case .PLIST:
+        return try PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any]
+    }
+}
+
+enum DataType {
+    case JSON
+    case PLIST
+
+    init?(_ fileExtension: String) {
+        switch fileExtension.lowercased() {
+        case ".json":
+            self = .JSON
+        default:
+            return nil
+        }
+    }
+}

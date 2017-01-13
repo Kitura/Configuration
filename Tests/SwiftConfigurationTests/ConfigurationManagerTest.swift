@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corporation 2016
+ * Copyright IBM Corporation 2017
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,18 +29,30 @@ class ConfigurationManagerTest: XCTestCase {
         let manager = ConfigurationManager()
 
         manager.loadDictionary(["Hello": "World"])
-        XCTAssertEqual(manager.getValue(for: "Hello") as? String, "World")
+        XCTAssertEqual(manager["Hello"] as? String, "World")
     }
 
     func testLoadFile() {
-        let fileURL = URL(fileURLWithPath: #file).appendingPathComponent("../../../TestResources/default.json").standardized
-        let manager = ConfigurationManager()
+        // JSON
+        var manager = ConfigurationManager()
 
         do {
-            try manager.loadFile(fileURL.path)
-            XCTAssertEqual(manager.getValue(for: "OAuth:configuration:state") as? Bool, true)
+            try manager.loadFile("../../../TestResources/default.json", relativeFrom: #file)
+            XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
         }
         catch {
+            XCTFail("Cannot read file")
+        }
+
+        // PLIST
+        manager = ConfigurationManager()
+
+        do {
+            try manager.loadFile("../../../TestResources/default.plist", relativeFrom: #file)
+            XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+        }
+        catch {
+            print(error.localizedDescription)
             XCTFail("Cannot read file")
         }
     }

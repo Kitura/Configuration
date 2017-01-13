@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>env</key>
+	<string>&lt;default&gt;</string>
+	<key>OAuth</key>
+	<dict>
+		<key>name</key>
+		<string>facebook</string>
+		<key>configuration</key>
+		<dict>
+			<key>clientID</key>
+			<string>&lt;default&gt;</string>
+			<key>clientSecret</key>
+			<string>&lt;default&gt;</string>
+			<key>profileFields</key>
+			<array>
+				<string>displayName</string>
+				<string>emails</string>
+				<string>id</string>
+				<string>name</string>
+			</array>
+			<key>profileURL</key>
+			<string>https://graph.facebook.com/v2.6/me</string>
+			<key>scope</key>
+			<array>
+				<string>email</string>
+			</array>
+			<key>state</key>
+			<true/>
+		</dict>
+	</dict>
+	<key>port</key>
+	<string>&lt;default&gt;</string>
+</dict>
+</plist>

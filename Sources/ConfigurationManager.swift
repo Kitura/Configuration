@@ -1,5 +1,5 @@
 /*
- * Copyright IBM Corporation 2016
+ * Copyright IBM Corporation 2017
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,8 +65,9 @@ public class ConfigurationManager {
     }
 
     @discardableResult
-    public func loadFile(_ fileName: String) throws -> ConfigurationManager {
-        // get NSString representation to access some path APIs
+    public func loadFile(_ fileName: String, relativeFrom: String = executableFolderAbsolutePath) throws -> ConfigurationManager {
+        // get NSString representation to access some path APIs like `isAbsolutePath`
+        // and `expandingTildeInPath`
         let fn = NSString(string: fileName)
         let pathURL: URL
 
@@ -74,13 +75,21 @@ public class ConfigurationManager {
             pathURL = URL(fileURLWithPath: fn.expandingTildeInPath)
         }
         else {
-            pathURL = URL(fileURLWithPath: executableRelativePath).appendingPathComponent(fileName)
+            pathURL = URL(fileURLWithPath: relativeFrom).appendingPathComponent(fileName).standardized
         }
 
         let data = try Data(contentsOf: pathURL)
 
-        // Only accept JSON dictionaries, not JSON raw values (not even raw arrays)
-        if let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+        // default to JSON parsing
+        var type = DataType.JSON
+        let fullPath = pathURL.standardized.absoluteString
+
+        if let range = fullPath.range(of: ".", options: String.CompareOptions.backwards) {
+            type = DataType(fullPath.substring(from: range.lowerBound)) ?? DataType.JSON
+        }
+
+        if let dict = try deserialize(data: data, type: type) {
+            print(dict)
             self.loadDictionary(dict)
         }
 
@@ -121,19 +130,11 @@ public class ConfigurationManager {
         }
 
         if type.hasPrefix("application/json"),
-            let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            let dict = try deserialize(data: data, type: .JSON) {
             self.loadDictionary(dict)
         }
 
         return self
-    }
-
-    public func getValue(for path: String) -> Any? {
-        return root[path]?.rawValue
-    }
-
-    public func setValue(for path: String, as value: Any) {
-        root[path] = ConfigurationNode(rawValue: value)
     }
 
     public func getConfigs() -> Any? {
