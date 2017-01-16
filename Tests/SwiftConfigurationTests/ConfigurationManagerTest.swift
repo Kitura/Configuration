@@ -52,7 +52,6 @@ class ConfigurationManagerTest: XCTestCase {
             XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
         }
         catch {
-            print(error.localizedDescription)
             XCTFail("Cannot read file")
         }
     }

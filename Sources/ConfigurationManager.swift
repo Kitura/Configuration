@@ -89,7 +89,6 @@ public class ConfigurationManager {
         }
 
         if let dict = try deserialize(data: data, type: type) {
-            print(dict)
             self.loadDictionary(dict)
         }
 

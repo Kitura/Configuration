@@ -37,6 +37,8 @@ enum DataType {
         switch fileExtension.lowercased() {
         case ".json":
             self = .JSON
+        case ".plist":
+            self = .PLIST
         default:
             return nil
         }
