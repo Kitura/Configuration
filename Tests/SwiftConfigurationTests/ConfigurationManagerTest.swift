@@ -20,15 +20,22 @@ import XCTest
 class ConfigurationManagerTest: XCTestCase {
     static var allTests : [(String, (ConfigurationManagerTest) -> () throws -> Void)] {
         return [
-            ("testLoadDictionary", testLoadDictionary),
+            ("testLoadSimple", testLoadSimple),
             ("testLoadFile", testLoadFile),
         ]
     }
 
-    func testLoadDictionary() {
-        let manager = ConfigurationManager()
+    func testLoadSimple() {
+        var manager = ConfigurationManager()
+        manager.load("Hello world")
+        XCTAssertEqual(manager.getConfigs() as? String, "Hello world")
 
-        manager.loadDictionary(["Hello": "World"])
+        manager = ConfigurationManager()
+        manager.load([0, "1", "hello world"])
+        XCTAssertEqual(manager["2"] as? String, "hello world")
+
+        manager = ConfigurationManager()
+        manager.load(["Hello": "World"])
         XCTAssertEqual(manager["Hello"] as? String, "World")
     }
 
@@ -37,7 +44,7 @@ class ConfigurationManagerTest: XCTestCase {
         var manager = ConfigurationManager()
 
         do {
-            try manager.loadFile("../../../TestResources/default.json", relativeFrom: #file)
+            try manager.load(file: "../../../TestResources/default.json", relativeFrom: #file)
             XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
         }
         catch {
@@ -48,7 +55,7 @@ class ConfigurationManagerTest: XCTestCase {
         manager = ConfigurationManager()
 
         do {
-            try manager.loadFile("../../../TestResources/default.plist", relativeFrom: #file)
+            try manager.load(file: "../../../TestResources/default.plist", relativeFrom: #file)
             XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
         }
         catch {

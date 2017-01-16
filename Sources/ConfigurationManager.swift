@@ -16,66 +16,104 @@
 
 import Foundation
 
+/// ConfigurationManager class
+///
+/// One-stop shop to aggregate configuration properties from different sources,
+/// including commandline arguments, environment variables, files, remove resources,
+/// and raw objects.
 public class ConfigurationManager {
     /// Internal tree representation of all config values
-    var root = ConfigurationNode.dictionary([:])
+    private var root = ConfigurationNode.dictionary([:])
 
-    public init() {}
+    /// Defaults to `--`
+    public var commandLineArgumentKeyPrefix: String
 
-    // values are added in this format:
-    // <keyPrefix><path>=<value>
+    /// Defaults to `.`
+    public var commandLineArgumentPathSeparator: String
+
+    /// Defaults to `__`
+    public var environmentVariablePathSeparator: String
+
+    public enum Source {
+        case CommandLineArguments
+        case EnvironmentVariables
+    }
+
+    /// Constructor
+    /// - parameter commandLineArgumentKeyPrefix: Optional. Used to denote an argument
+    /// as a configuration path-value pair. Defaults to `--`.
+    /// - parameter commandLineArgumentPathSeparator: Optional. Used to separate the
+    /// components of a path. Defaults to `.`.
+    /// - parameter environmentVariablePathSeparator: Optional. Used to separate the
+    /// components of a path. Defaults to `__`.
+    public init(commandLineArgumentKeyPrefix: String = "--",
+                commandLineArgumentPathSeparator: String = ".",
+                environmentVariablePathSeparator: String = "__") {
+        self.commandLineArgumentKeyPrefix = commandLineArgumentKeyPrefix
+        self.commandLineArgumentPathSeparator = commandLineArgumentPathSeparator
+        self.environmentVariablePathSeparator = environmentVariablePathSeparator
+    }
+
+    /// Load configurations from raw object.
+    /// - parameter object: The configurations object.
     @discardableResult
-    public func loadCommandlineArguments(keyPrefix: String = "--", separator: String = ".") -> ConfigurationManager {
-        let argv = CommandLine.arguments
+    public func load(_ object: Any) -> ConfigurationManager {
+        root.merge(overwrittenBy: ConfigurationNode(rawValue: object))
 
-        // skip first since it's always the executable
-        for index in 1..<argv.count {
-            // check if arg starts with keyPrefix
-            if let prefixRange = argv[index].range(of: keyPrefix),
-                prefixRange.lowerBound == argv[index].startIndex,
-                let breakRange = argv[index].range(of: "=") {
-                let path = argv[index][prefixRange.upperBound..<breakRange.lowerBound].replacingOccurrences(of: separator, with: ConfigurationNode.separator)
-                let value = argv[index].substring(from: breakRange.upperBound)
+        return self
+    }
 
-                root[path] = ConfigurationNode(rawValue: value)
+    /// Load configurations from command line arguments or environment variables.
+    /// For command line arguments, the configurations are parsed from arguments
+    /// in this format: `<keyPrefix><path>=<value>`
+    /// - parameter source: Enum denoting which source to load from.
+    @discardableResult
+    public func load(_ source: Source) -> ConfigurationManager {
+        switch source {
+        case .CommandLineArguments:
+            let argv = CommandLine.arguments
+
+            // skip first since it's always the executable
+            for index in 1..<argv.count {
+                // check if arg starts with keyPrefix
+                if let prefixRange = argv[index].range(of: commandLineArgumentKeyPrefix),
+                    prefixRange.lowerBound == argv[index].startIndex,
+                    let breakRange = argv[index].range(of: "=") {
+                    let path = argv[index][prefixRange.upperBound..<breakRange.lowerBound]
+                        .replacingOccurrences(of: commandLineArgumentPathSeparator,
+                                              with: ConfigurationNode.separator)
+                    let value = argv[index].substring(from: breakRange.upperBound)
+
+                    root[path] = ConfigurationNode(rawValue: value)
+                }
+            }
+        case .EnvironmentVariables:
+            ProcessInfo.processInfo.environment.forEach {
+                let index = $0.replacingOccurrences(of: environmentVariablePathSeparator,
+                                                    with: ConfigurationNode.separator)
+
+                root[index] = ConfigurationNode(rawValue: $1)
             }
         }
 
         return self
     }
 
+    /// Load configurations from a file on system.
+    /// - parameter fileName: Path to file.
+    /// - parameter relativeFrom: Optional. Defaults to the location of the executable.
     @discardableResult
-    public func loadDictionary(_ dict: [String: Any]) -> ConfigurationManager {
-        root.merge(overwrittenBy: ConfigurationNode(rawValue: dict))
-
-        return self
-    }
-
-    @discardableResult
-    public func loadEnvironmentVariables(separator: String = "__") -> ConfigurationManager {
-        let envVars = ProcessInfo.processInfo.environment
-
-        for (key, value) in envVars {
-            let index = key.replacingOccurrences(of: separator, with: ConfigurationNode.separator)
-
-            root[index] = ConfigurationNode(rawValue: value)
-        }
-
-        return self
-    }
-
-    @discardableResult
-    public func loadFile(_ fileName: String, relativeFrom: String = executableFolderAbsolutePath) throws -> ConfigurationManager {
+    public func load(file: String, relativeFrom: String = executableFolderAbsolutePath) throws -> ConfigurationManager {
         // get NSString representation to access some path APIs like `isAbsolutePath`
         // and `expandingTildeInPath`
-        let fn = NSString(string: fileName)
+        let fn = NSString(string: file)
         let pathURL: URL
 
         if fn.isAbsolutePath {
             pathURL = URL(fileURLWithPath: fn.expandingTildeInPath)
         }
         else {
-            pathURL = URL(fileURLWithPath: relativeFrom).appendingPathComponent(fileName).standardized
+            pathURL = URL(fileURLWithPath: relativeFrom).appendingPathComponent(file).standardized
         }
 
         let data = try Data(contentsOf: pathURL)
@@ -85,23 +123,21 @@ public class ConfigurationManager {
         let fullPath = pathURL.standardized.absoluteString
 
         if let range = fullPath.range(of: ".", options: String.CompareOptions.backwards) {
-            type = DataType(fullPath.substring(from: range.lowerBound)) ?? DataType.JSON
+            type = DataType(fullPath.substring(from: range.lowerBound)) ?? type
         }
 
-        if let dict = try deserialize(data: data, type: type) {
-            self.loadDictionary(dict)
-        }
-
-        return self
+        return self.load(try deserialize(data: data, type: type))
     }
 
+    /// Load configurations from a remote location.
+    /// - parament urlString: The URL pointing to a remote location as a string.
     @discardableResult
-    public func loadRemoteResource(_ urlString: String) throws -> ConfigurationManager {
-        guard let url = URL(string: urlString) else {
+    public func load(remoteURL: String) throws -> ConfigurationManager {
+        guard let url = URL(string: remoteURL) else {
             return self
         }
 
-        // help from http://stackoverflow.com/a/31563134
+        // Help from http://stackoverflow.com/a/31563134
         // in order to make dataTask synchronous
         let request = URLRequest(url: url)
         let semaphore = DispatchSemaphore(value: 0)
@@ -109,7 +145,7 @@ public class ConfigurationManager {
         var httpResponseOptional: HTTPURLResponse? = nil
         var errorOptional: Error? = nil
 
-        URLSession.shared.dataTask(with: request) { (responseData, response, error) -> Void in
+        URLSession.shared.dataTask(with: request) { responseData, response, error in
             dataOptional = responseData
             httpResponseOptional = response as? HTTPURLResponse
             errorOptional = error
@@ -128,18 +164,21 @@ public class ConfigurationManager {
                 return self
         }
 
-        if type.hasPrefix("application/json"),
-            let dict = try deserialize(data: data, type: .JSON) {
-            self.loadDictionary(dict)
+        if type.hasPrefix("application/json") {
+            // Assume JSON format
+            self.load(try deserialize(data: data, type: .JSON))
         }
 
         return self
     }
 
+    /// Get all configurations merged in the manager as a raw object.
     public func getConfigs() -> Any {
         return root.rawValue
     }
 
+    /// Access configurations by paths.
+    /// - parameter path: The path to a configuration value.
     public subscript(path: String) -> Any? {
         get {
             return root[path]?.rawValue

@@ -16,16 +16,15 @@
 
 import Foundation
 
-// Relative path (from PWD) to the executable's folder
-// Needed to look up file paths if they are relative
+/// Absolute path to the executable
 let executableFolderAbsolutePath = URL(fileURLWithPath: CommandLine.arguments[0]).appendingPathComponent("..").standardized.path
 
-func deserialize(data: Data, type: DataType) throws -> [String: Any]? {
+func deserialize(data: Data, type: DataType) throws -> Any {
     switch type {
     case .JSON:
-        return try JSONSerialization.jsonObject(with: data) as? [String: Any]
+        return try JSONSerialization.jsonObject(with: data)
     case .PLIST:
-        return try PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any]
+        return try PropertyListSerialization.propertyList(from: data, format: nil)
     }
 }
 
