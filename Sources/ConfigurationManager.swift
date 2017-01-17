@@ -35,8 +35,36 @@ public class ConfigurationManager {
     public var environmentVariablePathSeparator: String
 
     public enum Source {
-        case CommandLineArguments
-        case EnvironmentVariables
+        case commandLineArguments
+        case environmentVariables
+    }
+
+    /// Supported data types
+    public enum DataType {
+        case json
+        case plist
+
+        init?(fileExtension: String) {
+            switch fileExtension.lowercased() {
+            case ".json":
+                self = .json
+            case ".plist":
+                self = .plist
+            default:
+                return nil
+            }
+        }
+
+        init?(mimeType: String) {
+            let type = mimeType.lowercased()
+
+            if type.hasSuffix("/json") {
+                self = .json
+            }
+            else {
+                return nil
+            }
+        }
     }
 
     /// Constructor
@@ -70,7 +98,7 @@ public class ConfigurationManager {
     @discardableResult
     public func load(_ source: Source) -> ConfigurationManager {
         switch source {
-        case .CommandLineArguments:
+        case .commandLineArguments:
             let argv = CommandLine.arguments
 
             // skip first since it's always the executable
@@ -87,7 +115,7 @@ public class ConfigurationManager {
                     root[path] = ConfigurationNode(rawValue: value)
                 }
             }
-        case .EnvironmentVariables:
+        case .environmentVariables:
             ProcessInfo.processInfo.environment.forEach {
                 let index = $0.replacingOccurrences(of: environmentVariablePathSeparator,
                                                     with: ConfigurationNode.separator)
@@ -103,7 +131,9 @@ public class ConfigurationManager {
     /// - parameter fileName: Path to file.
     /// - parameter relativeFrom: Optional. Defaults to the location of the executable.
     @discardableResult
-    public func load(file: String, relativeFrom: String = executableFolderAbsolutePath) throws -> ConfigurationManager {
+    public func load(file: String,
+                     relativeFrom: String = executableFolderAbsolutePath) throws
+        -> ConfigurationManager {
         // get NSString representation to access some path APIs like `isAbsolutePath`
         // and `expandingTildeInPath`
         let fn = NSString(string: file)
@@ -116,38 +146,28 @@ public class ConfigurationManager {
             pathURL = URL(fileURLWithPath: relativeFrom).appendingPathComponent(file).standardized
         }
 
-        let data = try Data(contentsOf: pathURL)
-
-        // default to JSON parsing
-        var type = DataType.JSON
-        let fullPath = pathURL.standardized.absoluteString
-
-        if let range = fullPath.range(of: ".", options: String.CompareOptions.backwards) {
-            type = DataType(fullPath.substring(from: range.lowerBound)) ?? type
-        }
-
-        return self.load(try deserialize(data: data, type: type))
+        return try self.load(url: pathURL)
     }
 
     /// Load configurations from a remote location.
-    /// - parament urlString: The URL pointing to a remote location as a string.
+    /// - parameter url: The URL pointing to a configuration resource.
+    /// - parameter type: Optional. The type of data at the configuration resource.
+    /// Defaults to `nil`. Pass a value to force the parser to deserialize according to
+    /// the given format, i.e., `.json`; otherwise, parser will attempt to determine
+    /// the correct format, which isn't always reliable.
     @discardableResult
-    public func load(remoteURL: String) throws -> ConfigurationManager {
-        guard let url = URL(string: remoteURL) else {
-            return self
-        }
-
+    public func load(url: URL, type: DataType? = nil) throws -> ConfigurationManager {
         // Help from http://stackoverflow.com/a/31563134
         // in order to make dataTask synchronous
         let request = URLRequest(url: url)
         let semaphore = DispatchSemaphore(value: 0)
         var dataOptional: Data? = nil
-        var httpResponseOptional: HTTPURLResponse? = nil
+        var responseOptional: URLResponse? = nil
         var errorOptional: Error? = nil
 
         URLSession.shared.dataTask(with: request) { responseData, response, error in
             dataOptional = responseData
-            httpResponseOptional = response as? HTTPURLResponse
+            responseOptional = response
             errorOptional = error
             semaphore.signal()
             }.resume()
@@ -158,18 +178,34 @@ public class ConfigurationManager {
             throw error
         }
 
-        guard let httpResponse = httpResponseOptional,
-            let data = dataOptional,
-            let type = httpResponse.allHeaderFields["Content-Type"] as? String else {
+        guard let data = dataOptional else {
                 return self
         }
 
-        if type.hasPrefix("application/json") {
-            // Assume JSON format
-            self.load(try deserialize(data: data, type: .JSON))
+        // figure out what is the data type
+
+        // default to JSON
+        var dataType = DataType.json
+
+        if url.isFileURL{
+            // check file extension for file type
+            let fullPath = url.standardized.absoluteString
+
+            if let range = fullPath.range(of: ".", options: .backwards) {
+                dataType = DataType(fileExtension: fullPath.substring(from: range.lowerBound)) ?? dataType
+            }
+        }
+        else if let mimeType = responseOptional?.mimeType?.lowercased() {
+            // check for supported media types among the ones listed here:
+            // https://www.iana.org/assignments/media-types/media-types.xhtml
+            if mimeType.hasSuffix("/json") {
+                dataType = .json
+            }
         }
 
-        return self
+        dataType = type ?? dataType
+
+        return self.load(try deserialize(data: data, type: dataType))
     }
 
     /// Get all configurations merged in the manager as a raw object.

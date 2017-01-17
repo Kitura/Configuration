@@ -56,10 +56,10 @@ SwiftConfiguration has many methods to load configuration data:
 5. From a remote location over HTTP:
     
     ```swift
-    manager.load(remoteURL: "http://example.com/config")
+    manager.load(url: myURL)
     ```
     
-    **NOTE:** You MUST include the protocol scheme, i.e., `http://`, in the URL string
+    **NOTE:** The URL MUST include a scheme, i.e., `file://` or `http://`
 
 You can chain these methods so that configuration data can be obtained from multiple sources. Each subsequent method can possible overwrite the values loaded earlier. For instance:
 

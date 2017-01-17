@@ -19,27 +19,11 @@ import Foundation
 /// Absolute path to the executable
 let executableFolderAbsolutePath = URL(fileURLWithPath: CommandLine.arguments[0]).appendingPathComponent("..").standardized.path
 
-func deserialize(data: Data, type: DataType) throws -> Any {
+func deserialize(data: Data, type: ConfigurationManager.DataType) throws -> Any {
     switch type {
-    case .JSON:
+    case .json:
         return try JSONSerialization.jsonObject(with: data)
-    case .PLIST:
+    case .plist:
         return try PropertyListSerialization.propertyList(from: data, format: nil)
-    }
-}
-
-enum DataType {
-    case JSON
-    case PLIST
-
-    init?(_ fileExtension: String) {
-        switch fileExtension.lowercased() {
-        case ".json":
-            self = .JSON
-        case ".plist":
-            self = .PLIST
-        default:
-            return nil
-        }
     }
 }
