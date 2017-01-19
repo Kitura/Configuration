@@ -56,7 +56,10 @@ class ConfigurationManagerTest: XCTestCase {
 
         do {
             try manager.load(file: "../../../TestResources/default.plist", relativeFrom: #file)
-            XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+            #if os(OSX)
+                // broken on Linux due to https://bugs.swift.org/browse/SR-3681
+                XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+            #endif
         }
         catch {
             XCTFail("Cannot read file")

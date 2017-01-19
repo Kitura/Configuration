@@ -23,6 +23,7 @@ class ConfigurationNodeTest: XCTestCase {
             ("testRawValue", testRawValue),
             ("testSubscript", testSubscript),
             ("testMergeOverwrite", testMergeOverwrite),
+            ("testSplitKeys", testSplitKeys)
         ]
     }
 
@@ -37,13 +38,33 @@ class ConfigurationNodeTest: XCTestCase {
 
         root.rawValue = ["hello": "world"]
         XCTAssertEqual(root["hello"]?.rawValue as? String, "world")
+
+        root.rawValue = [
+            "env": "<default>",
+            "OAuth": [
+                "name": "facebook",
+                "configuration": [
+                    "state": true,
+                    "profileFields": ["displayName", "emails", "id", "name"],
+                    "clientID": "<default>",
+                    "clientSecret": "<default>",
+                    "profileURL": "https://graph.facebook.com/v2.6/me",
+                    "scope": ["email"]
+                ]
+            ],
+            "port": "<default>"
+        ]
+        XCTAssertEqual(root["OAuth:configuration:state"]?.rawValue as? Bool, true)
     }
 
     func testSubscript() {
         var root = ConfigurationNode.dictionary([:])
+        root["sub1:sub2"] = ConfigurationNode(rawValue: ["hello", "world"])
+        XCTAssertEqual(root["sub1:sub2:1"]?.rawValue as? String, "world")
 
-        root["sub1.sub2.sub3"] = ConfigurationNode(rawValue: "Hello world")
-        XCTAssertEqual(root["sub1.sub2.sub3"]?.rawValue as? String, "Hello world")
+        root = ConfigurationNode.dictionary([:])
+        root["sub1:sub2"] = ConfigurationNode(rawValue: ["sub3": "Hello world"])
+        XCTAssertEqual(root["sub1:sub2:sub3"]?.rawValue as? String, "Hello world")
     }
 
     func testMergeOverwrite() {
@@ -62,5 +83,15 @@ class ConfigurationNodeTest: XCTestCase {
         root.merge(overwrittenBy: other)
         XCTAssertEqual(root["sub1"]?.rawValue as? String, "Hello world")
         XCTAssertEqual(root["sub2"]?.rawValue as? String, "sub2")
+    }
+
+    func testSplitKeys() {
+        let simpleKeys = "hello".splitKeys
+        XCTAssertEqual(simpleKeys.0, "hello")
+        XCTAssertNil(simpleKeys.1)
+
+        let complexKeys = "hello:world".splitKeys
+        XCTAssertEqual(complexKeys.0, "hello")
+        XCTAssertEqual(complexKeys.1, "world")
     }
 }

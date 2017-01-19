@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+#if os(Linux)
+    import Dispatch
+#endif
+
 import Foundation
 
 /// ConfigurationManager class
@@ -22,6 +26,9 @@ import Foundation
 /// including commandline arguments, environment variables, files, remove resources,
 /// and raw objects.
 public class ConfigurationManager {
+    // URLSession.shared isn't supported on Linux yet
+    private let session = URLSession(configuration: URLSessionConfiguration.default)
+
     /// Internal tree representation of all config values
     private var root = ConfigurationNode.dictionary([:])
 
@@ -132,21 +139,42 @@ public class ConfigurationManager {
     /// - parameter relativeFrom: Optional. Defaults to the location of the executable.
     @discardableResult
     public func load(file: String,
-                     relativeFrom: String = executableFolderAbsolutePath) throws
-        -> ConfigurationManager {
+                     relativeFrom: String = executableFolderAbsolutePath) throws -> ConfigurationManager {
         // get NSString representation to access some path APIs like `isAbsolutePath`
         // and `expandingTildeInPath`
         let fn = NSString(string: file)
         let pathURL: URL
 
-        if fn.isAbsolutePath {
+        #if os(Linux)
+            let isAbsolutePath = fn.absolutePath
+        #else
+            let isAbsolutePath = fn.isAbsolutePath
+        #endif
+
+        if isAbsolutePath {
             pathURL = URL(fileURLWithPath: fn.expandingTildeInPath)
         }
         else {
             pathURL = URL(fileURLWithPath: relativeFrom).appendingPathComponent(file).standardized
         }
 
-        return try self.load(url: pathURL)
+        #if os(Linux)
+            // URLSession unable to load file from URL on Linux
+            // resort to `Data(contentsOf:)`
+            let data = try Data(contentsOf: pathURL)
+
+            // default to JSON parsing
+            var type = DataType.json
+            let fullPath = pathURL.standardized.absoluteString
+
+            if let range = fullPath.range(of: ".", options: String.CompareOptions.backwards) {
+                type = DataType(fileExtension: fullPath.substring(from: range.lowerBound)) ?? type
+            }
+
+            return self.load(try deserialize(data: data, type: type))
+        #else
+            return try self.load(url: pathURL)
+        #endif
     }
 
     /// Load configurations from a remote location.
@@ -165,7 +193,7 @@ public class ConfigurationManager {
         var responseOptional: URLResponse? = nil
         var errorOptional: Error? = nil
 
-        URLSession.shared.dataTask(with: request) { responseData, response, error in
+        session.dataTask(with: request) { responseData, response, error in
             dataOptional = responseData
             responseOptional = response
             errorOptional = error
@@ -179,7 +207,7 @@ public class ConfigurationManager {
         }
 
         guard let data = dataOptional else {
-                return self
+            return self
         }
 
         // figure out what is the data type

@@ -80,16 +80,8 @@ enum ConfigurationNode {
 
     subscript(path: String) -> ConfigurationNode? {
         get {
-            var firstKey = path
-            var restOfKeys: String? = nil
-
-            // check if it's an object path
-            if let range = path.range(of: ConfigurationNode.separator) {
-                firstKey = path.substring(to: range.lowerBound)
-                restOfKeys = path.substring(from: range.upperBound)
-            }
-
             var node: ConfigurationNode? = nil
+            let (firstKey, restOfKeys) = path.splitKeys
 
             switch self {
             case .array(let nodeArray):
@@ -116,19 +108,12 @@ enum ConfigurationNode {
                 return
             }
 
-            var firstKey = path
-            var restOfKeys: String? = nil
-
-            // check if it's an object path
-            if let range = path.range(of: ConfigurationNode.separator) {
-                firstKey = path.substring(to: range.lowerBound)
-                restOfKeys = path.substring(from: range.upperBound)
-            }
+            let (firstKey, restOfKeys) = path.splitKeys
 
             switch self {
             case .array(var nodeArray):
                 if let index = Int(firstKey),
-                    nodeArray.startIndex...nodeArray.endIndex ~= index {
+                    nodeArray.startIndex..<nodeArray.endIndex ~= index {
                     if let restOfKeys = restOfKeys {
                         nodeArray[index][restOfKeys] = newNode
                     }
@@ -139,6 +124,12 @@ enum ConfigurationNode {
                     self = .array(nodeArray)
                 }
             case .dictionary(var nodeDictionary):
+                if nodeDictionary[firstKey] == nil {
+                    // no value exists for key
+                    // add it to dictionary
+                    nodeDictionary[firstKey] = .dictionary([:])
+                }
+
                 if let restOfKeys = restOfKeys {
                     nodeDictionary[firstKey]?[restOfKeys] = newNode
                 }
@@ -162,5 +153,15 @@ enum ConfigurationNode {
                 self = .dictionary(nodeDictionary)
             }
         }
+    }
+}
+
+extension String {
+    var splitKeys: (String, String?) {
+        guard let range = self.range(of: ConfigurationNode.separator) else {
+            return (self, nil)
+        }
+
+        return (self.substring(to: range.lowerBound), self.substring(from: range.upperBound))
     }
 }
