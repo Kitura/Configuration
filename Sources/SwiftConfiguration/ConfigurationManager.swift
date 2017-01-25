@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-#if os(Linux)
-    import Dispatch
-#endif
-
 import Foundation
 
 /// ConfigurationManager class
@@ -74,6 +70,11 @@ public class ConfigurationManager {
         }
     }
 
+    private var deserializers: [String: Deserializer] = [
+        JSONDeserializer.shared.name: JSONDeserializer.shared,
+        PLISTDeserializer.shared.name: PLISTDeserializer.shared
+    ]
+
     /// Constructor
     /// - parameter commandLineArgumentKeyPrefix: Optional. Used to denote an argument
     /// as a configuration path-value pair. Defaults to `--`.
@@ -93,7 +94,7 @@ public class ConfigurationManager {
     /// - parameter object: The configurations object.
     @discardableResult
     public func load(_ object: Any) -> ConfigurationManager {
-        root.merge(overwrittenBy: ConfigurationNode(rawValue: object))
+        root.merge(overwrittenBy: ConfigurationNode(object))
 
         return self
     }
@@ -119,7 +120,7 @@ public class ConfigurationManager {
                                               with: ConfigurationNode.separator)
                     let value = argv[index].substring(from: breakRange.upperBound)
 
-                    root[path] = ConfigurationNode(rawValue: value)
+                    root[path] = ConfigurationNode(value)
                 }
             }
         case .environmentVariables:
@@ -127,7 +128,7 @@ public class ConfigurationManager {
                 let index = $0.replacingOccurrences(of: environmentVariablePathSeparator,
                                                     with: ConfigurationNode.separator)
 
-                root[index] = ConfigurationNode(rawValue: $1)
+                root[index] = ConfigurationNode($1)
             }
         }
 
@@ -137,9 +138,14 @@ public class ConfigurationManager {
     /// Load configurations from a file on system.
     /// - parameter fileName: Path to file.
     /// - parameter relativeFrom: Optional. Defaults to the location of the executable.
+    /// - parameter deserializerName: Optional. Designated deserializer for the configuration
+    /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
+    /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
+    /// a deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(file: String,
-                     relativeFrom: String = executableFolderAbsolutePath) throws -> ConfigurationManager {
+                     relativeFrom: String = executableFolderAbsolutePath,
+                     deserializerName: String? = nil) throws -> ConfigurationManager {
         // get NSString representation to access some path APIs like `isAbsolutePath`
         // and `expandingTildeInPath`
         let fn = NSString(string: file)
@@ -158,85 +164,51 @@ public class ConfigurationManager {
             pathURL = URL(fileURLWithPath: relativeFrom).appendingPathComponent(file).standardized
         }
 
-        #if os(Linux)
-            // URLSession unable to load file from URL on Linux
-            // resort to `Data(contentsOf:)`
-            let data = try Data(contentsOf: pathURL)
-
-            // default to JSON parsing
-            var type = DataType.json
-            let fullPath = pathURL.standardized.absoluteString
-
-            if let range = fullPath.range(of: ".", options: String.CompareOptions.backwards) {
-                type = DataType(fileExtension: fullPath.substring(from: range.lowerBound)) ?? type
-            }
-
-            return self.load(try deserialize(data: data, type: type))
-        #else
-            return try self.load(url: pathURL)
-        #endif
+        return try self.load(url: pathURL, deserializerName: deserializerName)
     }
 
     /// Load configurations from a remote location.
     /// - parameter url: The URL pointing to a configuration resource.
-    /// - parameter type: Optional. The type of data at the configuration resource.
-    /// Defaults to `nil`. Pass a value to force the parser to deserialize according to
-    /// the given format, i.e., `.json`; otherwise, parser will attempt to determine
-    /// the correct format, which isn't always reliable.
+    /// - parameter deserializerName: Optional. Designated deserializer for the configuration
+    /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
+    /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
+    /// a deserializers and attempt to deserialize using each one.
     @discardableResult
-    public func load(url: URL, type: DataType? = nil) throws -> ConfigurationManager {
-        // Help from http://stackoverflow.com/a/31563134
-        // in order to make dataTask synchronous
-        let request = URLRequest(url: url)
-        let semaphore = DispatchSemaphore(value: 0)
-        var dataOptional: Data? = nil
-        var responseOptional: URLResponse? = nil
-        var errorOptional: Error? = nil
+    public func load(url: URL, deserializerName: String? = nil) throws -> ConfigurationManager {
+        let data = try Data(contentsOf: url)
 
-        session.dataTask(with: request) { responseData, response, error in
-            dataOptional = responseData
-            responseOptional = response
-            errorOptional = error
-            semaphore.signal()
-            }.resume()
-
-        let _ = semaphore.wait(timeout: .distantFuture)
-
-        if let error = errorOptional {
-            throw error
+        if let deserializerName = deserializerName,
+            let deserializer = deserializers[deserializerName] {
+            self.load(try deserializer.deserialize(data: data))
         }
-
-        guard let data = dataOptional else {
-            return self
-        }
-
-        // figure out what is the data type
-
-        // default to JSON
-        var dataType = DataType.json
-
-        if url.isFileURL{
-            // check file extension for file type
-            let fullPath = url.standardized.absoluteString
-
-            if let range = fullPath.range(of: ".", options: .backwards) {
-                dataType = DataType(fileExtension: fullPath.substring(from: range.lowerBound)) ?? dataType
+        else {
+            for deserializer in deserializers.values {
+                do {
+                    self.load(try deserializer.deserialize(data: data))
+                    break
+                }
+                catch {
+                    // try the next deserializer
+                    continue
+                }
             }
-        }
-        else if let mimeType = responseOptional?.mimeType?.lowercased() {
-            // check for supported media types among the ones listed here:
-            // https://www.iana.org/assignments/media-types/media-types.xhtml
-            if mimeType.hasSuffix("/json") {
-                dataType = .json
-            }
+            // TODO
+            // maybe throw error here?
         }
 
-        dataType = type ?? dataType
-
-        return self.load(try deserialize(data: data, type: dataType))
+        return self
     }
 
-    /// Get all configurations merged in the manager as a raw object.
+    /// Add a deserializer to the list.
+    /// - paramter deserializer: The deserializer to be added.
+    @discardableResult
+    public func use(_ deserializer: Deserializer) -> ConfigurationManager {
+        deserializers[deserializer.name] = deserializer
+
+        return self
+    }
+
+    /// Get all configurations that have been merged in the manager as a raw object.
     public func getConfigs() -> Any {
         return root.rawValue
     }
@@ -252,7 +224,7 @@ public class ConfigurationManager {
                 return
             }
 
-            root[path] = ConfigurationNode(rawValue: rawValue)
+            root[path] = ConfigurationNode(rawValue)
         }
     }
 }

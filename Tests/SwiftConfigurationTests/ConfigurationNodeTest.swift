@@ -59,11 +59,11 @@ class ConfigurationNodeTest: XCTestCase {
 
     func testSubscript() {
         var root = ConfigurationNode.dictionary([:])
-        root["sub1:sub2"] = ConfigurationNode(rawValue: ["hello", "world"])
+        root["sub1:sub2"] = ConfigurationNode(["hello", "world"])
         XCTAssertEqual(root["sub1:sub2:1"]?.rawValue as? String, "world")
 
         root = ConfigurationNode.dictionary([:])
-        root["sub1:sub2"] = ConfigurationNode(rawValue: ["sub3": "Hello world"])
+        root["sub1:sub2"] = ConfigurationNode(["sub3": "Hello world"])
         XCTAssertEqual(root["sub1:sub2:sub3"]?.rawValue as? String, "Hello world")
     }
 

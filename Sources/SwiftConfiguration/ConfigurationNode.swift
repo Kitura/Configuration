@@ -21,7 +21,7 @@ enum ConfigurationNode {
     case array([ConfigurationNode])
     case dictionary([String: ConfigurationNode])
 
-    init(rawValue: Any) {
+    init(_ rawValue: Any) {
         self = .dictionary([:])
         self.rawValue = rawValue
     }
@@ -41,11 +41,11 @@ enum ConfigurationNode {
         }
         set {
             if let valueArray = newValue as? [Any] {
-                self = .array(valueArray.map { ConfigurationNode(rawValue: $0) })
+                self = .array(valueArray.map { ConfigurationNode($0) })
             }
             else if let valueDictionary = newValue as? [String: Any] {
                 self = .dictionary([:])
-                valueDictionary.forEach { self[$0] = ConfigurationNode(rawValue: $1) }
+                valueDictionary.forEach { self[$0] = ConfigurationNode($1) }
             }
             else {
                 self = .any(newValue)
