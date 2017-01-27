@@ -15,7 +15,7 @@
  */
 
 import XCTest
-@testable import SwiftConfiguration
+@testable import Configuration
 
 class ConfigurationNodeTest: XCTestCase {
     static var allTests : [(String, (ConfigurationNodeTest) -> () throws -> Void)] {
