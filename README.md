@@ -1,11 +1,11 @@
-# SwiftConfiguration
+# Configuration
 
 A hierarchical configuration loader for Swift.
 
 ## Getting Started
 
 ```swift
-import SwiftConfiguration
+import Configuration
 
 let manager = ConfigurationManager()
 
@@ -21,7 +21,7 @@ let hostname = manager["VCAP_SERVICES:cloudantNoSQLDB:0:credentials:host"]
 
 ## Loading configuration data
 
-SwiftConfiguration has many methods to load configuration data:
+Configuration has many methods to load configuration data:
 
 1. From environment variables:
 
