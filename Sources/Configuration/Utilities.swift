@@ -19,11 +19,4 @@ import Foundation
 /// Absolute path to the executable
 let executableFolderAbsolutePath = URL(fileURLWithPath: CommandLine.arguments[0]).appendingPathComponent("..").standardized.path
 
-func deserialize(data: Data, type: ConfigurationManager.DataType) throws -> Any {
-    switch type {
-    case .json:
-        return try JSONSerialization.jsonObject(with: data)
-    case .plist:
-        return try PropertyListSerialization.propertyList(from: data, format: nil)
-    }
-}
+let pwd = URL(fileURLWithPath: "").path

@@ -70,6 +70,13 @@ public class ConfigurationManager {
         }
     }
 
+    /// Base paths for resolving relative paths
+    public enum BasePath {
+        case executable
+        case pwd
+        case customPath(String)
+    }
+
     private var deserializers: [String: Deserializer] = [
         JSONDeserializer.shared.name: JSONDeserializer.shared,
         PLISTDeserializer.shared.name: PLISTDeserializer.shared
@@ -136,15 +143,15 @@ public class ConfigurationManager {
     }
 
     /// Load configurations from a file on system.
-    /// - parameter fileName: Path to file.
+    /// - parameter file: Path to file.
     /// - parameter relativeFrom: Optional. Defaults to the location of the executable.
     /// - parameter deserializerName: Optional. Designated deserializer for the configuration
-    /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
-    /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
-    /// a deserializers and attempt to deserialize using each one.
+    /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize
+    /// according to the given format, i.e., `JSONDeserializer.name`; otherwise, parser will
+    /// go through a list a deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(file: String,
-                     relativeFrom: String = executableFolderAbsolutePath,
+                     relativeFrom: BasePath = .executable,
                      deserializerName: String? = nil) throws -> ConfigurationManager {
         // get NSString representation to access some path APIs like `isAbsolutePath`
         // and `expandingTildeInPath`
@@ -161,7 +168,18 @@ public class ConfigurationManager {
             pathURL = URL(fileURLWithPath: fn.expandingTildeInPath)
         }
         else {
-            pathURL = URL(fileURLWithPath: relativeFrom).appendingPathComponent(file).standardized
+            var basePath: String
+
+            switch relativeFrom {
+            case .executable:
+                basePath = executableFolderAbsolutePath
+            case .pwd:
+                basePath = pwd
+            case .customPath(let path):
+                basePath = path
+            }
+
+            pathURL = URL(fileURLWithPath: basePath).appendingPathComponent(file).standardized
         }
 
         return try self.load(url: pathURL, deserializerName: deserializerName)

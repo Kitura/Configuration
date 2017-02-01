@@ -44,7 +44,7 @@ class ConfigurationManagerTest: XCTestCase {
         var manager = ConfigurationManager()
 
         do {
-            try manager.load(file: "../../../TestResources/default.json", relativeFrom: #file)
+            try manager.load(file: "../../../TestResources/default.json", relativeFrom: .customPath(#file))
             XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
         }
         catch {
@@ -55,7 +55,7 @@ class ConfigurationManagerTest: XCTestCase {
         manager = ConfigurationManager()
 
         do {
-            try manager.load(file: "../../../TestResources/default.plist", relativeFrom: #file)
+            try manager.load(file: "../../../TestResources/default.plist", relativeFrom: .customPath(#file))
             #if os(OSX)
                 // broken on Linux due to https://bugs.swift.org/browse/SR-3681
                 XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
