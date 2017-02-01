@@ -11,7 +11,7 @@ let manager = ConfigurationManager()
 
 do {
     try manager.load(file: "config.json")
-               .load(.EnvironmentVariables)
+               .load(.environmentVariables)
 } catch { 
 	
 }
@@ -26,7 +26,7 @@ Configuration has many methods to load configuration data:
 1. From environment variables:
 
     ```swift
-    manager.load(.EnvironmentVariables)
+    manager.load(.environmentVariables)
     ```
 
 2. From a JSON file:
@@ -38,7 +38,7 @@ Configuration has many methods to load configuration data:
 3. From command line arguments:
 
     ```swift
-    manager.load(.CommandLineArguments)
+    manager.load(.commandLineArguments)
     ```
 
     Then, to use it in your executable, do:
@@ -66,7 +66,7 @@ You can chain these methods so that configuration data can be obtained from mult
 ```swift
 manager.load(myObject)
        .load(file: "config.json")
-       .load(.CommandLineArguments)
+       .load(.commandLineArguments)
 
 ```
 
