@@ -93,5 +93,9 @@ class ConfigurationNodeTest: XCTestCase {
         let complexKeys = "hello:world".splitKeys
         XCTAssertEqual(complexKeys.0, "hello")
         XCTAssertEqual(complexKeys.1, "world")
+
+        let emptyRestOfKeys = "hello:".splitKeys
+        XCTAssertEqual(emptyRestOfKeys.0, "hello")
+        XCTAssertEqual(emptyRestOfKeys.1, "")
     }
 }
