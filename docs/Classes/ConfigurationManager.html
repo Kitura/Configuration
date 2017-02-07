@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ConfigurationManager Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ConfigurationManager" class="dashAnchor"></a>
+    <a title="ConfigurationManager Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (42% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        ConfigurationManager Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/ConfigurationManager.html">ConfigurationManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ConfigurationManager/Source.html">– Source</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ConfigurationManager/DataType.html">– DataType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ConfigurationManager/BasePath.html">– BasePath</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/JSONDeserializer.html">JSONDeserializer</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/PLISTDeserializer.html">PLISTDeserializer</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/Deserializer.html">Deserializer</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ConfigurationManager</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ConfigurationManager</span></code></pre>
+
+                </div>
+              </div>
+            <p>ConfigurationManager class</p>
+
+<p>One-stop shop to aggregate configuration properties from different sources,
+including commandline arguments, environment variables, files, remove resources,
+and raw objects.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:iC13Configuration20ConfigurationManager9subscriptFSSGSqP__"></a>
+                    <a name="//apple_ref/swift/Method/subscript(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:iC13Configuration20ConfigurationManager9subscriptFSSGSqP__">subscript(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Access configurations by paths.
+- parameter path: The path to a configuration value.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">subscript</span><span class="p">(</span><span class="nv">path</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Any</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>path</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The path to a configuration value.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC13Configuration20ConfigurationManager28commandLineArgumentKeyPrefixSS"></a>
+                    <a name="//apple_ref/swift/Property/commandLineArgumentKeyPrefix" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC13Configuration20ConfigurationManager28commandLineArgumentKeyPrefixSS">commandLineArgumentKeyPrefix</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Defaults to <code>--</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">commandLineArgumentKeyPrefix</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC13Configuration20ConfigurationManager32commandLineArgumentPathSeparatorSS"></a>
+                    <a name="//apple_ref/swift/Property/commandLineArgumentPathSeparator" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC13Configuration20ConfigurationManager32commandLineArgumentPathSeparatorSS">commandLineArgumentPathSeparator</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Defaults to <code>.</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">commandLineArgumentPathSeparator</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC13Configuration20ConfigurationManager32environmentVariablePathSeparatorSS"></a>
+                    <a name="//apple_ref/swift/Property/environmentVariablePathSeparator" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC13Configuration20ConfigurationManager32environmentVariablePathSeparatorSS">environmentVariablePathSeparator</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Defaults to <code>__</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">environmentVariablePathSeparator</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:OC13Configuration20ConfigurationManager6Source"></a>
+                    <a name="//apple_ref/swift/Enum/Source" class="dashAnchor"></a>
+                    <a class="token" href="#/s:OC13Configuration20ConfigurationManager6Source">Source</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                        <a href="../Classes/ConfigurationManager/Source.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ConfigurationManager</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:OC13Configuration20ConfigurationManager8DataType"></a>
+                    <a name="//apple_ref/swift/Enum/DataType" class="dashAnchor"></a>
+                    <a class="token" href="#/s:OC13Configuration20ConfigurationManager8DataType">DataType</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Supported data types</p>
+
+                        <a href="../Classes/ConfigurationManager/DataType.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">DataType</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:OC13Configuration20ConfigurationManager8BasePath"></a>
+                    <a name="//apple_ref/swift/Enum/BasePath" class="dashAnchor"></a>
+                    <a class="token" href="#/s:OC13Configuration20ConfigurationManager8BasePath">BasePath</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Base paths for resolving relative paths</p>
+
+                        <a href="../Classes/ConfigurationManager/BasePath.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">BasePath</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC13Configuration20ConfigurationManagercFT28commandLineArgumentKeyPrefixSS32commandLineArgumentPathSeparatorSS32environmentVariablePathSeparatorSS_S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC13Configuration20ConfigurationManagercFT28commandLineArgumentKeyPrefixSS32commandLineArgumentPathSeparatorSS32environmentVariablePathSeparatorSS_S0_">init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Constructor
+- parameter commandLineArgumentKeyPrefix: Optional. Used to denote an argument
+as a configuration path-value pair. Defaults to <code>--</code>.
+- parameter commandLineArgumentPathSeparator: Optional. Used to separate the
+components of a path. Defaults to <code>.</code>.
+- parameter environmentVariablePathSeparator: Optional. Used to separate the
+components of a path. Defaults to <code>__</code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">commandLineArgumentKeyPrefix</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"--"</span><span class="p">,</span>
+                <span class="nv">commandLineArgumentPathSeparator</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"."</span><span class="p">,</span>
+                <span class="nv">environmentVariablePathSeparator</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"__"</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>commandLineArgumentKeyPrefix</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional. Used to denote an argument as a configuration path-value pair. Defaults to <code>--</code>.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>commandLineArgumentPathSeparator</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional. Used to separate the components of a path. Defaults to <code>.</code>.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>environmentVariablePathSeparator</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional. Used to separate the components of a path. Defaults to <code>__</code>.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC13Configuration20ConfigurationManager4loadFP_S0_"></a>
+                    <a name="//apple_ref/swift/Method/load(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC13Configuration20ConfigurationManager4loadFP_S0_">load(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Load configurations from raw object.
+- parameter object: The configurations object.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">load</span><span class="p">(</span><span class="n">_</span> <span class="nv">object</span><span class="p">:</span> <span class="kt">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ConfigurationManager</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>object</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The configurations object.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC13Configuration20ConfigurationManager4loadFOS0_6SourceS0_"></a>
+                    <a name="//apple_ref/swift/Method/load(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC13Configuration20ConfigurationManager4loadFOS0_6SourceS0_">load(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Load configurations from command line arguments or environment variables.
+For command line arguments, the configurations are parsed from arguments
+in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code>
+- parameter source: Enum denoting which source to load from.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">load</span><span class="p">(</span><span class="n">_</span> <span class="nv">source</span><span class="p">:</span> <span class="kt"><a href="../Classes/ConfigurationManager/Source.html">Source</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ConfigurationManager</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>source</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Enum denoting which source to load from.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC13Configuration20ConfigurationManager4loadFzT4fileSS12relativeFromOS0_8BasePath16deserializerNameGSqSS__S0_"></a>
+                    <a name="//apple_ref/swift/Method/load(file:relativeFrom:deserializerName:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC13Configuration20ConfigurationManager4loadFzT4fileSS12relativeFromOS0_8BasePath16deserializerNameGSqSS__S0_">load(file:relativeFrom:deserializerName:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Load configurations from a file on system.
+- parameter file: Path to file.
+- parameter relativeFrom: Optional. Defaults to the location of the executable.
+- parameter deserializerName: Optional. Designated deserializer for the configuration
+resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize
+according to the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vC13Configuration16JSONDeserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will
+go through a list a deserializers and attempt to deserialize using each one.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span>
+                     <span class="nv">relativeFrom</span><span class="p">:</span> <span class="kt"><a href="../Classes/ConfigurationManager/BasePath.html">BasePath</a></span> <span class="o">=</span> <span class="o">.</span><span class="n">executable</span><span class="p">,</span>
+                     <span class="nv">deserializerName</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">ConfigurationManager</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>file</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Path to file.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>relativeFrom</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional. Defaults to the location of the executable.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>deserializerName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional. Designated deserializer for the configuration resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to the given format, i.e., <code>JSONDeserializer.name</code>; otherwise, parser will go through a list a deserializers and attempt to deserialize using each one.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC13Configuration20ConfigurationManager4loadFzT3urlV10Foundation3URL16deserializerNameGSqSS__S0_"></a>
+                    <a name="//apple_ref/swift/Method/load(url:deserializerName:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC13Configuration20ConfigurationManager4loadFzT3urlV10Foundation3URL16deserializerNameGSqSS__S0_">load(url:deserializerName:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Load configurations from a remote location.
+- parameter url: The URL pointing to a configuration resource.
+- parameter deserializerName: Optional. Designated deserializer for the configuration
+resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to
+the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vC13Configuration16JSONDeserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will go through a list
+a deserializers and attempt to deserialize using each one.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">load</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="kt">URL</span><span class="p">,</span> <span class="nv">deserializerName</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">ConfigurationManager</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>url</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The URL pointing to a configuration resource.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>deserializerName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional. Designated deserializer for the configuration resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to the given format, i.e., <code>JSONDeserializer.name</code>; otherwise, parser will go through a list a deserializers and attempt to deserialize using each one.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC13Configuration20ConfigurationManager3useFPS_12Deserializer_S0_"></a>
+                    <a name="//apple_ref/swift/Method/use(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC13Configuration20ConfigurationManager3useFPS_12Deserializer_S0_">use(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Add a deserializer to the list.
+- paramter deserializer: The deserializer to be added.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">use</span><span class="p">(</span><span class="n">_</span> <span class="nv">deserializer</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Deserializer.html">Deserializer</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ConfigurationManager</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC13Configuration20ConfigurationManager10getConfigsFT_P_"></a>
+                    <a name="//apple_ref/swift/Method/getConfigs()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC13Configuration20ConfigurationManager10getConfigsFT_P_">getConfigs()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get all configurations that have been merged in the manager as a raw object.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">getConfigs</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Any</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-02-07)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
