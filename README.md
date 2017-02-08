@@ -81,7 +81,7 @@ path__to_configuration=value
 
 You can set your preferred path separator (`__`) string when instantiating 'ConfigurationManager`.
 
-### From a JSON file:
+### From a file:
 
 ```swift
 try manager.load(file: "config.json")
@@ -116,6 +116,7 @@ manager.load(["foo": "bar"])
 
 `manager["foo"]` returns `baz` because `["foo": "baz"]` was more recently loaded than `["foo": "bar"]`. The same behavior applies to all other `load` functions.
 
+**NOTE:** Currently, `Configuration` only supports JSON and PLIST formats for resources loaded from file or URL. You can write a custom deserializer to parse additional data formats.
 
 ## Accessing configuration data
 
