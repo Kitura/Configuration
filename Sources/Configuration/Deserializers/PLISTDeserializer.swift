@@ -16,7 +16,11 @@
 
 import Foundation
 
+/// Default PLIST deserializer implementation
+///
+/// Deserializes PLIST formatted data using Foundation's PropertListSerialization class
 public class PLISTDeserializer: Deserializer {
+    /// A shared instance
     public static let shared = PLISTDeserializer()
 
     public let name = "plist"
@@ -24,4 +28,7 @@ public class PLISTDeserializer: Deserializer {
     public func deserialize(data: Data) throws -> Any {
         return try PropertyListSerialization.propertyList(from: data, format: nil)
     }
+
+    // No need to create multiple instances of PLISTDeserializer
+    private init() {}
 }

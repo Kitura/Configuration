@@ -28,6 +28,12 @@ public class ConfigurationManager {
     /// Internal tree representation of all config values
     private var root = ConfigurationNode.dictionary([:])
 
+    /// List of known deserializers for parsing raw data (i.e., from file or HTTP requests)
+    private var deserializers: [String: Deserializer] = [
+        JSONDeserializer.shared.name: JSONDeserializer.shared,
+        PLISTDeserializer.shared.name: PLISTDeserializer.shared
+    ]
+
     /// Defaults to `--`
     public var commandLineArgumentKeyPrefix: String
 
@@ -37,50 +43,27 @@ public class ConfigurationManager {
     /// Defaults to `__`
     public var environmentVariablePathSeparator: String
 
+    /// Enum to specify configuration source between commandline arguments
+    /// and environment variables.
     public enum Source {
+        /// Flag to load configurations from commandline arguments
         case commandLineArguments
+
+        /// Flag to load configurations from environment variables
         case environmentVariables
-    }
-
-    /// Supported data types
-    public enum DataType {
-        case json
-        case plist
-
-        init?(fileExtension: String) {
-            switch fileExtension.lowercased() {
-            case ".json":
-                self = .json
-            case ".plist":
-                self = .plist
-            default:
-                return nil
-            }
-        }
-
-        init?(mimeType: String) {
-            let type = mimeType.lowercased()
-
-            if type.hasSuffix("/json") {
-                self = .json
-            }
-            else {
-                return nil
-            }
-        }
     }
 
     /// Base paths for resolving relative paths
     public enum BasePath {
+        /// Relative from executable location
         case executable
+
+        /// Relative from present working directory (PWD)
         case pwd
+
+        /// Relative from a custom location
         case customPath(String)
     }
-
-    private var deserializers: [String: Deserializer] = [
-        JSONDeserializer.shared.name: JSONDeserializer.shared,
-        PLISTDeserializer.shared.name: PLISTDeserializer.shared
-    ]
 
     /// Constructor
     /// - parameter commandLineArgumentKeyPrefix: Optional. Used to denote an argument
@@ -142,6 +125,35 @@ public class ConfigurationManager {
         return self
     }
 
+    /// Load configurations from a Data object
+    /// - data: The Data object containing configurations.
+    /// - parameter deserializerName: Optional. Designated deserializer for the configuration
+    /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
+    /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
+    /// a deserializers and attempt to deserialize using each one.
+    public func load(data: Data, deserializerName: String? = nil) throws -> ConfigurationManager {
+        if let deserializerName = deserializerName,
+            let deserializer = deserializers[deserializerName] {
+            self.load(try deserializer.deserialize(data: data))
+        }
+        else {
+            for deserializer in deserializers.values {
+                do {
+                    self.load(try deserializer.deserialize(data: data))
+                    break
+                }
+                catch {
+                    // try the next deserializer
+                    continue
+                }
+            }
+            // TODO
+            // maybe throw error here?
+        }
+
+        return self
+    }
+
     /// Load configurations from a file on system.
     /// - parameter file: Path to file.
     /// - parameter relativeFrom: Optional. Defaults to the location of the executable.
@@ -193,28 +205,7 @@ public class ConfigurationManager {
     /// a deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(url: URL, deserializerName: String? = nil) throws -> ConfigurationManager {
-        let data = try Data(contentsOf: url)
-
-        if let deserializerName = deserializerName,
-            let deserializer = deserializers[deserializerName] {
-            self.load(try deserializer.deserialize(data: data))
-        }
-        else {
-            for deserializer in deserializers.values {
-                do {
-                    self.load(try deserializer.deserialize(data: data))
-                    break
-                }
-                catch {
-                    // try the next deserializer
-                    continue
-                }
-            }
-            // TODO
-            // maybe throw error here?
-        }
-
-        return self
+        return try self.load(data: Data(contentsOf: url), deserializerName: deserializerName)
     }
 
     /// Add a deserializer to the list.

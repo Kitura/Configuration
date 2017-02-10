@@ -81,20 +81,27 @@ path__to_configuration=value
 
 You can set your preferred path separator (`__`) string when instantiating 'ConfigurationManager`.
 
+### From a Data object:
+
+```swift
+let data = Data(...)
+try manager.load(data: data)
+```
+
 ### From a file:
 
 ```swift
-try manager.load(file: "config.json")
+try manager.load(file: "/path/to/file")
 ```
 
-By default, the `file` argument is a path relative from the location of the executable (i.e., `.build/debug/myApp`). You can change the relative-from path using the optional `relativeFrom` parameter, like so:
+By default, the `file` argument is a path relative from the location of the executable (i.e., `.build/debug/myApp`); if `file` is an absolute path, then it will be treated as such. You can change the relative-from path using the optional `relativeFrom` parameter, like so:
 
 ```swift
-try manager.load(file: "config.json", relativeFrom: .pwd)
+try manager.load(file: "../path/to/file", relativeFrom: .pwd)
 
 // or
 
-try manager.load(file: "config.json", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
+try manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
 ```
 
 ### From a resource URL:
@@ -114,9 +121,9 @@ manager.load(["foo": "bar"])
        .load(["foo": "baz"])
 ```
 
-`manager["foo"]` returns `baz` because `["foo": "baz"]` was more recently loaded than `["foo": "bar"]`. The same behavior applies to all other `load` functions.
+the value for `foo` is now `baz` because `["foo": "baz"]` was more recently loaded than `["foo": "bar"]`. The same behavior applies to all other `load` functions.
 
-**NOTE:** Currently, `Configuration` only supports JSON and PLIST formats for resources loaded from file or URL. You can write a custom deserializer to parse additional data formats.
+**NOTE:** Currently, `Configuration` only supports JSON and PLIST formats for resources loaded from data, file, or URL. You can write a custom deserializer to parse additional formats.
 
 ## Accessing configuration data
 

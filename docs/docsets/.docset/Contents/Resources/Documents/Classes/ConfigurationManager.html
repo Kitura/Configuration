@@ -14,7 +14,7 @@
     <a title="ConfigurationManager Class Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="../index.html"> Docs</a> (42% documented)</p>
+        <p><a href="../index.html"> Docs</a> (100% documented)</p>
       </div>
     </header>
     <div class="content-wrapper">
@@ -35,9 +35,6 @@
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ConfigurationManager/Source.html">– Source</a>
-              </li>
-              <li class="nav-group-task">
-                <a href="../Classes/ConfigurationManager/DataType.html">– DataType</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ConfigurationManager/BasePath.html">– BasePath</a>
@@ -222,7 +219,8 @@ and raw objects.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Enum to specify configuration source between commandline arguments
+and environment variables.</p>
 
                         <a href="../Classes/ConfigurationManager/Source.html" class="slightly-smaller">See more</a>
                       </div>
@@ -230,35 +228,7 @@ and raw objects.</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ConfigurationManager</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:OC13Configuration20ConfigurationManager8DataType"></a>
-                    <a name="//apple_ref/swift/Enum/DataType" class="dashAnchor"></a>
-                    <a class="token" href="#/s:OC13Configuration20ConfigurationManager8DataType">DataType</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Supported data types</p>
-
-                        <a href="../Classes/ConfigurationManager/DataType.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">DataType</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">Source</span></code></pre>
 
                         </div>
                       </div>
@@ -475,6 +445,58 @@ in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code>
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:FC13Configuration20ConfigurationManager4loadFzT4dataV10Foundation4Data16deserializerNameGSqSS__S0_"></a>
+                    <a name="//apple_ref/swift/Method/load(data:deserializerName:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC13Configuration20ConfigurationManager4loadFzT4dataV10Foundation4Data16deserializerNameGSqSS__S0_">load(data:deserializerName:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Load configurations from a Data object
+- data: The Data object containing configurations.
+- parameter deserializerName: Optional. Designated deserializer for the configuration
+resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to
+the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vP13Configuration12Deserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will go through a list
+a deserializers and attempt to deserialize using each one.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">load</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="kt">Data</span><span class="p">,</span> <span class="nv">deserializerName</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="kt">ConfigurationManager</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>deserializerName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional. Designated deserializer for the configuration resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to the given format, i.e., <code>JSONDeserializer.name</code>; otherwise, parser will go through a list a deserializers and attempt to deserialize using each one.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:FC13Configuration20ConfigurationManager4loadFzT4fileSS12relativeFromOS0_8BasePath16deserializerNameGSqSS__S0_"></a>
                     <a name="//apple_ref/swift/Method/load(file:relativeFrom:deserializerName:)" class="dashAnchor"></a>
                     <a class="token" href="#/s:FC13Configuration20ConfigurationManager4loadFzT4fileSS12relativeFromOS0_8BasePath16deserializerNameGSqSS__S0_">load(file:relativeFrom:deserializerName:)</a>
@@ -490,7 +512,7 @@ in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code>
 - parameter relativeFrom: Optional. Defaults to the location of the executable.
 - parameter deserializerName: Optional. Designated deserializer for the configuration
 resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize
-according to the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vC13Configuration16JSONDeserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will
+according to the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vP13Configuration12Deserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will
 go through a list a deserializers and attempt to deserialize using each one.</p>
 
                       </div>
@@ -570,7 +592,7 @@ go through a list a deserializers and attempt to deserialize using each one.</p>
 - parameter url: The URL pointing to a configuration resource.
 - parameter deserializerName: Optional. Designated deserializer for the configuration
 resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to
-the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vC13Configuration16JSONDeserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will go through a list
+the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vP13Configuration12Deserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will go through a list
 a deserializers and attempt to deserialize using each one.</p>
 
                       </div>
@@ -678,7 +700,7 @@ a deserializers and attempt to deserialize using each one.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-02-07)</p>
+          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-02-10)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>
