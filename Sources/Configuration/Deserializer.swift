@@ -16,8 +16,15 @@
 
 import Foundation
 
+/// Deserializer protocol
+///
+/// Additional deserializers (i.e., for unsupported file formats) may be used
+/// by implementing this protocol.
 public protocol Deserializer {
+    /// A unique name that identifies this deserializer
     var name: String { get }
 
+    /// Function that deserializes raw data into a Foundation object
+    /// - parameter data: The raw data to be deserialized
     func deserialize(data: Data) throws -> Any
 }

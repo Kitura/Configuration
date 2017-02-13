@@ -16,7 +16,11 @@
 
 import Foundation
 
+/// Default JSON deserializer implementation
+///
+/// Deserializes JSON formatted data using Foundation's JSONSerialization class
 public class JSONDeserializer: Deserializer {
+    /// A shared instance
     public static let shared = JSONDeserializer()
 
     public let name = "json"
@@ -24,4 +28,7 @@ public class JSONDeserializer: Deserializer {
     public func deserialize(data: Data) throws -> Any {
         return try JSONSerialization.jsonObject(with: data)
     }
+
+    // No need to create multiple instances of JSONDeserializer
+    private init() {}
 }

@@ -19,4 +19,5 @@ import Foundation
 /// Absolute path to the executable
 let executableFolderAbsolutePath = URL(fileURLWithPath: CommandLine.arguments[0]).appendingPathComponent("..").standardized.path
 
+/// Absolute path to the present working directory (PWD)
 let pwd = URL(fileURLWithPath: "").path
