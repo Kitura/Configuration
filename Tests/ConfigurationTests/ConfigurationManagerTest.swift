@@ -64,5 +64,10 @@ class ConfigurationManagerTest: XCTestCase {
         catch {
             XCTFail("Cannot read file")
         }
+
+        // File does not exist
+        manager = ConfigurationManager()
+
+        XCTAssertThrowsError(try manager.load(file: "../../../TestResources/thisfileisalie.json", relativeFrom: .customPath(#file)))
     }
 }
