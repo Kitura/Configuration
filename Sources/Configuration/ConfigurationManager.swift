@@ -139,6 +139,7 @@ public class ConfigurationManager {
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
     /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
     /// a deserializers and attempt to deserialize using each one.
+    @discardableResult
     public func load(data: Data, deserializerName: String? = nil) throws -> ConfigurationManager {
         if let deserializerName = deserializerName,
             let deserializer = deserializers[deserializerName] {
