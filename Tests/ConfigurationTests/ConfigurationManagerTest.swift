@@ -22,18 +22,22 @@ class ConfigurationManagerTest: XCTestCase {
         return [
             ("testLoadSimple", testLoadSimple),
             ("testLoadFile", testLoadFile),
+            ("testLoadData", testLoadData)
         ]
     }
 
     func testLoadSimple() {
+        // String
         var manager = ConfigurationManager()
         manager.load("Hello world")
         XCTAssertEqual(manager.getConfigs() as? String, "Hello world")
 
+        // Array
         manager = ConfigurationManager()
         manager.load([0, "1", "hello world"])
         XCTAssertEqual(manager["2"] as? String, "hello world")
 
+        // Dictionary
         manager = ConfigurationManager()
         manager.load(["Hello": "World"])
         XCTAssertEqual(manager["Hello"] as? String, "World")
@@ -44,7 +48,7 @@ class ConfigurationManagerTest: XCTestCase {
         var manager = ConfigurationManager()
 
         do {
-            try manager.load(file: "../../../TestResources/default.json", relativeFrom: .customPath(#file))
+            try manager.load(file: "../../../TestResources/test.json", relativeFrom: .customPath(#file))
             XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
         }
         catch {
@@ -55,7 +59,7 @@ class ConfigurationManagerTest: XCTestCase {
         manager = ConfigurationManager()
 
         do {
-            try manager.load(file: "../../../TestResources/default.plist", relativeFrom: .customPath(#file))
+            try manager.load(file: "../../../TestResources/test.plist", relativeFrom: .customPath(#file))
             #if os(OSX)
                 // broken on Linux due to https://bugs.swift.org/browse/SR-3681
                 XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
@@ -68,24 +72,36 @@ class ConfigurationManagerTest: XCTestCase {
         // File does not exist
         manager = ConfigurationManager()
 
-        XCTAssertThrowsError(try manager.load(file: "../../../TestResources/thisfileisalie.json", relativeFrom: .customPath(#file)))
+        XCTAssertThrowsError(try manager.load(file: "../../../TestResources/TheFileIsALie.json", relativeFrom: .customPath(#file)))
     }
 
     func testLoadData() {
-        let manager = ConfigurationManager()
+        // JSON
+        var manager = ConfigurationManager()
         let jsonString = "{\"hello\": \"world\"}"
 
-        guard let data = jsonString.data(using: .utf8) else {
+        guard let jsonData = jsonString.data(using: .utf8) else {
             XCTFail("Cannot convert \(jsonString) to Data")
             return
         }
 
         do {
-            try manager.load(data: data)
+            try manager.load(data: jsonData)
             XCTAssertEqual(manager["hello"] as? String, "world")
         }
         catch {
             XCTFail("Cannot load data")
         }
+
+        // XML - not supported
+        manager = ConfigurationManager()
+        let xmlString = "<hello>world</hello>"
+
+        guard let xmlData = xmlString.data(using: .utf8) else {
+            XCTFail("Cannot convert \(xmlString) to Data")
+            return
+        }
+
+        XCTAssertThrowsError(try manager.load(data: xmlData))
     }
 }

@@ -1,64 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Protocols  Reference</title>
-    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
-    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <title>ConfigurationError Enum Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
-    <script src="js/jquery.min.js" defer></script>
-    <script src="js/jazzy.js" defer></script>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
     
   </head>
   <body>
-    <a title="Protocols  Reference"></a>
+    <a name="//apple_ref/swift/Enum/ConfigurationError" class="dashAnchor"></a>
+    <a title="ConfigurationError Enum Reference"></a>
     <header>
       <div class="content-wrapper">
-        <p><a href="index.html"> Docs</a> (100% documented)</p>
+        <p><a href="../index.html"> Docs</a> (100% documented)</p>
       </div>
     </header>
     <div class="content-wrapper">
       <p id="breadcrumbs">
-        <a href="index.html"> Reference</a>
-        <img id="carat" src="img/carat.png" />
-        Protocols  Reference
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        ConfigurationError Enum Reference
       </p>
     </div>
     <div class="content-wrapper">
       <nav class="sidebar">
         <ul class="nav-groups">
           <li class="nav-group-name">
-            <a href="Classes.html">Classes</a>
+            <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Classes/ConfigurationManager.html">ConfigurationManager</a>
+                <a href="../Classes/ConfigurationManager.html">ConfigurationManager</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ConfigurationManager/Source.html">– Source</a>
+                <a href="../Classes/ConfigurationManager/Source.html">– Source</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ConfigurationManager/BasePath.html">– BasePath</a>
+                <a href="../Classes/ConfigurationManager/BasePath.html">– BasePath</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/JSONDeserializer.html">JSONDeserializer</a>
+                <a href="../Classes/JSONDeserializer.html">JSONDeserializer</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/PLISTDeserializer.html">PLISTDeserializer</a>
+                <a href="../Classes/PLISTDeserializer.html">PLISTDeserializer</a>
               </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a href="Enums.html">Enums</a>
+            <a href="../Enums.html">Enums</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Enums/ConfigurationError.html">ConfigurationError</a>
+                <a href="../Enums/ConfigurationError.html">ConfigurationError</a>
               </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a href="Protocols.html">Protocols</a>
+            <a href="../Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Protocols/Deserializer.html">Deserializer</a>
+                <a href="../Protocols/Deserializer.html">Deserializer</a>
               </li>
             </ul>
           </li>
@@ -67,8 +68,14 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>Protocols</h1>
-            <p>The following protocols are available globally.</p>
+            <h1>ConfigurationError</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">ConfigurationError</span><span class="p">:</span> <span class="kt">Error</span></code></pre>
+
+                </div>
+              </div>
+            <p>Custom errors</p>
 
           </section>
           <section class="section task-group-section">
@@ -77,9 +84,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:P13Configuration12Deserializer"></a>
-                    <a name="//apple_ref/swift/Protocol/Deserializer" class="dashAnchor"></a>
-                    <a class="token" href="#/s:P13Configuration12Deserializer">Deserializer</a>
+                    <a name="/s:FO13Configuration18ConfigurationError24noCompatibleDeserializerFMS0_FV10Foundation4DataS0_"></a>
+                    <a name="//apple_ref/swift/Element/noCompatibleDeserializer" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FO13Configuration18ConfigurationError24noCompatibleDeserializerFMS0_FV10Foundation4DataS0_">noCompatibleDeserializer</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -87,18 +94,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Deserializer protocol</p>
+                        <p>Unable to deserialize data using available deserializers</p>
 
-<p>Additional deserializers (i.e., for unsupported file formats) may be used
-by implementing this protocol.</p>
-
-                        <a href="Protocols/Deserializer.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">Deserializer</span></code></pre>
+                          <pre class="highlight"><code><span class="k">case</span> <span class="nf">noCompatibleDeserializer</span><span class="p">(</span><span class="kt">Data</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>

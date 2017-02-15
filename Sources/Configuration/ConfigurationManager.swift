@@ -66,6 +66,18 @@ public class ConfigurationManager {
 
         /// Relative from a custom location
         case customPath(String)
+
+        /// Get the absolute path as denoted by self
+        var path: String {
+            switch self {
+            case .executable:
+                return executableFolder
+            case .pwd:
+                return presentWorkingDirectory
+            case .customPath(let path):
+                return path
+            }
+        }
     }
 
     /// Constructor
@@ -145,24 +157,21 @@ public class ConfigurationManager {
     public func load(data: Data, deserializerName: String? = nil) throws -> ConfigurationManager {
         if let deserializerName = deserializerName,
             let deserializer = deserializers[deserializerName] {
-            self.load(try deserializer.deserialize(data: data))
+            return self.load(try deserializer.deserialize(data: data))
         }
         else {
             for deserializer in deserializers.values {
                 do {
-                    self.load(try deserializer.deserialize(data: data))
-                    break
+                    return self.load(try deserializer.deserialize(data: data))
                 }
                 catch {
                     // try the next deserializer
                     continue
                 }
             }
-            // TODO
-            // maybe throw error here?
-        }
 
-        return self
+            throw ConfigurationError.noCompatibleDeserializer(data)
+        }
     }
 
     /// Load configurations from a file on system.
@@ -191,18 +200,7 @@ public class ConfigurationManager {
             pathURL = URL(fileURLWithPath: fn.expandingTildeInPath)
         }
         else {
-            var basePath: String
-
-            switch relativeFrom {
-            case .executable:
-                basePath = executableFolderAbsolutePath
-            case .pwd:
-                basePath = pwd
-            case .customPath(let path):
-                basePath = path
-            }
-
-            pathURL = URL(fileURLWithPath: basePath).appendingPathComponent(file).standardized
+            pathURL = URL(fileURLWithPath: relativeFrom.path).appendingPathComponent(file).standardized
         }
 
         return try self.load(url: pathURL, deserializerName: deserializerName)
