@@ -13,6 +13,9 @@
 ## Version Info
 `Configuration` runs on Swift 3, on both macOS and Ubuntu Linux.
 
+## API Documentations
+Full API documentations for `Configuration` can be found [here](https://ibm-swift.github.io/Configuration/index.html).
+
 ## Usage
 
 The core of the `Configuration` package is the `ConfigurationManager` class. To manage your application's configurations, first create an instance of the `ConfigurationManager` class.

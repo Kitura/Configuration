@@ -43,6 +43,9 @@ public class ConfigurationManager {
     /// Defaults to `__`
     public var environmentVariablePathSeparator: String
 
+    /// Defaults to `true`
+    public var parseStringToObject: Bool
+
     /// Enum to specify configuration source between commandline arguments
     /// and environment variables.
     public enum Source {
@@ -72,12 +75,17 @@ public class ConfigurationManager {
     /// components of a path. Defaults to `.`.
     /// - parameter environmentVariablePathSeparator: Optional. Used to separate the
     /// components of a path. Defaults to `__`.
+    /// - parameter parseStringToObject: Optional. Used to indicate if string values
+    /// in commandline arguments and environment variables should be parsed to array
+    /// or dictionary, if possible, using a known `Deserializer`. Defaults to `true`.
     public init(commandLineArgumentKeyPrefix: String = "--",
                 commandLineArgumentPathSeparator: String = ".",
-                environmentVariablePathSeparator: String = "__") {
+                environmentVariablePathSeparator: String = "__",
+                parseStringToObject: Bool = true) {
         self.commandLineArgumentKeyPrefix = commandLineArgumentKeyPrefix
         self.commandLineArgumentPathSeparator = commandLineArgumentPathSeparator
         self.environmentVariablePathSeparator = environmentVariablePathSeparator
+        self.parseStringToObject = parseStringToObject
     }
 
     /// Load configurations from raw object.
@@ -110,15 +118,15 @@ public class ConfigurationManager {
                                               with: ConfigurationNode.separator)
                     let value = argv[index].substring(from: breakRange.upperBound)
 
-                    root[path] = ConfigurationNode(value)
+                    root[path] = ConfigurationNode(self.deserializeFrom(value))
                 }
             }
         case .environmentVariables:
-            ProcessInfo.processInfo.environment.forEach {
-                let index = $0.replacingOccurrences(of: environmentVariablePathSeparator,
+            for (path, value) in ProcessInfo.processInfo.environment {
+                let index = path.replacingOccurrences(of: environmentVariablePathSeparator,
                                                     with: ConfigurationNode.separator)
 
-                root[index] = ConfigurationNode($1)
+                root[index] = ConfigurationNode(self.deserializeFrom(value))
             }
         }
 
@@ -131,6 +139,7 @@ public class ConfigurationManager {
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
     /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
     /// a deserializers and attempt to deserialize using each one.
+    @discardableResult
     public func load(data: Data, deserializerName: String? = nil) throws -> ConfigurationManager {
         if let deserializerName = deserializerName,
             let deserializer = deserializers[deserializerName] {
@@ -235,5 +244,24 @@ public class ConfigurationManager {
 
             root[path] = ConfigurationNode(rawValue)
         }
+    }
+
+    /// Deserialize a string into an object (i.e., a JSON string into a dictionary)
+    /// - parameter str: The string to be deserialized.
+    private func deserializeFrom(_ str: String) -> Any {
+        if let data = str.data(using: .utf8) {
+            for deserializer in deserializers.values {
+                do {
+                    return try deserializer.deserialize(data: data)
+                }
+                catch {
+                    // try the next deserializer
+                    continue
+                }
+            }
+        }
+
+        // str cannot be deserialized; return it as it is
+        return str
     }
 }

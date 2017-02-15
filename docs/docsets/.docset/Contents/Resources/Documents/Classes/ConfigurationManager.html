@@ -209,6 +209,33 @@ and raw objects.</p>
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:vC13Configuration20ConfigurationManager19parseStringToObjectSb"></a>
+                    <a name="//apple_ref/swift/Property/parseStringToObject" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC13Configuration20ConfigurationManager19parseStringToObjectSb">parseStringToObject</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Defaults to <code>true</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">parseStringToObject</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:OC13Configuration20ConfigurationManager6Source"></a>
                     <a name="//apple_ref/swift/Enum/Source" class="dashAnchor"></a>
                     <a class="token" href="#/s:OC13Configuration20ConfigurationManager6Source">Source</a>
@@ -266,9 +293,9 @@ and environment variables.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FC13Configuration20ConfigurationManagercFT28commandLineArgumentKeyPrefixSS32commandLineArgumentPathSeparatorSS32environmentVariablePathSeparatorSS_S0_"></a>
-                    <a name="//apple_ref/swift/Method/init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FC13Configuration20ConfigurationManagercFT28commandLineArgumentKeyPrefixSS32commandLineArgumentPathSeparatorSS32environmentVariablePathSeparatorSS_S0_">init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:)</a>
+                    <a name="/s:FC13Configuration20ConfigurationManagercFT28commandLineArgumentKeyPrefixSS32commandLineArgumentPathSeparatorSS32environmentVariablePathSeparatorSS19parseStringToObjectSb_S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC13Configuration20ConfigurationManagercFT28commandLineArgumentKeyPrefixSS32commandLineArgumentPathSeparatorSS32environmentVariablePathSeparatorSS19parseStringToObjectSb_S0_">init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -282,7 +309,10 @@ as a configuration path-value pair. Defaults to <code>--</code>.
 - parameter commandLineArgumentPathSeparator: Optional. Used to separate the
 components of a path. Defaults to <code>.</code>.
 - parameter environmentVariablePathSeparator: Optional. Used to separate the
-components of a path. Defaults to <code>__</code>.</p>
+components of a path. Defaults to <code>__</code>.
+- parameter parseStringToObject: Optional. Used to indicate if string values
+in commandline arguments and environment variables should be parsed to array
+or dictionary, if possible, using a known <code><a href="../Protocols/Deserializer.html">Deserializer</a></code>. Defaults to <code>true</code>.</p>
 
                       </div>
                       <div class="declaration">
@@ -291,7 +321,8 @@ components of a path. Defaults to <code>__</code>.</p>
                           <p class="aside-title">Swift</p>
                           <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">commandLineArgumentKeyPrefix</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"--"</span><span class="p">,</span>
                 <span class="nv">commandLineArgumentPathSeparator</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"."</span><span class="p">,</span>
-                <span class="nv">environmentVariablePathSeparator</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"__"</span><span class="p">)</span></code></pre>
+                <span class="nv">environmentVariablePathSeparator</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"__"</span><span class="p">,</span>
+                <span class="nv">parseStringToObject</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -334,6 +365,19 @@ components of a path. Defaults to <code>__</code>.</p>
                               <td>
                                 <div>
                                   <p>Optional. Used to separate the components of a path. Defaults to <code>__</code>.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>parseStringToObject</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Optional. Used to indicate if string values in commandline arguments and environment variables should be parsed to array or dictionary, if possible, using a known <code>Deserializer</code>. Defaults to <code>true</code>.</p>
 
                                 </div>
                               </td>
@@ -700,7 +744,7 @@ a deserializers and attempt to deserialize using each one.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-02-10)</p>
+          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-02-14)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
       </article>

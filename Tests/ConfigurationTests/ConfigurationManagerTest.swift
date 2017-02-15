@@ -64,5 +64,28 @@ class ConfigurationManagerTest: XCTestCase {
         catch {
             XCTFail("Cannot read file")
         }
+
+        // File does not exist
+        manager = ConfigurationManager()
+
+        XCTAssertThrowsError(try manager.load(file: "../../../TestResources/thisfileisalie.json", relativeFrom: .customPath(#file)))
+    }
+
+    func testLoadData() {
+        let manager = ConfigurationManager()
+        let jsonString = "{\"hello\": \"world\"}"
+
+        guard let data = jsonString.data(using: .utf8) else {
+            XCTFail("Cannot convert \(jsonString) to Data")
+            return
+        }
+
+        do {
+            try manager.load(data: data)
+            XCTAssertEqual(manager["hello"] as? String, "world")
+        }
+        catch {
+            XCTFail("Cannot load data")
+        }
     }
 }
