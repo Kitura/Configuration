@@ -118,7 +118,8 @@ public class ConfigurationManager {
                                               with: ConfigurationNode.separator)
                     let value = argv[index].substring(from: breakRange.upperBound)
 
-                    root[path] = ConfigurationNode(self.deserializeFrom(value))
+                    let rawValue = parseStringToObject ? self.deserializeFrom(value) : value
+                    root[path] = ConfigurationNode(rawValue)
                 }
             }
         case .environmentVariables:
@@ -126,7 +127,8 @@ public class ConfigurationManager {
                 let index = path.replacingOccurrences(of: environmentVariablePathSeparator,
                                                     with: ConfigurationNode.separator)
 
-                root[index] = ConfigurationNode(self.deserializeFrom(value))
+                let rawValue = parseStringToObject ? self.deserializeFrom(value) : value
+                root[index] = ConfigurationNode(rawValue)
             }
         }
 
