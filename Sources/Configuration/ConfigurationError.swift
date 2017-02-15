@@ -16,8 +16,8 @@
 
 import Foundation
 
-/// Absolute path to the executable's folder
-let executableFolder = URL(fileURLWithPath: CommandLine.arguments[0]).appendingPathComponent("..").standardized.path
-
-/// Absolute path to the present working directory (PWD)
-let presentWorkingDirectory = URL(fileURLWithPath: "").path
+/// Custom errors
+public enum ConfigurationError: Error {
+    /// Unable to deserialize data using available deserializers
+    case noCompatibleDeserializer(Data)
+}
