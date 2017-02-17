@@ -15,6 +15,7 @@
  */
 
 import Foundation
+import LoggerAPI
 
 /// ConfigurationManager class
 ///
@@ -104,6 +105,8 @@ public class ConfigurationManager {
     /// - parameter object: The configurations object.
     @discardableResult
     public func load(_ object: Any) -> ConfigurationManager {
+        Log.debug("Loading object: \(object)")
+
         root.merge(overwrittenBy: ConfigurationNode(object))
 
         return self
@@ -118,6 +121,8 @@ public class ConfigurationManager {
         switch source {
         case .commandLineArguments:
             let argv = CommandLine.arguments
+
+            Log.debug("Loading commandline arguments: \(argv)")
 
             // skip first since it's always the executable
             for index in 1..<argv.count {
@@ -135,6 +140,8 @@ public class ConfigurationManager {
                 }
             }
         case .environmentVariables:
+            Log.debug("Loading environment variables: \(ProcessInfo.processInfo.environment)")
+
             for (path, value) in ProcessInfo.processInfo.environment {
                 let index = path.replacingOccurrences(of: environmentVariablePathSeparator,
                                                     with: ConfigurationNode.separator)
@@ -155,6 +162,8 @@ public class ConfigurationManager {
     /// a deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(data: Data, deserializerName: String? = nil) throws -> ConfigurationManager {
+        Log.debug("Loading data: \(data)")
+
         if let deserializerName = deserializerName,
             let deserializer = deserializers[deserializerName] {
             return self.load(try deserializer.deserialize(data: data))
@@ -203,6 +212,8 @@ public class ConfigurationManager {
             pathURL = URL(fileURLWithPath: relativeFrom.path).appendingPathComponent(file).standardized
         }
 
+        Log.verbose("Loading file: \(pathURL)")
+
         return try self.load(url: pathURL, deserializerName: deserializerName)
     }
 
@@ -214,6 +225,8 @@ public class ConfigurationManager {
     /// a deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(url: URL, deserializerName: String? = nil) throws -> ConfigurationManager {
+        Log.verbose("Loading URL: \(url)")
+
         return try self.load(data: Data(contentsOf: url), deserializerName: deserializerName)
     }
 
