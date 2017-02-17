@@ -34,10 +34,10 @@ class ConfigurationNodeTest: XCTestCase {
         XCTAssertEqual(root.rawValue as? String, "Hello world")
 
         root.rawValue = [0, "1", "hello world"]
-        XCTAssertEqual(root["2"]?.rawValue as? String, "hello world")
+        XCTAssertEqual((root.rawValue as? [Any])?[2] as? String, "hello world")
 
         root.rawValue = ["hello": "world"]
-        XCTAssertEqual(root["hello"]?.rawValue as? String, "world")
+        XCTAssertEqual((root.rawValue as? [String: Any])?["hello"] as? String, "world")
 
         root.rawValue = [
             "env": "<default>",
@@ -58,13 +58,21 @@ class ConfigurationNodeTest: XCTestCase {
     }
 
     func testSubscript() {
-        var root = ConfigurationNode.dictionary([:])
+        var root = ConfigurationNode.any(false)
         root["sub1:sub2"] = ConfigurationNode(["hello", "world"])
         XCTAssertEqual(root["sub1:sub2:1"]?.rawValue as? String, "world")
 
+        root = ConfigurationNode.array([])
+        root["0:sub2"] = ConfigurationNode(["sub3": ["Hello", "world"]])
+        XCTAssertEqual(root["0:sub2:sub3:1"]?.rawValue as? String, "world")
+
+        // edge cases
         root = ConfigurationNode.dictionary([:])
-        root["sub1:sub2"] = ConfigurationNode(["sub3": "Hello world"])
-        XCTAssertEqual(root["sub1:sub2:sub3"]?.rawValue as? String, "Hello world")
+        root["hello"] = nil
+        XCTAssertNil(root["hello"])
+
+        root = ConfigurationNode.any("Hello world")
+        XCTAssertNil(root["Hello:world"])
     }
 
     func testMergeOverwrite() {

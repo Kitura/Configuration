@@ -93,6 +93,8 @@ class ConfigurationManagerTest: XCTestCase {
             XCTFail("Cannot load data")
         }
 
+        XCTAssertThrowsError(try manager.load(data: jsonData, deserializerName: PLISTDeserializer.shared.name))
+
         // XML - not supported
         manager = ConfigurationManager()
         let xmlString = "<hello>world</hello>"
