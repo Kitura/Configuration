@@ -80,13 +80,13 @@ enum ConfigurationNode {
 
     subscript(path: String) -> ConfigurationNode? {
         get {
-            var node: ConfigurationNode? = nil
+            var node: ConfigurationNode?
             let (firstKey, restOfKeys) = path.splitKeys
 
             switch self {
             case .array(let nodeArray):
                 if let index = Int(firstKey),
-                    nodeArray.startIndex...nodeArray.endIndex ~= index {
+                    nodeArray.startIndex..<nodeArray.endIndex ~= index {
                     node = nodeArray[index]
                 }
             case .dictionary(let nodeDictionary):
@@ -112,17 +112,31 @@ enum ConfigurationNode {
 
             switch self {
             case .array(var nodeArray):
-                if let index = Int(firstKey),
-                    nodeArray.startIndex..<nodeArray.endIndex ~= index {
-                    if let restOfKeys = restOfKeys {
-                        nodeArray[index][restOfKeys] = newNode
+                if let index = Int(firstKey) {
+                    if nodeArray.startIndex..<nodeArray.endIndex ~= index {
+                        if let restOfKeys = restOfKeys {
+                            nodeArray[index][restOfKeys] = newNode
+                        }
+                        else {
+                            nodeArray[index] = newNode
+                        }
                     }
-                    else {
-                        nodeArray[index] = newNode
-                    }
+                    else if nodeArray.endIndex == index {
+                        var node = ConfigurationNode.dictionary([:])
 
-                    self = .array(nodeArray)
+                        if let restOfKeys = restOfKeys {
+                            node[restOfKeys] = newNode
+                        }
+                        else {
+                            node = newNode
+                        }
+
+                        // insert into end of array
+                        nodeArray.append(node)
+                    }
                 }
+
+                self = .array(nodeArray)
             case .dictionary(var nodeDictionary):
                 if nodeDictionary[firstKey] == nil {
                     // no value exists for key

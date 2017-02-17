@@ -4,6 +4,7 @@
 ![macOS](https://img.shields.io/badge/os-macOS-green.svg?style=flat)
 ![Linux](https://img.shields.io/badge/os-linux-green.svg?style=flat)
 ![Apache 2](https://img.shields.io/badge/license-Apache2-blue.svg?style=flat)
+[![codecov](https://codecov.io/gh/IBM-Swift/Configuration/branch/master/graph/badge.svg)](https://codecov.io/gh/IBM-Swift/Configuration)
 
 ## Summary
 `Configuration` is a Swift package for managing application configurations. Using `Configuration`, an application can easily load and merge configuration data from multiple sources and access them from one central configuration store.
