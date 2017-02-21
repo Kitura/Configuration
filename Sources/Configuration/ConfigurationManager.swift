@@ -144,7 +144,7 @@ public class ConfigurationManager {
 
             for (path, value) in ProcessInfo.processInfo.environment {
                 let index = path.replacingOccurrences(of: environmentVariablePathSeparator,
-                                                    with: ConfigurationNode.separator)
+                                                      with: ConfigurationNode.separator)
 
                 let rawValue = parseStringToObject ? self.deserializeFrom(value) : value
                 root[index] = ConfigurationNode(rawValue)
@@ -161,12 +161,20 @@ public class ConfigurationManager {
     /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
     /// a deserializers and attempt to deserialize using each one.
     @discardableResult
-    public func load(data: Data, deserializerName: String? = nil) throws -> ConfigurationManager {
+    public func load(data: Data, deserializerName: String? = nil) -> ConfigurationManager {
         Log.debug("Loading data: \(data)")
 
         if let deserializerName = deserializerName,
             let deserializer = deserializers[deserializerName] {
-            return self.load(try deserializer.deserialize(data: data))
+
+            do {
+                self.load(try deserializer.deserialize(data: data))
+            }
+            catch {
+                Log.error("Unable to deserialize data using \"\(deserializerName)\" deserializer")
+            }
+
+            return self
         }
         else {
             for deserializer in deserializers.values {
@@ -179,7 +187,9 @@ public class ConfigurationManager {
                 }
             }
 
-            throw ConfigurationError.noCompatibleDeserializer(data)
+            Log.error("Unable to deserialize data using any known deserializer")
+
+            return self
         }
     }
 
@@ -193,7 +203,7 @@ public class ConfigurationManager {
     @discardableResult
     public func load(file: String,
                      relativeFrom: BasePath = .executable,
-                     deserializerName: String? = nil) throws -> ConfigurationManager {
+                     deserializerName: String? = nil) -> ConfigurationManager {
         // get NSString representation to access some path APIs like `isAbsolutePath`
         // and `expandingTildeInPath`
         let fn = NSString(string: file)
@@ -214,7 +224,7 @@ public class ConfigurationManager {
 
         Log.verbose("Loading file: \(pathURL)")
 
-        return try self.load(url: pathURL, deserializerName: deserializerName)
+        return self.load(url: pathURL, deserializerName: deserializerName)
     }
 
     /// Load configurations from a remote location.
@@ -224,10 +234,17 @@ public class ConfigurationManager {
     /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
     /// a deserializers and attempt to deserialize using each one.
     @discardableResult
-    public func load(url: URL, deserializerName: String? = nil) throws -> ConfigurationManager {
+    public func load(url: URL, deserializerName: String? = nil) -> ConfigurationManager {
         Log.verbose("Loading URL: \(url)")
 
-        return try self.load(data: Data(contentsOf: url), deserializerName: deserializerName)
+        do {
+            try self.load(data: Data(contentsOf: url), deserializerName: deserializerName)
+        }
+        catch {
+            Log.error("Unable to load data from URL \(url)")
+        }
+
+        return self
     }
 
     /// Add a deserializer to the list.
@@ -273,7 +290,7 @@ public class ConfigurationManager {
                 }
             }
         }
-
+        
         // str cannot be deserialized; return it as it is
         return str
     }

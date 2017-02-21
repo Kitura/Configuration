@@ -1,79 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>  Reference</title>
+    <title>Configuration  Reference</title>
     <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="css/highlight.css" />
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <script src="js/jquery.min.js" defer></script>
     <script src="js/jazzy.js" defer></script>
     
   </head>
   <body>
-    <a title="  Reference"></a>
-    <header>
-      <div class="content-wrapper">
-        <p><a href="index.html"> Docs</a> (100% documented)</p>
-      </div>
-    </header>
-    <div class="content-wrapper">
-      <p id="breadcrumbs">
-        <a href="index.html"> Reference</a>
-        <img id="carat" src="img/carat.png" />
-          Reference
+
+
+    <a title="Configuration  Reference"></a>
+
+    <header class="header">
+      <p class="header-col header-col--primary">
+        <a class="header-link" href="index.html">
+          Configuration Docs
+        </a>
+         (100% documented)
       </p>
-    </div>
+    
+        <p class="header-col header-col--secondary">
+          <a class="header-link" href="https://github.com/IBM-Swift/Configuration/">
+            <img class="header-icon" src="img/gh.png"/>
+            View on GitHub
+          </a>
+        </p>
+    
+    </header>
+
+    <p class="breadcrumbs">
+      <a class="breadcrumb" href="index.html">Configuration Reference</a>
+      <img class="carat" src="img/carat.png" />
+      Configuration  Reference
+    </p>
+
     <div class="content-wrapper">
-      <nav class="sidebar">
+      <nav class="navigation">
         <ul class="nav-groups">
           <li class="nav-group-name">
-            <a href="Classes.html">Classes</a>
+            <a class="nav-group-name-link" href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Classes/ConfigurationManager.html">ConfigurationManager</a>
+                <a class="nav-group-task-link" href="Classes/ConfigurationManager.html">ConfigurationManager</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ConfigurationManager/Source.html">– Source</a>
+                <a class="nav-group-task-link" href="Classes/ConfigurationManager/Source.html">– Source</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ConfigurationManager/BasePath.html">– BasePath</a>
+                <a class="nav-group-task-link" href="Classes/ConfigurationManager/BasePath.html">– BasePath</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/JSONDeserializer.html">JSONDeserializer</a>
+                <a class="nav-group-task-link" href="Classes/JSONDeserializer.html">JSONDeserializer</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/PLISTDeserializer.html">PLISTDeserializer</a>
+                <a class="nav-group-task-link" href="Classes/PLISTDeserializer.html">PLISTDeserializer</a>
               </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a href="Enums.html">Enums</a>
+            <a class="nav-group-name-link" href="Enums.html">Enums</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Enums/ConfigurationError.html">ConfigurationError</a>
+                <a class="nav-group-task-link" href="Enums/ConfigurationError.html">ConfigurationError</a>
               </li>
             </ul>
           </li>
           <li class="nav-group-name">
-            <a href="Protocols.html">Protocols</a>
+            <a class="nav-group-name-link" href="Protocols.html">Protocols</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a href="Protocols/Deserializer.html">Deserializer</a>
+                <a class="nav-group-task-link" href="Protocols/Deserializer.html">Deserializer</a>
               </li>
             </ul>
           </li>
         </ul>
       </nav>
       <article class="main-content">
-        <section>
-          <section class="section">
+
+        <section class="section">
+          <div class="section-content">
             
             <a href='#configuration' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='configuration'>Configuration</h1>
 
 <p><a href="https://travis-ci.org/IBM-Swift/Configuration"><img src="https://api.travis-ci.org/IBM-Swift/Configuration.svg?branch=master" alt="Build Status - Master"></a>
 <img src="https://img.shields.io/badge/os-macOS-green.svg?style=flat" alt="macOS">
 <img src="https://img.shields.io/badge/os-linux-green.svg?style=flat" alt="Linux">
-<img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2"></p>
+<img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2">
+<a href="https://codecov.io/gh/IBM-Swift/Configuration"><img src="https://codecov.io/gh/IBM-Swift/Configuration/branch/master/graph/badge.svg" alt="codecov"></a></p>
 <a href='#summary' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='summary'>Summary</h2>
 
 <p><code>Configuration</code> is a Swift package for managing application configurations. Using <code>Configuration</code>, an application can easily load and merge configuration data from multiple sources and access them from one central configuration store.</p>
@@ -94,14 +110,8 @@
 </code></pre>
 
 <p>Using the <code>ConfigurationManager</code> instance, you can then load and retrieve configurations:</p>
-<pre class="highlight swift"><code><span class="k">do</span> <span class="p">{</span>
-    <span class="k">try</span> <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"config.json"</span><span class="p">)</span>
-               <span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">environmentVariables</span><span class="p">)</span>
-<span class="p">}</span> <span class="k">catch</span> <span class="p">{</span> 
-
-<span class="p">}</span>
-
-<span class="k">let</span> <span class="nv">hostname</span> <span class="o">=</span> <span class="n">manager</span><span class="p">[</span><span class="s">"path:to:configuration:value"</span><span class="p">]</span>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"config.json"</span><span class="p">)</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">environmentVariables</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">value</span> <span class="o">=</span> <span class="n">manager</span><span class="p">[</span><span class="s">"path:to:configuration:value"</span><span class="p">]</span>
 </code></pre>
 <a href='#loading-configuration-data' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='loading-configuration-data'>Loading configuration data</h2>
 
@@ -130,35 +140,34 @@
 </code></pre>
 
 <p>Then, to use it in your application, set environment variables like so:</p>
-<pre class="highlight plaintext"><code>path__to_configuration=value
+<pre class="highlight plaintext"><code>PATH__TO__CONFIGURATION=value
 </code></pre>
 
-<p>You can set your preferred path separator (<code>__</code>) string when instantiating &lsquo;ConfigurationManager`.</p>
+<p>You can set your preferred path separator (default <code>__</code>) string when instantiating &lsquo;ConfigurationManager`.</p>
 <a href='#from-a-data-object' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-a-data-object'>From a Data object:</h3>
 <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="kt">Data</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="k">try</span> <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="n">data</span><span class="p">)</span>
+<span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="n">data</span><span class="p">)</span>
 </code></pre>
 <a href='#from-a-file' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-a-file'>From a file:</h3>
-<pre class="highlight swift"><code><span class="k">try</span> <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"/path/to/file"</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"/path/to/file"</span><span class="p">)</span>
 </code></pre>
 
 <p>By default, the <code>file</code> argument is a path relative from the location of the executable (i.e., <code>.build/debug/myApp</code>); if <code>file</code> is an absolute path, then it will be treated as such. You can change the relative-from path using the optional <code>relativeFrom</code> parameter, like so:</p>
-<pre class="highlight swift"><code><span class="k">try</span> <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"../path/to/file"</span><span class="p">,</span> <span class="nv">relativeFrom</span><span class="p">:</span> <span class="o">.</span><span class="n">pwd</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"../path/to/file"</span><span class="p">,</span> <span class="nv">relativeFrom</span><span class="p">:</span> <span class="o">.</span><span class="n">pwd</span><span class="p">)</span>
 
 <span class="c1">// or</span>
 
-<span class="k">try</span> <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"../path/to/file"</span><span class="p">,</span> <span class="nv">relativeFrom</span><span class="p">:</span> <span class="o">.</span><span class="nf">customPath</span><span class="p">(</span><span class="s">"/path/to/somewhere/on/file/system"</span><span class="p">))</span>
+<span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"../path/to/file"</span><span class="p">,</span> <span class="nv">relativeFrom</span><span class="p">:</span> <span class="o">.</span><span class="nf">customPath</span><span class="p">(</span><span class="s">"/path/to/somewhere/on/file/system"</span><span class="p">))</span>
 </code></pre>
 <a href='#from-a-resource-url' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-a-resource-url'>From a resource URL:</h3>
-<pre class="highlight swift"><code><span class="k">try</span> <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="n">myURL</span><span class="p">)</span>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="n">myURL</span><span class="p">)</span>
 </code></pre>
 
 <p><strong>NOTE:</strong> The URL MUST include a scheme, i.e., <code>file://</code>, <code>http://</code>, etc.</p>
 <a href='#from-multiple-sources' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-multiple-sources'>From multiple sources:</h3>
 
 <p>You can chain these methods to load configuration data from multiple sources all at once. If the same configuration key exists in the multiple sources, the one most recently loaded will override the ones loaded earlier. In this simple example,</p>
-<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"bar"</span><span class="p">])</span>
-       <span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"baz"</span><span class="p">])</span>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"bar"</span><span class="p">])</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"baz"</span><span class="p">])</span>
 </code></pre>
 
 <p>the value for <code>foo</code> is now <code>baz</code> because <code>[&quot;foo&quot;: &quot;baz&quot;]</code> was more recently loaded than <code>[&quot;foo&quot;: &quot;bar&quot;]</code>. The same behavior applies to all other <code>load</code> functions.</p>
@@ -202,14 +211,16 @@
 
 <p>Apache 2.0</p>
 
-          </section>
+          </div>
         </section>
-        <section id="footer">
-          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-02-15)</p>
-          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
-        </section>
+
+
       </article>
     </div>
+    <section class="footer">
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">IBM</a>. All rights reserved. (Last updated: 2017-02-21)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+    </section>
   </body>
 </div>
 </html>
