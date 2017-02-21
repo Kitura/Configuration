@@ -47,37 +47,24 @@ class ConfigurationManagerTest: XCTestCase {
         // JSON
         var manager = ConfigurationManager()
 
-        do {
-            try manager.load(file: "../../../TestResources/test.json", relativeFrom: .customPath(#file))
-            XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
-        }
-        catch {
-            XCTFail("Cannot read file")
-        }
+        manager.load(file: "../../../TestResources/test.json", relativeFrom: .customPath(#file))
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
         // PLIST
         manager = ConfigurationManager()
 
-        do {
-            try manager.load(file: "../../../TestResources/test.plist", relativeFrom: .customPath(#file))
-            #if os(OSX)
-                // broken on Linux due to https://bugs.swift.org/browse/SR-3681
-                XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
-            #endif
-        }
-        catch {
-            XCTFail("Cannot read file")
-        }
-
-        // File does not exist
-        manager = ConfigurationManager()
-
-        XCTAssertThrowsError(try manager.load(file: "../../../TestResources/TheFileIsALie.json", relativeFrom: .customPath(#file)))
+        manager.load(file: "../../../TestResources/test.plist", relativeFrom: .customPath(#file))
+        #if swift(>=3.1)
+            // broken on Linux due to https://bugs.swift.org/browse/SR-3681
+            XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+        #else
+            XCTAssertEqual(manager["OAuth:configuration:scope:0"] as? String, "email")
+        #endif
     }
 
     func testLoadData() {
         // JSON
-        var manager = ConfigurationManager()
+        let manager = ConfigurationManager()
         let jsonString = "{\"hello\": \"world\"}"
 
         guard let jsonData = jsonString.data(using: .utf8) else {
@@ -85,25 +72,7 @@ class ConfigurationManagerTest: XCTestCase {
             return
         }
 
-        do {
-            try manager.load(data: jsonData)
-            XCTAssertEqual(manager["hello"] as? String, "world")
-        }
-        catch {
-            XCTFail("Cannot load data")
-        }
-
-        XCTAssertThrowsError(try manager.load(data: jsonData, deserializerName: PLISTDeserializer.shared.name))
-
-        // XML - not supported
-        manager = ConfigurationManager()
-        let xmlString = "<hello>world</hello>"
-
-        guard let xmlData = xmlString.data(using: .utf8) else {
-            XCTFail("Cannot convert \(xmlString) to Data")
-            return
-        }
-
-        XCTAssertThrowsError(try manager.load(data: xmlData))
+        manager.load(data: jsonData)
+        XCTAssertEqual(manager["hello"] as? String, "world")
     }
 }

@@ -30,14 +30,8 @@ let manager = ConfigurationManager()
 Using the `ConfigurationManager` instance, you can then load and retrieve configurations:
 
 ```swift
-do {
-    try manager.load(file: "config.json")
-               .load(.environmentVariables)
-} catch { 
-	
-}
-			  
-let hostname = manager["path:to:configuration:value"]
+manager.load(file: "config.json").load(.environmentVariables)
+let value = manager["path:to:configuration:value"]
 ```
 
 ## Loading configuration data
@@ -80,38 +74,38 @@ manager.load(.environmentVariables)
 Then, to use it in your application, set environment variables like so:
 
 ```
-path__to_configuration=value
+PATH__TO__CONFIGURATION=value
 ```
 
-You can set your preferred path separator (`__`) string when instantiating 'ConfigurationManager`.
+You can set your preferred path separator (default `__`) string when instantiating 'ConfigurationManager`.
 
 ### From a Data object:
 
 ```swift
 let data = Data(...)
-try manager.load(data: data)
+manager.load(data: data)
 ```
 
 ### From a file:
 
 ```swift
-try manager.load(file: "/path/to/file")
+manager.load(file: "/path/to/file")
 ```
 
 By default, the `file` argument is a path relative from the location of the executable (i.e., `.build/debug/myApp`); if `file` is an absolute path, then it will be treated as such. You can change the relative-from path using the optional `relativeFrom` parameter, like so:
 
 ```swift
-try manager.load(file: "../path/to/file", relativeFrom: .pwd)
+manager.load(file: "../path/to/file", relativeFrom: .pwd)
 
 // or
 
-try manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
+manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
 ```
 
 ### From a resource URL:
     
 ```swift
-try manager.load(url: myURL)
+manager.load(url: myURL)
 ```
 
 **NOTE:** The URL MUST include a scheme, i.e., `file://`, `http://`, etc.
@@ -121,8 +115,7 @@ try manager.load(url: myURL)
 You can chain these methods to load configuration data from multiple sources all at once. If the same configuration key exists in the multiple sources, the one most recently loaded will override the ones loaded earlier. In this simple example,
 
 ```swift
-manager.load(["foo": "bar"])
-       .load(["foo": "baz"])
+manager.load(["foo": "bar"]).load(["foo": "baz"])
 ```
 
 the value for `foo` is now `baz` because `["foo": "baz"]` was more recently loaded than `["foo": "bar"]`. The same behavior applies to all other `load` functions.
