@@ -16,8 +16,17 @@
 
 import Foundation
 
+/// Absolute URL to executable
+#if os(Linux)
+let executableURL = Bundle.main.executableURL
+                    ?? URL(fileURLWithPath: "/proc/self/exe").resolvingSymlinksInPath()
+#else
+let executableURL = Bundle.main.executableURL
+                    ?? URL(fileURLWithPath: CommandLine.arguments[0]).standardized
+#endif
+
 /// Absolute path to the executable's folder
-let executableFolder = URL(fileURLWithPath: CommandLine.arguments[0]).appendingPathComponent("..").standardized.path
+let executableFolder = executableURL.appendingPathComponent("..").standardized.path
 
 /// Absolute path to the present working directory (PWD)
 let presentWorkingDirectory = URL(fileURLWithPath: "").path
