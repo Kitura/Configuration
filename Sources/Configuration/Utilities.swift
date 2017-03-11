@@ -28,5 +28,25 @@ let executableURL = Bundle.main.executableURL
 /// Absolute path to the executable's folder
 let executableFolder = executableURL.appendingPathComponent("..").standardized.path
 
+/// Directory containing the Package.swift of the project (as determined by traversing
+/// up the directory structure starting at the directory containing the executable), or
+/// if no Package.swift is found then the directory containing the executable
+func findProjectRoot() -> String {
+    let fileManager = FileManager()
+    var directory = executableURL
+    repeat {
+        directory.appendPathComponent("..")
+        directory.standardize()
+        let packageFilePath = directory.appendingPathComponent("Package.swift").path
+        if fileManager.fileExists(atPath: packageFilePath) {
+            return directory.path
+        }
+    } while directory.path != "/"
+    return executableFolder
+}
+
+/// Absolute path to the project directory
+let projectDirectory = findProjectRoot()
+
 /// Absolute path to the present working directory (PWD)
 let presentWorkingDirectory = URL(fileURLWithPath: "").path
