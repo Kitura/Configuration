@@ -18,6 +18,7 @@ import PackageDescription
 
 let package = Package(
     name: "Configuration",
+    targets: [ Target(name: "ExternalLoadTestProgram", dependencies: [ .Target(name: "Configuration") ]) ],
     dependencies: [
         .Package(url: "https://github.com/IBM-Swift/LoggerAPI.git", majorVersion: 1),
         ]

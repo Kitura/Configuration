@@ -62,6 +62,9 @@ public class ConfigurationManager {
         /// Relative from executable location
         case executable
 
+        /// Relative from project directory
+        case project
+
         /// Relative from present working directory (PWD)
         case pwd
 
@@ -75,6 +78,8 @@ public class ConfigurationManager {
                 return executableFolder
             case .pwd:
                 return presentWorkingDirectory
+            case .project:
+                return projectDirectory
             case .customPath(let path):
                 return path
             }
