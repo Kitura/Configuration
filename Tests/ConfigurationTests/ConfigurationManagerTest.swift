@@ -15,6 +15,7 @@
  */
 
 import XCTest
+import Foundation
 @testable import Configuration
 
 class ConfigurationManagerTest: XCTestCase {
@@ -22,7 +23,8 @@ class ConfigurationManagerTest: XCTestCase {
         return [
             ("testLoadSimple", testLoadSimple),
             ("testLoadFile", testLoadFile),
-            ("testLoadData", testLoadData)
+            ("testLoadData", testLoadData),
+            ("testLoadRelative", testLoadRelative)
         ]
     }
 
@@ -74,5 +76,27 @@ class ConfigurationManagerTest: XCTestCase {
 
         manager.load(data: jsonData)
         XCTAssertEqual(manager["hello"] as? String, "world")
+    }
+
+    func testLoadRelative() {
+        var manager = ConfigurationManager()
+        manager.load(file: "TestResources/test.json", relativeFrom: .project)
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+
+        manager = ConfigurationManager()
+        manager.load(file: "../../TestResources/test.json", relativeFrom: .executable)
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+
+        manager = ConfigurationManager()
+        manager.load(file: "../../../TestResources/test.json", relativeFrom: .customPath(executableFolder + "/dummy"))
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+
+        manager = ConfigurationManager()
+        guard FileManager().changeCurrentDirectoryPath(executableFolder + "/..") else {
+            XCTFail("Failed to set working directory")
+            return
+        }
+        manager.load(file: "../TestResources/test.json", relativeFrom: .pwd)
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
     }
 }
