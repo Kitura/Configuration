@@ -15,6 +15,7 @@
  */
 
 import XCTest
+import Foundation
 @testable import Configuration
 
 class ConfigurationManagerTest: XCTestCase {
@@ -22,7 +23,9 @@ class ConfigurationManagerTest: XCTestCase {
         return [
             ("testLoadSimple", testLoadSimple),
             ("testLoadFile", testLoadFile),
-            ("testLoadData", testLoadData)
+            ("testLoadData", testLoadData),
+            ("testLoadRelative", testLoadRelative),
+            ("testLoadRelativeExternal", testLoadRelativeExternal)
         ]
     }
 
@@ -74,5 +77,58 @@ class ConfigurationManagerTest: XCTestCase {
 
         manager.load(data: jsonData)
         XCTAssertEqual(manager["hello"] as? String, "world")
+    }
+
+    func testLoadRelative() {
+        var manager = ConfigurationManager()
+        manager.load(file: "TestResources/test.json", relativeFrom: .project)
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+
+        manager = ConfigurationManager()
+        manager.load(file: "../../TestResources/test.json", relativeFrom: .executable)
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+
+        manager = ConfigurationManager()
+        manager.load(file: "../../../TestResources/test.json", relativeFrom: .customPath(executableFolder + "/dummy"))
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+
+        manager = ConfigurationManager()
+        guard FileManager().changeCurrentDirectoryPath(executableFolder + "/..") else {
+            XCTFail("Failed to set working directory")
+            return
+        }
+        manager.load(file: "../TestResources/test.json", relativeFrom: .pwd)
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+    }
+
+    func testLoadRelativeExternal() {
+        func execute(_ file: URL) -> (Int32, String, String) {
+#if os(Linux)
+            let process = Task()
+#else
+            let process = Process()
+#endif
+            let errPipe = Pipe()
+            let outPipe = Pipe()
+            process.launchPath = file.path
+            process.arguments = []
+            process.standardError = errPipe
+            process.standardOutput = outPipe
+            process.launch()
+
+            let output = String(data: outPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+            let error = String(data: errPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+            process.waitUntilExit()
+
+            return (process.terminationStatus, error ?? "", output ?? "")
+        }
+        let externalTestExecutable = URL(fileURLWithPath: executableFolder).appendingPathComponent("ExternalLoadTestProgram");
+        let (exitCode, error, output) = execute(externalTestExecutable);
+        XCTAssertEqual(exitCode, 0, "One or more external load assertions failed")
+        XCTAssertEqual(error, "", "External load test has non-empty error stream: \(error)")
+        XCTAssert(output.contains(".project: PASS"), "External load test .project assertion failed");
+        XCTAssert(output.contains(".executable: PASS"), "External load test .executable assertion failed");
+        XCTAssert(output.contains(".customPath: PASS"), "External load test .customPath assertion failed");
+        XCTAssert(output.contains(".pwd: PASS"), "External load test .pwd assertion failed");
     }
 }
