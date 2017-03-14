@@ -57,8 +57,9 @@ class ConfigurationManagerTest: XCTestCase {
         manager = ConfigurationManager()
 
         manager.load(file: "../../../TestResources/test.plist", relativeFrom: .customPath(#file))
-        #if swift(>=3.1)
-            // broken on Linux due to https://bugs.swift.org/browse/SR-3681
+
+        #if swift(>=4)
+            // Broken on Linux due to https://bugs.swift.org/browse/SR-3681
             XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
         #else
             XCTAssertEqual(manager["OAuth:configuration:scope:0"] as? String, "email")
@@ -89,7 +90,7 @@ class ConfigurationManagerTest: XCTestCase {
         XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
         manager = ConfigurationManager()
-        manager.load(file: "../../../TestResources/test.json", relativeFrom: .customPath(executableFolder + "/dummy"))
+        manager.load(file: "../../../TestResources/test.json", relativeFrom: .customPath(#file))
         XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
         manager = ConfigurationManager()
@@ -103,11 +104,11 @@ class ConfigurationManagerTest: XCTestCase {
 
     func testLoadRelativeExternal() {
         func execute(_ file: URL) -> (Int32, String, String) {
-#if os(Linux)
-            let process = Task()
-#else
-            let process = Process()
-#endif
+            #if os(Linux)
+                let process = Task()
+            #else
+                let process = Process()
+            #endif
             let errPipe = Pipe()
             let outPipe = Pipe()
             process.launchPath = file.path
@@ -122,7 +123,7 @@ class ConfigurationManagerTest: XCTestCase {
 
             return (process.terminationStatus, error ?? "", output ?? "")
         }
-        let externalTestExecutable = URL(fileURLWithPath: executableFolder).appendingPathComponent("ExternalLoadTestProgram");
+        let externalTestExecutable = URL(fileURLWithPath: executableFolder).appendingPathComponent("TestProgram");
         let (exitCode, error, output) = execute(externalTestExecutable);
         XCTAssertEqual(exitCode, 0, "One or more external load assertions failed")
         XCTAssertEqual(error, "", "External load test has non-empty error stream: \(error)")
