@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+// This program is needed to test features of this package that relates to
+// an executable (for example, loading a file relative to the executable's
+// path), as well as features related to environment variables and commandline
+// arguments. None of these can be tested normally in Xcode and are instead
+// being tested in this module that is only meant to be called from the unit tests.
+
 import Foundation
 import Configuration
 

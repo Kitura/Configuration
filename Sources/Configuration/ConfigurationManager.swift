@@ -72,7 +72,7 @@ public class ConfigurationManager {
         case customPath(String)
 
         /// Get the absolute path as denoted by self
-        var path: String {
+        public var path: String {
             switch self {
             case .executable:
                 return executableFolder
