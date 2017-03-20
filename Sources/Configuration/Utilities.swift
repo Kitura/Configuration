@@ -24,26 +24,7 @@ let executableFolderURL = { () -> URL in
         return URL(fileURLWithPath: "/proc/self/exe").resolvingSymlinksInPath().appendingPathComponent("..")
     #else
         // Bundle is available on Darwin
-        let actualExecutableURL = Bundle.main.executableURL ?? URL(fileURLWithPath: CommandLine.arguments[0])
-        let actualExecutableFolderURL = actualExecutableURL.appendingPathComponent("..")
-
-        if (actualExecutableURL.lastPathComponent != "xctest") {
-            return actualExecutableFolderURL
-        }
-        else {
-            // We are running under the test runner, we may be able to work out the build directory that
-            // contains the test program which is testing libraries in the project. That build directory
-            // should also contain any executables associated with the project until this build type
-            // (eg: release or debug)
-            let loadedTestBundles = Bundle.allBundles.filter({ $0.isLoaded }).filter({ $0.bundlePath.hasSuffix(".xctest") })
-
-            if loadedTestBundles.count > 0 {
-                return loadedTestBundles[0].bundleURL.appendingPathComponent("..")
-            }
-            else {
-                return actualExecutableFolderURL
-            }
-        }
+        return (Bundle.main.executableURL ?? URL(fileURLWithPath: CommandLine.arguments[0])).appendingPathComponent("..")
     #endif
     }().standardized
 
