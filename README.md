@@ -77,7 +77,7 @@ Then, to use it in your application, set environment variables like so:
 PATH__TO__CONFIGURATION=value
 ```
 
-You can set your preferred path separator (default `__`) string when instantiating 'ConfigurationManager`.
+You can set your preferred path separator (default `__`) string when instantiating `ConfigurationManager`.
 
 ### From a Data object:
 
@@ -95,10 +95,17 @@ manager.load(file: "/path/to/file")
 By default, the `file` argument is a path relative from the location of the executable (i.e., `.build/debug/myApp`); if `file` is an absolute path, then it will be treated as such. You can change the relative-from path using the optional `relativeFrom` parameter, like so:
 
 ```swift
+// Resolve path against PWD
 manager.load(file: "../path/to/file", relativeFrom: .pwd)
 
 // or
 
+// Resolve path against project root folder
+manager.load(file: "../path/to/file", relativeFrom: .project)
+
+// or
+
+// Resolve path against a custom path
 manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
 ```
 

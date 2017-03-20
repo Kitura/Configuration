@@ -14,58 +14,44 @@
  * limitations under the License.
  */
 
-// This program is needed to test features of this package that relates to
-// an executable (for example, loading a file relative to the executable's
-// path), as well as features related to environment variables and commandline
+// This executable is needed to test features of this package that relates to
+// an executable (for example, loading a file relative to the project root),
+// as well as features related to environment variables and commandline
 // arguments. None of these can be tested normally in Xcode and are instead
 // being tested in this module that is only meant to be called from the unit tests.
 
 import Foundation
 import Configuration
 
-let executableURL = Bundle.main.executableURL ?? URL(fileURLWithPath: CommandLine.arguments[0])
-let executableFolder = executableURL.appendingPathComponent("..").standardized.path
 var exitCode: Int32 = 0
+var testsExecuted = 0
 
-var manager = ConfigurationManager()
-manager.load(file: "TestResources/test.json", relativeFrom: .project)
-if manager["OAuth:configuration:state"] as? Bool == true {
-    print(".project: PASS")
-} else {
-    print(".project: FAIL")
-    exitCode = 1
+var manager: ConfigurationManager
+
+// test load argv
+manager = ConfigurationManager().load(.commandLineArguments)
+
+if manager["argv:OAuth:configuration:state"] as? Bool == true {
+    print("Test Case '- [.commandLineArguments]': PASS")
+}
+else {
+    print("Test Case '- [.commandLineArguments]': FAIL")
+    exitCode += 1 << testsExecuted
 }
 
-manager = ConfigurationManager()
-manager.load(file: "../../TestResources/test.json", relativeFrom: .executable)
-if manager["OAuth:configuration:state"] as? Bool == true {
-    print(".executable: PASS")
-} else {
-    print(".executable: FAIL")
-    exitCode = 1
+testsExecuted += 1
+
+// test load env
+manager = ConfigurationManager().load(.environmentVariables)
+
+if manager["ENV:OAuth:configuration:state"] as? Bool == true {
+    print("Test Case '- [.environmentVariables]': PASS")
+}
+else {
+    print("Test Case '- [.environmentVariables]': FAIL")
+    exitCode += 1 << testsExecuted
 }
 
-manager = ConfigurationManager()
-manager.load(file: "../../../TestResources/test.json", relativeFrom: .customPath(executableFolder + "/dummy"))
-if manager["OAuth:configuration:state"] as? Bool == true {
-    print(".customPath: PASS")
-} else {
-    print(".customPath: FAIL")
-    exitCode = 1
-}
-
-manager = ConfigurationManager()
-if FileManager().changeCurrentDirectoryPath(executableFolder + "/..") {
-    manager.load(file: "../TestResources/test.json", relativeFrom: .pwd)
-    if manager["OAuth:configuration:state"] as? Bool == true {
-        print(".pwd: PASS")
-    } else {
-        print(".pwd: FAIL")
-        exitCode = 1
-    }
-} else {
-    print(".pwd: FAIL (working directory)")
-    exitCode = 1
-}
+testsExecuted += 1
 
 exit(exitCode)
