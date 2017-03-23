@@ -24,7 +24,7 @@ import Foundation
 import Configuration
 
 var exitCode: Int32 = 0
-var testsExecuted = 0
+var testsExecuted: Int32 = 0
 
 var manager: ConfigurationManager
 

@@ -60,7 +60,7 @@ class ConfigurationManagerTest: XCTestCase {
     // Helper function to run shell commands
     // Tip from http://stackoverflow.com/a/26973384
     func shell(_ args: String..., environment: [String: String] = [:]) -> (Pipe, Pipe, Int32) {
-        #if os(Linux)
+        #if os(Linux) && !swift(>=3.1)
             let process = Task()
         #else
             let process = Process()
@@ -189,6 +189,6 @@ class ConfigurationManagerTest: XCTestCase {
         print(output ?? "No stdout from test executable")
 
         XCTAssertEqual(exitCode, 0, "One or more external load assertions failed")
-        XCTAssertEqual(error, "", "External load test has non-empty error stream: \(error)")
+        XCTAssertEqual(error, "", "External load test has non-empty error stream: \(String(describing: error))")
     }
 }
