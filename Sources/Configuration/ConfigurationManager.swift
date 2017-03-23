@@ -214,7 +214,7 @@ public class ConfigurationManager {
         let fn = NSString(string: file)
         let pathURL: URL
 
-        #if os(Linux)
+        #if os(Linux) && !swift(>=3.1)
             let isAbsolutePath = fn.absolutePath
         #else
             let isAbsolutePath = fn.isAbsolutePath
