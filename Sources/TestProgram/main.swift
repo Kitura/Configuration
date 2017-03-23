@@ -54,4 +54,30 @@ else {
 
 testsExecuted += 1
 
+// test load file relative from executable
+manager = ConfigurationManager().load(file: "../../TestResources/test.json", relativeFrom: .executable)
+
+if manager["OAuth:configuration:state"] as? Bool == true {
+    print("Test Case '- [.executable]': PASS")
+}
+else {
+    print("Test Case '- [.executable]': FAIL")
+    exitCode += 1 << testsExecuted
+}
+
+testsExecuted += 1
+
+// test load file relative from project folder
+manager = ConfigurationManager().load(file: "TestResources/test.json", relativeFrom: .project)
+
+if manager["OAuth:configuration:state"] as? Bool == true {
+    print("Test Case '- [.executable]': PASS")
+}
+else {
+    print("Test Case '- [.executable]': FAIL")
+    exitCode += 1 << testsExecuted
+}
+
+testsExecuted += 1
+
 exit(exitCode)
