@@ -32,10 +32,10 @@ var manager: ConfigurationManager
 manager = ConfigurationManager().load(.commandLineArguments)
 
 if manager["argv:OAuth:configuration:state"] as? Bool == true {
-    print("Test Case '- [.commandLineArguments]': PASS")
+    print("Test Case '-[.commandLineArguments]': PASS")
 }
 else {
-    print("Test Case '- [.commandLineArguments]': FAIL")
+    print("Test Case '-[.commandLineArguments]': FAIL")
     exitCode += 1 << testsExecuted
 }
 
@@ -45,10 +45,10 @@ testsExecuted += 1
 manager = ConfigurationManager().load(.environmentVariables)
 
 if manager["ENV:OAuth:configuration:state"] as? Bool == true {
-    print("Test Case '- [.environmentVariables]': PASS")
+    print("Test Case '-[.environmentVariables]': PASS")
 }
 else {
-    print("Test Case '- [.environmentVariables]': FAIL")
+    print("Test Case '-[.environmentVariables]': FAIL")
     exitCode += 1 << testsExecuted
 }
 
@@ -58,10 +58,10 @@ testsExecuted += 1
 manager = ConfigurationManager().load(file: "../../TestResources/test.json", relativeFrom: .executable)
 
 if manager["OAuth:configuration:state"] as? Bool == true {
-    print("Test Case '- [.executable]': PASS")
+    print("Test Case '-[.executable]': PASS")
 }
 else {
-    print("Test Case '- [.executable]': FAIL")
+    print("Test Case '-[.executable]': FAIL")
     exitCode += 1 << testsExecuted
 }
 
@@ -71,10 +71,10 @@ testsExecuted += 1
 manager = ConfigurationManager().load(file: "TestResources/test.json", relativeFrom: .project)
 
 if manager["OAuth:configuration:state"] as? Bool == true {
-    print("Test Case '- [.executable]': PASS")
+    print("Test Case '-[.project]': PASS")
 }
 else {
-    print("Test Case '- [.executable]': FAIL")
+    print("Test Case '-[.project]': FAIL")
     exitCode += 1 << testsExecuted
 }
 
