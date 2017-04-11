@@ -21,7 +21,6 @@ import Foundation
 class ConfigurationManagerTest: XCTestCase {
     static var allTests : [(String, (ConfigurationManagerTest) -> () throws -> Void)] {
         return [
-            ("testLinuxTestSuiteIncludesAllTests", testLinuxTestSuiteIncludesAllTests),
             ("testLoadSimple", testLoadSimple),
             ("testLoadFile", testLoadFile),
             ("testLoadData", testLoadData),
@@ -79,15 +78,6 @@ class ConfigurationManagerTest: XCTestCase {
         process.waitUntilExit()
 
         return (errPipe, outPipe, process.terminationStatus)
-    }
-
-    func testLinuxTestSuiteIncludesAllTests() {
-        #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
-            let thisClass = type(of: self)
-            let linuxCount = thisClass.allTests.count
-            let darwinCount = Int(thisClass.defaultTestSuite().testCaseCount)
-            XCTAssertEqual(linuxCount, darwinCount, "\(darwinCount - linuxCount) tests are missing from allTests")
-        #endif
     }
 
     func testLoadSimple() {
