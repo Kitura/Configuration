@@ -79,7 +79,7 @@ public class ConfigurationManager {
             case .pwd:
                 return presentWorkingDirectory
             case .project:
-                return projectDirectory
+                return projectFolder
             case .customPath(let path):
                 return path
             }
