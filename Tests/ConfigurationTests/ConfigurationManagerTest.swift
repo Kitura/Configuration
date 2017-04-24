@@ -29,37 +29,42 @@ class ConfigurationManagerTest: XCTestCase {
         ]
     }
 
-    static let testJSONURL = URL(fileURLWithPath: #file).appendingPathComponent("../../../TestResources/test.json").standardized
+    static let testJSONURL = URL(fileURLWithPath: #file).appendingPathComponent("../test.json").standardized
 
     static let symlinkToPWD = URL(fileURLWithPath: "test.json")
 
     let jsonString = "{\n    \"env\": \"<default>\",\n    \"OAuth\": {\n        \"name\": \"facebook\",\n        \"configuration\": {\n            \"clientID\": \"<default>\",\n            \"clientSecret\": \"<default>\",\n            \"profileFields\": [\"displayName\", \"emails\", \"id\", \"name\"],\n            \"profileURL\": \"https://graph.facebook.com/v2.6/me\",\n            \"scope\": [\"email\"],\n            \"state\": true\n        }\n    },\n    \"port\": \"<default>\"\n}"
 
-    // Copy test resource files over to the correct locations for testing
+    // Create symlink to test configuration file in PWD
     override class func setUp() {
         do {
             try FileManager.default.createSymbolicLink(at: symlinkToPWD, withDestinationURL: testJSONURL)
         }
         catch {
             // Nothing we can do but leave a failure message
-            print(error)
+            XCTFail(error.localizedDescription)
         }
     }
 
-    // Delete test resource files copied in setUp()
+    // Delete test configuration file symlink created in setUp()
     override class func tearDown() {
         do {
             try FileManager.default.removeItem(at: symlinkToPWD)
         }
         catch {
             // Nothing we can do but leave a failure message
-            print(error)
+            XCTFail(error.localizedDescription)
         }
     }
 
     // Helper function to run shell commands
     // Tip from http://stackoverflow.com/a/26973384
     func shell(_ args: String..., environment: [String: String] = [:]) -> (Pipe, Pipe, Int32) {
+        // Print out the command to be executed
+        var command = "/usr/bin/env"
+        args.forEach { command.append(" " + $0) }
+        print("Executing command: \(String(describing: command))")
+
         #if os(Linux) && !swift(>=3.1)
             let process = Task()
         #else
@@ -100,11 +105,11 @@ class ConfigurationManagerTest: XCTestCase {
         var manager: ConfigurationManager
 
         // JSON
-        manager = ConfigurationManager().load(file: "../../../TestResources/test.json", relativeFrom: .customPath(#file))
+        manager = ConfigurationManager().load(file: "../test.json", relativeFrom: .customPath(#file))
         XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
         // PLIST
-        manager = ConfigurationManager().load(file: "../../../TestResources/test.plist", relativeFrom: .customPath(#file))
+        manager = ConfigurationManager().load(file: "../test.plist", relativeFrom: .customPath(#file))
 
         #if swift(>=4)
             // Broken on Linux due to https://bugs.swift.org/browse/SR-3681
@@ -143,7 +148,7 @@ class ConfigurationManagerTest: XCTestCase {
     func testLoadRelative() {
         var manager: ConfigurationManager
 
-        manager = ConfigurationManager().load(file: "../../../TestResources/test.json", relativeFrom: .customPath(#file))
+        manager = ConfigurationManager().load(file: "../test.json", relativeFrom: .customPath(#file))
         XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
         manager = ConfigurationManager().load(file: "test.json", relativeFrom: .pwd)

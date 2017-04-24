@@ -20,6 +20,8 @@
 // arguments. None of these can be tested normally in Xcode and are instead
 // being tested in this module that is only meant to be called from the unit tests.
 
+// DO NOT RUN THIS PROGRAM FROM INSIDE XCODE.
+
 import Foundation
 import Configuration
 
@@ -55,7 +57,7 @@ else {
 testsExecuted += 1
 
 // test load file relative from executable
-manager = ConfigurationManager().load(file: "../../TestResources/test.json", relativeFrom: .executable)
+manager = ConfigurationManager().load(file: "../../Tests/ConfigurationTests/test.json", relativeFrom: .executable)
 
 if manager["OAuth:configuration:state"] as? Bool == true {
     print("Test Case '-[.executable]': PASS")
@@ -68,7 +70,7 @@ else {
 testsExecuted += 1
 
 // test load file relative from project folder
-manager = ConfigurationManager().load(file: "TestResources/test.json", relativeFrom: .project)
+manager = ConfigurationManager().load(file: "Tests/ConfigurationTests/test.json", relativeFrom: .project)
 
 if manager["OAuth:configuration:state"] as? Bool == true {
     print("Test Case '-[.project]': PASS")
