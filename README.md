@@ -109,7 +109,7 @@ manager.load(file: "../path/to/file", relativeFrom: .project)
 manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
 ```
 
-**NOTE:** The following `relativeFrom` options, `.executable` (default), `.pwd`, and `.project`, are meant to be used by applications that run from the command-line, and not from within Xcode. This is because the executable and present working directory are different for the application when ran inside Xcode as opposed to when it is ran from the command-line.
+**NOTE:** The following `relativeFrom` options, `.executable` (default), `.pwd`, and `.project`, are meant to be used by applications that run from the command-line, and not from within Xcode. This is because the executable and present working directory are different for the application when ran inside Xcode as opposed to when it is ran from the command-line. Under Xcode, this package will change the paths to point to file locations as if the application is running on the command-line.
 
 ### From a resource URL:
     
