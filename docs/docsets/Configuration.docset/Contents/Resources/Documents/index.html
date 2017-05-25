@@ -8,6 +8,9 @@
     <script src="js/jquery.min.js" defer></script>
     <script src="js/jazzy.js" defer></script>
     
+    <script src="js/lunr.min.js" defer></script>
+    <script src="js/typeahead.jquery.js" defer></script>
+    <script src="js/jazzy.search.js" defer></script>
   </head>
   <body>
 
@@ -20,6 +23,12 @@
           Configuration Docs
         </a>
          (100% documented)
+      </p>
+    
+      <p class="header-col--secondary">
+        <form role="search" action="search.json">
+          <input type="text" placeholder="Search documentation" data-typeahead>
+        </form>
       </p>
     
         <p class="header-col header-col--secondary">
@@ -75,25 +84,25 @@
         <section class="section">
           <div class="section-content">
             
-            <a href='#configuration' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='configuration'>Configuration</h1>
+            <h1 id='configuration' class='heading'>Configuration</h1>
 
 <p><a href="https://travis-ci.org/IBM-Swift/Configuration"><img src="https://api.travis-ci.org/IBM-Swift/Configuration.svg?branch=master" alt="Build Status - Master"></a>
 <img src="https://img.shields.io/badge/os-macOS-green.svg?style=flat" alt="macOS">
 <img src="https://img.shields.io/badge/os-linux-green.svg?style=flat" alt="Linux">
 <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2">
 <a href="https://codecov.io/gh/IBM-Swift/Configuration"><img src="https://codecov.io/gh/IBM-Swift/Configuration/branch/master/graph/badge.svg" alt="codecov"></a></p>
-<a href='#summary' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='summary'>Summary</h2>
+<h2 id='summary' class='heading'>Summary</h2>
 
 <p><code>Configuration</code> is a Swift package for managing application configurations. Using <code>Configuration</code>, an application can easily load and merge configuration data from multiple sources and access them from one central configuration store.</p>
 
 <p><code>Configuration</code> supports configuration keys as paths. That is, a key is a qualified path selector written in the <code>[parent]&lt;separator&gt;[child]</code> syntax. This allows applications to retrieve configuration objects at any level of specificity.</p>
-<a href='#version-info' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='version-info'>Version Info</h2>
+<h2 id='version-info' class='heading'>Version Info</h2>
 
 <p><code>Configuration</code> runs on Swift 3, on both macOS and Ubuntu Linux.</p>
-<a href='#api-documentations' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='api-documentations'>API Documentations</h2>
+<h2 id='api-documentations' class='heading'>API Documentations</h2>
 
 <p>Full API documentations for <code>Configuration</code> can be found <a href="https://ibm-swift.github.io/Configuration/index.html">here</a>.</p>
-<a href='#usage' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='usage'>Usage</h2>
+<h2 id='usage' class='heading'>Usage</h2>
 
 <p>The core of the <code>Configuration</code> package is the <code>ConfigurationManager</code> class. To manage your application&rsquo;s configurations, first create an instance of the <code>ConfigurationManager</code> class.</p>
 <pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">Configuration</span>
@@ -105,12 +114,12 @@
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"config.json"</span><span class="p">)</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">environmentVariables</span><span class="p">)</span>
 <span class="k">let</span> <span class="nv">value</span> <span class="o">=</span> <span class="n">manager</span><span class="p">[</span><span class="s">"path:to:configuration:value"</span><span class="p">]</span>
 </code></pre>
-<a href='#loading-configuration-data' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='loading-configuration-data'>Loading configuration data</h2>
+<h2 id='loading-configuration-data' class='heading'>Loading configuration data</h2>
 
 <p><code>Configuration</code> has many methods to load configuration data. </p>
 
 <p><strong>NOTE:</strong> In all cases, configuration key paths are case sensitive.</p>
-<a href='#from-a-raw-object' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-a-raw-object'>From a raw object:</h3>
+<h3 id='from-a-raw-object' class='heading'>From a raw object:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span>
     <span class="s">"hello"</span><span class="p">:</span> <span class="s">"world"</span><span class="p">,</span>
     <span class="s">"foo"</span><span class="p">:</span> <span class="p">[</span>
@@ -118,7 +127,7 @@
     <span class="p">]</span>
 <span class="p">])</span>
 </code></pre>
-<a href='#from-command-line-arguments' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-command-line-arguments'>From command line arguments:</h3>
+<h3 id='from-command-line-arguments' class='heading'>From command line arguments:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">commandLineArguments</span><span class="p">)</span>
 </code></pre>
 
@@ -127,7 +136,7 @@
 </code></pre>
 
 <p>You can set your preferred argument prefix (<code>--</code>) and path separator (<code>.</code>) strings when instantiating <code>ConfigurationManager</code>.</p>
-<a href='#from-environment-variables' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-environment-variables'>From environment variables:</h3>
+<h3 id='from-environment-variables' class='heading'>From environment variables:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">environmentVariables</span><span class="p">)</span>
 </code></pre>
 
@@ -136,11 +145,11 @@
 </code></pre>
 
 <p>You can set your preferred path separator (default <code>__</code>) string when instantiating <code>ConfigurationManager</code>.</p>
-<a href='#from-a-data-object' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-a-data-object'>From a Data object:</h3>
+<h3 id='from-a-data-object' class='heading'>From a Data object:</h3>
 <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="kt">Data</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="n">data</span><span class="p">)</span>
 </code></pre>
-<a href='#from-a-file' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-a-file'>From a file:</h3>
+<h3 id='from-a-file' class='heading'>From a file:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"/path/to/file"</span><span class="p">)</span>
 </code></pre>
 
@@ -158,12 +167,14 @@
 <span class="c1">// Resolve path against a custom path</span>
 <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"../path/to/file"</span><span class="p">,</span> <span class="nv">relativeFrom</span><span class="p">:</span> <span class="o">.</span><span class="nf">customPath</span><span class="p">(</span><span class="s">"/path/to/somewhere/on/file/system"</span><span class="p">))</span>
 </code></pre>
-<a href='#from-a-resource-url' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-a-resource-url'>From a resource URL:</h3>
+
+<p><strong>NOTE:</strong> The following <code>relativeFrom</code> options, <code>.executable</code> (default), <code>.pwd</code>, and <code>.project</code>, are meant to be used by applications that run from the command-line, and not from within Xcode. This is because the executable and present working directory are different for the application when ran inside Xcode as opposed to when it is ran from the command-line.</p>
+<h3 id='from-a-resource-url' class='heading'>From a resource URL:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="n">myURL</span><span class="p">)</span>
 </code></pre>
 
 <p><strong>NOTE:</strong> The URL MUST include a scheme, i.e., <code>file://</code>, <code>http://</code>, etc.</p>
-<a href='#from-multiple-sources' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='from-multiple-sources'>From multiple sources:</h3>
+<h3 id='from-multiple-sources' class='heading'>From multiple sources:</h3>
 
 <p>You can chain these methods to load configuration data from multiple sources all at once. If the same configuration key exists in the multiple sources, the one most recently loaded will override the ones loaded earlier. In this simple example,</p>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"bar"</span><span class="p">])</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"baz"</span><span class="p">])</span>
@@ -172,7 +183,7 @@
 <p>the value for <code>foo</code> is now <code>baz</code> because <code>[&quot;foo&quot;: &quot;baz&quot;]</code> was more recently loaded than <code>[&quot;foo&quot;: &quot;bar&quot;]</code>. The same behavior applies to all other <code>load</code> functions.</p>
 
 <p><strong>NOTE:</strong> Currently, <code>Configuration</code> only supports JSON and PLIST formats for resources loaded from data, file, or URL. You can write a custom deserializer to parse additional formats.</p>
-<a href='#accessing-configuration-data' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='accessing-configuration-data'>Accessing configuration data</h2>
+<h2 id='accessing-configuration-data' class='heading'>Accessing configuration data</h2>
 
 <p>To get individual configuration values after they have been loaded, use:</p>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="p">[</span><span class="s">"path:to:configuration"</span><span class="p">]</span>
@@ -203,10 +214,10 @@
 </code></pre>
 
 <p>The return value is raw representation of all configuration values currently in the configuration store.</p>
-<a href='#acknowledgements' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='acknowledgements'>Acknowledgements</h2>
+<h2 id='acknowledgements' class='heading'>Acknowledgements</h2>
 
 <p><code>Configuration</code> was inspired by <a href="https://github.com/indexzero/nconf"><code>nconf</code></a>, a popular NodeJS hierarchical configuration manager.</p>
-<a href='#license' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='license'>License</h2>
+<h2 id='license' class='heading'>License</h2>
 
 <p>Apache 2.0</p>
 
@@ -217,8 +228,8 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">IBM</a>. All rights reserved. (Last updated: 2017-03-17)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">IBM</a>. All rights reserved. (Last updated: 2017-05-25)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

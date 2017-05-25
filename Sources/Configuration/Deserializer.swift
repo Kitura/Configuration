@@ -25,6 +25,7 @@ public protocol Deserializer {
     var name: String { get }
 
     /// Function that deserializes raw data into a Foundation object
-    /// - parameter data: The raw data to be deserialized
+    ///
+    /// - Parameter data: The raw data to be deserialized
     func deserialize(data: Data) throws -> Any
 }

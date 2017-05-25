@@ -43,15 +43,16 @@ private let isRanFromXCTest = executableURL.path.hasSuffix("/xctest")
 /// the /.build/debug folder in the project's root folder.
 private let executableFolderURL = { () -> URL in
     if isRanInsideXcode || isRanFromXCTest {
-        // Get URL to /.build/debug manually
+        // Get URL to /debug manually
         let sourceFile = sourceFileURL.path
 
-        if let range = sourceFile.range(of: "/.build/checkouts/") {
-            // In Swift 3.1, package source code is downloaded to /.build/checkouts
-            return URL(fileURLWithPath: sourceFile.substring(to: range.lowerBound) + "/.build/debug")
+        if let range = sourceFile.range(of: "/checkouts/") {
+            // In Swift 3.1, package source code is downloaded to /<build-path>/checkouts
+            return URL(fileURLWithPath: sourceFile.substring(to: range.lowerBound) + "/debug")
         }
         else if let range = sourceFile.range(of: "/Packages/") {
             // In Swift 3.0-3.0.2 (or editable package in Swift 3.1), package source code is downloaded to /Packages
+            // Since we don't know /<build-path>, assume /.build instead
             return URL(fileURLWithPath: sourceFile.substring(to: range.lowerBound) + "/.build/debug")
         }
 

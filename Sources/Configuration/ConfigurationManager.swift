@@ -87,13 +87,14 @@ public class ConfigurationManager {
     }
 
     /// Constructor
-    /// - parameter commandLineArgumentKeyPrefix: Optional. Used to denote an argument
+    ///
+    /// - Parameter commandLineArgumentKeyPrefix: Optional. Used to denote an argument
     /// as a configuration path-value pair. Defaults to `--`.
-    /// - parameter commandLineArgumentPathSeparator: Optional. Used to separate the
+    /// - Parameter commandLineArgumentPathSeparator: Optional. Used to separate the
     /// components of a path. Defaults to `.`.
-    /// - parameter environmentVariablePathSeparator: Optional. Used to separate the
+    /// - Parameter environmentVariablePathSeparator: Optional. Used to separate the
     /// components of a path. Defaults to `__`.
-    /// - parameter parseStringToObject: Optional. Used to indicate if string values
+    /// - Parameter parseStringToObject: Optional. Used to indicate if string values
     /// in commandline arguments and environment variables should be parsed to array
     /// or dictionary, if possible, using a known `Deserializer`. Defaults to `true`.
     public init(commandLineArgumentKeyPrefix: String = "--",
@@ -107,7 +108,8 @@ public class ConfigurationManager {
     }
 
     /// Load configurations from raw object.
-    /// - parameter object: The configurations object.
+    ///
+    /// - Parameter object: The configurations object.
     @discardableResult
     public func load(_ object: Any) -> ConfigurationManager {
         Log.debug("Loading object: \(object)")
@@ -120,7 +122,8 @@ public class ConfigurationManager {
     /// Load configurations from command line arguments or environment variables.
     /// For command line arguments, the configurations are parsed from arguments
     /// in this format: `<keyPrefix><path>=<value>`
-    /// - parameter source: Enum denoting which source to load from.
+    ///
+    /// - Parameter source: Enum denoting which source to load from.
     @discardableResult
     public func load(_ source: Source) -> ConfigurationManager {
         switch source {
@@ -160,8 +163,9 @@ public class ConfigurationManager {
     }
 
     /// Load configurations from a Data object
-    /// - data: The Data object containing configurations.
-    /// - parameter deserializerName: Optional. Designated deserializer for the configuration
+    ///
+    /// - Parameter data: The Data object containing configurations.
+    /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
     /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
     /// a deserializers and attempt to deserialize using each one.
@@ -199,9 +203,10 @@ public class ConfigurationManager {
     }
 
     /// Load configurations from a file on system.
-    /// - parameter file: Path to file.
-    /// - parameter relativeFrom: Optional. Defaults to the location of the executable.
-    /// - parameter deserializerName: Optional. Designated deserializer for the configuration
+    ///
+    /// - Parameter file: Path to file.
+    /// - Parameter relativeFrom: Optional. Defaults to the location of the executable.
+    /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize
     /// according to the given format, i.e., `JSONDeserializer.name`; otherwise, parser will
     /// go through a list a deserializers and attempt to deserialize using each one.
@@ -233,8 +238,9 @@ public class ConfigurationManager {
     }
 
     /// Load configurations from a remote location.
-    /// - parameter url: The URL pointing to a configuration resource.
-    /// - parameter deserializerName: Optional. Designated deserializer for the configuration
+    ///
+    /// - Parameter url: The URL pointing to a configuration resource.
+    /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
     /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
     /// a deserializers and attempt to deserialize using each one.
@@ -252,8 +258,9 @@ public class ConfigurationManager {
         return self
     }
 
-    /// Add a deserializer to the list.
-    /// - paramter deserializer: The deserializer to be added.
+    /// Add a deserializer to the list of deserializers that can be used to parse raw data.
+    ///
+    /// - Parameter deserializer: The deserializer to be added.
     @discardableResult
     public func use(_ deserializer: Deserializer) -> ConfigurationManager {
         deserializers[deserializer.name] = deserializer
@@ -267,7 +274,8 @@ public class ConfigurationManager {
     }
 
     /// Access configurations by paths.
-    /// - parameter path: The path to a configuration value.
+    ///
+    /// - Parameter path: The path to a configuration value.
     public subscript(path: String) -> Any? {
         get {
             return root[path]?.rawValue
@@ -282,7 +290,8 @@ public class ConfigurationManager {
     }
 
     /// Deserialize a string into an object (i.e., a JSON string into a dictionary)
-    /// - parameter str: The string to be deserialized.
+    ///
+    /// - Parameter str: The string to be deserialized.
     private func deserializeFrom(_ str: String) -> Any {
         if let data = str.data(using: .utf8) {
             for deserializer in deserializers.values {
