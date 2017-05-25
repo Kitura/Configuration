@@ -8,6 +8,9 @@
     <script src="../js/jquery.min.js" defer></script>
     <script src="../js/jazzy.js" defer></script>
     
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
 
@@ -21,6 +24,12 @@
           Configuration Docs
         </a>
          (100% documented)
+      </p>
+    
+      <p class="header-col--secondary">
+        <form role="search" action="../search.json">
+          <input type="text" placeholder="Search documentation" data-typeahead>
+        </form>
       </p>
     
         <p class="header-col header-col--secondary">
@@ -108,8 +117,7 @@ and raw objects.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Access configurations by paths.
-- parameter path: The path to a configuration value.</p>
+                        <p>Access configurations by paths.</p>
 
                       </div>
                       <div class="declaration">
@@ -133,7 +141,6 @@ and raw objects.</p>
                               <td>
                                 <div>
                                   <p>The path to a configuration value.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -321,16 +328,7 @@ and environment variables.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Constructor
-- parameter commandLineArgumentKeyPrefix: Optional. Used to denote an argument
-as a configuration path-value pair. Defaults to <code>--</code>.
-- parameter commandLineArgumentPathSeparator: Optional. Used to separate the
-components of a path. Defaults to <code>.</code>.
-- parameter environmentVariablePathSeparator: Optional. Used to separate the
-components of a path. Defaults to <code>__</code>.
-- parameter parseStringToObject: Optional. Used to indicate if string values
-in commandline arguments and environment variables should be parsed to array
-or dictionary, if possible, using a known <code><a href="../Protocols/Deserializer.html">Deserializer</a></code>. Defaults to <code>true</code>.</p>
+                        <p>Constructor</p>
 
                       </div>
                       <div class="declaration">
@@ -356,8 +354,8 @@ or dictionary, if possible, using a known <code><a href="../Protocols/Deserializ
                               </td>
                               <td>
                                 <div>
-                                  <p>Optional. Used to denote an argument as a configuration path-value pair. Defaults to <code>--</code>.</p>
-
+                                  <p>Optional. Used to denote an argument
+as a configuration path-value pair. Defaults to <code>--</code>.</p>
                                 </div>
                               </td>
                             </tr>
@@ -369,8 +367,8 @@ or dictionary, if possible, using a known <code><a href="../Protocols/Deserializ
                               </td>
                               <td>
                                 <div>
-                                  <p>Optional. Used to separate the components of a path. Defaults to <code>.</code>.</p>
-
+                                  <p>Optional. Used to separate the
+components of a path. Defaults to <code>.</code>.</p>
                                 </div>
                               </td>
                             </tr>
@@ -382,8 +380,8 @@ or dictionary, if possible, using a known <code><a href="../Protocols/Deserializ
                               </td>
                               <td>
                                 <div>
-                                  <p>Optional. Used to separate the components of a path. Defaults to <code>__</code>.</p>
-
+                                  <p>Optional. Used to separate the
+components of a path. Defaults to <code>__</code>.</p>
                                 </div>
                               </td>
                             </tr>
@@ -395,8 +393,9 @@ or dictionary, if possible, using a known <code><a href="../Protocols/Deserializ
                               </td>
                               <td>
                                 <div>
-                                  <p>Optional. Used to indicate if string values in commandline arguments and environment variables should be parsed to array or dictionary, if possible, using a known <code>Deserializer</code>. Defaults to <code>true</code>.</p>
-
+                                  <p>Optional. Used to indicate if string values
+in commandline arguments and environment variables should be parsed to array
+or dictionary, if possible, using a known <code>Deserializer</code>. Defaults to <code>true</code>.</p>
                                 </div>
                               </td>
                             </tr>
@@ -419,8 +418,7 @@ or dictionary, if possible, using a known <code><a href="../Protocols/Deserializ
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Load configurations from raw object.
-- parameter object: The configurations object.</p>
+                        <p>Load configurations from raw object.</p>
 
                       </div>
                       <div class="declaration">
@@ -444,7 +442,6 @@ or dictionary, if possible, using a known <code><a href="../Protocols/Deserializ
                               <td>
                                 <div>
                                   <p>The configurations object.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -469,8 +466,7 @@ or dictionary, if possible, using a known <code><a href="../Protocols/Deserializ
                       <div class="abstract">
                         <p>Load configurations from command line arguments or environment variables.
 For command line arguments, the configurations are parsed from arguments
-in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code>
-- parameter source: Enum denoting which source to load from.</p>
+in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code></p>
 
                       </div>
                       <div class="declaration">
@@ -494,7 +490,6 @@ in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code>
                               <td>
                                 <div>
                                   <p>Enum denoting which source to load from.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -517,12 +512,7 @@ in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Load configurations from a Data object
-- data: The Data object containing configurations.
-- parameter deserializerName: Optional. Designated deserializer for the configuration
-resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to
-the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vP13Configuration12Deserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will go through a list
-a deserializers and attempt to deserialize using each one.</p>
+                        <p>Load configurations from a Data object</p>
 
                       </div>
                       <div class="declaration">
@@ -540,13 +530,27 @@ a deserializers and attempt to deserialize using each one.</p>
                             <tr>
                               <td>
                                 <code>
+                                <em>data</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The Data object containing configurations.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
                                 <em>deserializerName</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>Optional. Designated deserializer for the configuration resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to the given format, i.e., <code>JSONDeserializer.name</code>; otherwise, parser will go through a list a deserializers and attempt to deserialize using each one.</p>
-
+                                  <p>Optional. Designated deserializer for the configuration
+resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to
+the given format, i.e., <code>JSONDeserializer.name</code>; otherwise, parser will go through a list
+a deserializers and attempt to deserialize using each one.</p>
                                 </div>
                               </td>
                             </tr>
@@ -569,13 +573,7 @@ a deserializers and attempt to deserialize using each one.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Load configurations from a file on system.
-- parameter file: Path to file.
-- parameter relativeFrom: Optional. Defaults to the location of the executable.
-- parameter deserializerName: Optional. Designated deserializer for the configuration
-resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize
-according to the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vP13Configuration12Deserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will
-go through a list a deserializers and attempt to deserialize using each one.</p>
+                        <p>Load configurations from a file on system.</p>
 
                       </div>
                       <div class="declaration">
@@ -601,7 +599,6 @@ go through a list a deserializers and attempt to deserialize using each one.</p>
                               <td>
                                 <div>
                                   <p>Path to file.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -614,7 +611,6 @@ go through a list a deserializers and attempt to deserialize using each one.</p>
                               <td>
                                 <div>
                                   <p>Optional. Defaults to the location of the executable.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -626,8 +622,10 @@ go through a list a deserializers and attempt to deserialize using each one.</p>
                               </td>
                               <td>
                                 <div>
-                                  <p>Optional. Designated deserializer for the configuration resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to the given format, i.e., <code>JSONDeserializer.name</code>; otherwise, parser will go through a list a deserializers and attempt to deserialize using each one.</p>
-
+                                  <p>Optional. Designated deserializer for the configuration
+resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize
+according to the given format, i.e., <code>JSONDeserializer.name</code>; otherwise, parser will
+go through a list a deserializers and attempt to deserialize using each one.</p>
                                 </div>
                               </td>
                             </tr>
@@ -650,12 +648,7 @@ go through a list a deserializers and attempt to deserialize using each one.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Load configurations from a remote location.
-- parameter url: The URL pointing to a configuration resource.
-- parameter deserializerName: Optional. Designated deserializer for the configuration
-resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to
-the given format, i.e., <code><a href="../Classes/JSONDeserializer.html#/s:vP13Configuration12Deserializer4nameSS">JSONDeserializer.name</a></code>; otherwise, parser will go through a list
-a deserializers and attempt to deserialize using each one.</p>
+                        <p>Load configurations from a remote location.</p>
 
                       </div>
                       <div class="declaration">
@@ -679,7 +672,6 @@ a deserializers and attempt to deserialize using each one.</p>
                               <td>
                                 <div>
                                   <p>The URL pointing to a configuration resource.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -691,8 +683,10 @@ a deserializers and attempt to deserialize using each one.</p>
                               </td>
                               <td>
                                 <div>
-                                  <p>Optional. Designated deserializer for the configuration resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to the given format, i.e., <code>JSONDeserializer.name</code>; otherwise, parser will go through a list a deserializers and attempt to deserialize using each one.</p>
-
+                                  <p>Optional. Designated deserializer for the configuration
+resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to
+the given format, i.e., <code>JSONDeserializer.name</code>; otherwise, parser will go through a list
+a deserializers and attempt to deserialize using each one.</p>
                                 </div>
                               </td>
                             </tr>
@@ -715,8 +709,7 @@ a deserializers and attempt to deserialize using each one.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Add a deserializer to the list.
-- paramter deserializer: The deserializer to be added.</p>
+                        <p>Add a deserializer to the list of deserializers that can be used to parse raw data.</p>
 
                       </div>
                       <div class="declaration">
@@ -726,6 +719,25 @@ a deserializers and attempt to deserialize using each one.</p>
                           <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">use</span><span class="p">(</span><span class="n">_</span> <span class="nv">deserializer</span><span class="p">:</span> <span class="kt"><a href="../Protocols/Deserializer.html">Deserializer</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">ConfigurationManager</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>deserializer</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The deserializer to be added.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -765,8 +777,8 @@ a deserializers and attempt to deserialize using each one.</p>
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">IBM</a>. All rights reserved. (Last updated: 2017-03-17)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">IBM</a>. All rights reserved. (Last updated: 2017-05-25)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

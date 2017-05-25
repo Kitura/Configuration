@@ -23,8 +23,12 @@ public class JSONDeserializer: Deserializer {
     /// A shared instance
     public static let shared = JSONDeserializer()
 
+    /// A unique name that identifies this deserializer
     public let name = "json"
 
+    /// Function that deserializes raw JSON data into a Foundation object
+    ///
+    /// - Parameter data: The raw JSON data to be deserialized
     public func deserialize(data: Data) throws -> Any {
         return try JSONSerialization.jsonObject(with: data)
     }
