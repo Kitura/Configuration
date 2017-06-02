@@ -22,8 +22,9 @@ class ConfigurationManagerTest: XCTestCase {
     static var allTests : [(String, (ConfigurationManagerTest) -> () throws -> Void)] {
         return [
             ("testLoadSimple", testLoadSimple),
-            ("testLoadFile", testLoadFile),
+            ("testLoadArgv", testLoadArgv),
             ("testLoadData", testLoadData),
+            ("testLoadFile", testLoadFile),
             ("testLoadRelative", testLoadRelative),
             ("testExternalExecutable", testExternalExecutable)
         ]
@@ -85,6 +86,18 @@ class ConfigurationManagerTest: XCTestCase {
         return (errPipe, outPipe, process.terminationStatus)
     }
 
+    func testLoadArgv() {
+        // Set up CommandLine.arguments
+        CommandLine.arguments.append("--argv=\(jsonString)")
+
+        let manager = ConfigurationManager().load(.commandLineArguments)
+
+        XCTAssert(manager["argv:OAuth:configuration:state"] as? Bool == true)
+
+        // Clean up CommandLine.arguments
+        CommandLine.arguments.removeLast()
+    }
+
     func testLoadSimple() {
         var manager: ConfigurationManager
 
@@ -99,24 +112,6 @@ class ConfigurationManagerTest: XCTestCase {
         // Dictionary
         manager = ConfigurationManager().load(["Hello": "World"])
         XCTAssertEqual(manager["Hello"] as? String, "World")
-    }
-
-    func testLoadFile() {
-        var manager: ConfigurationManager
-
-        // JSON
-        manager = ConfigurationManager().load(file: "../test.json", relativeFrom: .customPath(#file))
-        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
-
-        // PLIST
-        manager = ConfigurationManager().load(file: "../test.plist", relativeFrom: .customPath(#file))
-
-        #if swift(>=4)
-            // Broken on Linux due to https://bugs.swift.org/browse/SR-3681
-            XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
-        #else
-            XCTAssertEqual(manager["OAuth:configuration:scope:0"] as? String, "email")
-        #endif
     }
 
     func testLoadData() {
@@ -143,6 +138,24 @@ class ConfigurationManagerTest: XCTestCase {
 
         manager = ConfigurationManager().load(data: plistData)
         XCTAssertEqual(manager["hello"] as? String, "world")
+    }
+
+    func testLoadFile() {
+        var manager: ConfigurationManager
+
+        // JSON
+        manager = ConfigurationManager().load(file: "../test.json", relativeFrom: .customPath(#file))
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+
+        // PLIST
+        manager = ConfigurationManager().load(file: "../test.plist", relativeFrom: .customPath(#file))
+
+        #if swift(>=4)
+            // Broken on Linux due to https://bugs.swift.org/browse/SR-3681
+            XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+        #else
+            XCTAssertEqual(manager["OAuth:configuration:scope:0"] as? String, "email")
+        #endif
     }
 
     func testLoadRelative() {
@@ -186,7 +199,7 @@ class ConfigurationManagerTest: XCTestCase {
         #endif
 
         // Run the test executable
-        (errPipe, outPipe, exitCode) = shell(testProgramURL.path, "--argv=\(jsonString)", environment: ["ENV": jsonString])
+        (errPipe, outPipe, exitCode) = shell(testProgramURL.path, environment: ["ENV": jsonString])
 
         output = String(data: outPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
         error = String(data: errPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)

@@ -16,9 +16,9 @@
 
 // This executable is needed to test features of this package that relates to
 // an executable (for example, loading a file relative to the project root),
-// as well as features related to environment variables and commandline
-// arguments. None of these can be tested normally in Xcode and are instead
-// being tested in this module that is only meant to be called from the unit tests.
+// as well as features related to environment variables. None of these can be
+// tested normally in Xcode and are instead being tested in this module that is
+// only meant to be called from the unit tests.
 
 // DO NOT RUN THIS PROGRAM FROM INSIDE XCODE.
 
@@ -29,19 +29,6 @@ var exitCode: Int32 = 0
 var testsExecuted: Int32 = 0
 
 var manager: ConfigurationManager
-
-// test load argv
-manager = ConfigurationManager().load(.commandLineArguments)
-
-if manager["argv:OAuth:configuration:state"] as? Bool == true {
-    print("Test Case '-[.commandLineArguments]': PASS")
-}
-else {
-    print("Test Case '-[.commandLineArguments]': FAIL")
-    exitCode += 1 << testsExecuted
-}
-
-testsExecuted += 1
 
 // test load env
 manager = ConfigurationManager().load(.environmentVariables)
