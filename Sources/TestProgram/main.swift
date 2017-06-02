@@ -31,6 +31,8 @@ var testsExecuted: Int32 = 0
 var manager: ConfigurationManager
 
 // test load env
+// Cannot be tested in XCTest on Linux due to https://bugs.swift.org/browse/SR-5076
+#if os(Linux)
 manager = ConfigurationManager().load(.environmentVariables)
 
 if manager["ENV:OAuth:configuration:state"] as? Bool == true {
@@ -42,6 +44,7 @@ else {
 }
 
 testsExecuted += 1
+#endif
 
 // test load file relative from executable
 manager = ConfigurationManager().load(file: "../../Tests/ConfigurationTests/test.json", relativeFrom: .executable)
