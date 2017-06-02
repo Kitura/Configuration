@@ -23,6 +23,7 @@ class ConfigurationManagerTest: XCTestCase {
         return [
             ("testLoadSimple", testLoadSimple),
             ("testLoadArgv", testLoadArgv),
+            ("testLoadEnvVar", testLoadEnvVar),
             ("testLoadData", testLoadData),
             ("testLoadFile", testLoadFile),
             ("testLoadRelative", testLoadRelative),
@@ -92,10 +93,26 @@ class ConfigurationManagerTest: XCTestCase {
 
         let manager = ConfigurationManager().load(.commandLineArguments)
 
-        XCTAssert(manager["argv:OAuth:configuration:state"] as? Bool == true)
+        XCTAssertEqual(manager["argv:OAuth:configuration:state"] as? Bool, true)
 
         // Clean up CommandLine.arguments
         CommandLine.arguments.removeLast()
+    }
+
+    func testLoadEnvVar() {
+        // Does not work in Linux yet due to https://bugs.swift.org/browse/SR-5076
+
+        #if os(macOS)
+            // Set env var
+            XCTAssertEqual(setenv("ENV", jsonString, 1), 0)
+
+            let manager = ConfigurationManager().load(.environmentVariables)
+
+            XCTAssertEqual(manager["ENV:OAuth:configuration:state"] as? Bool, true)
+
+            // Unset env var
+            XCTAssertEqual(unsetenv("ENV"), 0)
+        #endif
     }
 
     func testLoadSimple() {
