@@ -204,13 +204,18 @@ class ConfigurationManagerTest: XCTestCase {
             // ran from .build directory on Linux
         #else
             // Force rebuild of test executable on OSX
-            (errPipe, outPipe, exitCode) = shell("swift", "build", "-C", projectFolder.path)
+
+            // Need to pass in current environment variables on local machine or it will fail with
+            // `error: Unable to find executable for 'xcrun'`
+            // when ran with Xcode 9 beta
+            (errPipe, outPipe, exitCode) = shell("swift", "build", "-C", projectFolder.path, environment: ProcessInfo.processInfo.environment)
             output = String(data: outPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
 
             print(output ?? "No stdout from `swift build -C \(projectFolder.path)`")
 
             guard exitCode == 0 else {
-                XCTFail("Unable to build project")
+                let error = String(data: errPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
+                XCTFail(error ?? "No stderr from `swift build -C \(projectFolder.path)`")
                 return
             }
         #endif
