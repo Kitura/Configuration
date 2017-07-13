@@ -1,6 +1,6 @@
 # Configuration
 
-[![Build Status - Master](https://api.travis-ci.org/IBM-Swift/Configuration.svg?branch=master)](https://travis-ci.org/IBM-Swift/Configuration)
+[![Build Status](https://api.travis-ci.org/IBM-Swift/Configuration.svg?branch=master)](https://travis-ci.org/IBM-Swift/Configuration)
 ![macOS](https://img.shields.io/badge/os-macOS-green.svg?style=flat)
 ![Linux](https://img.shields.io/badge/os-linux-green.svg?style=flat)
 ![Apache 2](https://img.shields.io/badge/license-Apache2-blue.svg?style=flat)
@@ -34,13 +34,13 @@ manager.load(file: "config.json").load(.environmentVariables)
 let value = manager["path:to:configuration:value"]
 ```
 
-## Loading configuration data
+## Loading Configuration Data
 
 `Configuration` has many methods to load configuration data. 
 
 **NOTE:** In all cases, configuration key paths are case sensitive.
 
-### From a raw object:
+### From a Raw Object:
 
 ```swift
 manager.load([
@@ -51,13 +51,13 @@ manager.load([
 ])
 ```
 
-### From command line arguments:
+### From Command-line Arguments:
 
 ```swift
 manager.load(.commandLineArguments)
 ```
 
-To inject configurations via the commandline at runtime, set configuration values when launching the executable, like so:
+To inject configurations via the command-line at runtime, set configuration values when launching the executable, like so:
     
 ```
 ./myApp --path.to.configuration=value
@@ -65,7 +65,7 @@ To inject configurations via the commandline at runtime, set configuration value
 
 You can set your preferred argument prefix (`--`) and path separator (`.`) strings when instantiating `ConfigurationManager`.
 
-### From environment variables:
+### From Environment Variables:
 
 ```swift
 manager.load(.environmentVariables)
@@ -79,14 +79,14 @@ PATH__TO__CONFIGURATION=value
 
 You can set your preferred path separator (default `__`) string when instantiating `ConfigurationManager`.
 
-### From a Data object:
+### From a Data Object:
 
 ```swift
 let data = Data(...)
 manager.load(data: data)
 ```
 
-### From a file:
+### From a File:
 
 ```swift
 manager.load(file: "/path/to/file")
@@ -111,7 +111,7 @@ manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewh
 
 **NOTE:** The following `relativeFrom` options, `.executable` (default), `.pwd`, and `.project`, are meant to be used by applications that run from the command-line, and not from within Xcode. This is because the executable and present working directory are different for the application when ran inside Xcode as opposed to when it is ran from the command-line. Under Xcode, this package will change the paths to point to file locations as if the application is running on the command-line.
 
-### From a resource URL:
+### From a Resource URL:
     
 ```swift
 manager.load(url: myURL)
@@ -119,7 +119,7 @@ manager.load(url: myURL)
 
 **NOTE:** The URL MUST include a scheme, i.e., `file://`, `http://`, etc.
 
-### From multiple sources:
+### From Multiple Sources:
 
 You can chain these methods to load configuration data from multiple sources all at once. If the same configuration key exists in the multiple sources, the one most recently loaded will override the ones loaded earlier. In this simple example,
 
@@ -131,7 +131,7 @@ the value for `foo` is now `baz` because `["foo": "baz"]` was more recently load
 
 **NOTE:** Currently, `Configuration` only supports JSON and PLIST formats for resources loaded from data, file, or URL. You can write a custom deserializer to parse additional formats.
 
-## Accessing configuration data
+## Accessing Configuration Data
 
 To get individual configuration values after they have been loaded, use:
 
@@ -155,7 +155,7 @@ The configuration store is represented as a tree, where the path elements in key
 }
 ```
 
-The value is returned as an instance of `Any`. Therefore, it's important to cast the value to the datatype you want to use. For instance:
+The value returned is typed as `Any?`. Therefore, it's important to cast the value to the type you want to use. For instance:
 
 ```swift
 let stringValue = manager["VCAP_SERVICES:cloudantNoSQLDB:0:credentials:host"] as? String

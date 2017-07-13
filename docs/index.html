@@ -86,7 +86,7 @@
             
             <h1 id='configuration' class='heading'>Configuration</h1>
 
-<p><a href="https://travis-ci.org/IBM-Swift/Configuration"><img src="https://api.travis-ci.org/IBM-Swift/Configuration.svg?branch=master" alt="Build Status - Master"></a>
+<p><a href="https://travis-ci.org/IBM-Swift/Configuration"><img src="https://api.travis-ci.org/IBM-Swift/Configuration.svg?branch=master" alt="Build Status"></a>
 <img src="https://img.shields.io/badge/os-macOS-green.svg?style=flat" alt="macOS">
 <img src="https://img.shields.io/badge/os-linux-green.svg?style=flat" alt="Linux">
 <img src="https://img.shields.io/badge/license-Apache2-blue.svg?style=flat" alt="Apache 2">
@@ -114,12 +114,12 @@
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"config.json"</span><span class="p">)</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">environmentVariables</span><span class="p">)</span>
 <span class="k">let</span> <span class="nv">value</span> <span class="o">=</span> <span class="n">manager</span><span class="p">[</span><span class="s">"path:to:configuration:value"</span><span class="p">]</span>
 </code></pre>
-<h2 id='loading-configuration-data' class='heading'>Loading configuration data</h2>
+<h2 id='loading-configuration-data' class='heading'>Loading Configuration Data</h2>
 
 <p><code>Configuration</code> has many methods to load configuration data. </p>
 
 <p><strong>NOTE:</strong> In all cases, configuration key paths are case sensitive.</p>
-<h3 id='from-a-raw-object' class='heading'>From a raw object:</h3>
+<h3 id='from-a-raw-object' class='heading'>From a Raw Object:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span>
     <span class="s">"hello"</span><span class="p">:</span> <span class="s">"world"</span><span class="p">,</span>
     <span class="s">"foo"</span><span class="p">:</span> <span class="p">[</span>
@@ -127,16 +127,16 @@
     <span class="p">]</span>
 <span class="p">])</span>
 </code></pre>
-<h3 id='from-command-line-arguments' class='heading'>From command line arguments:</h3>
+<h3 id='from-command-line-arguments' class='heading'>From Command-line Arguments:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">commandLineArguments</span><span class="p">)</span>
 </code></pre>
 
-<p>To inject configurations via the commandline at runtime, set configuration values when launching the executable, like so:</p>
+<p>To inject configurations via the command-line at runtime, set configuration values when launching the executable, like so:</p>
 <pre class="highlight plaintext"><code>./myApp --path.to.configuration=value
 </code></pre>
 
 <p>You can set your preferred argument prefix (<code>--</code>) and path separator (<code>.</code>) strings when instantiating <code>ConfigurationManager</code>.</p>
-<h3 id='from-environment-variables' class='heading'>From environment variables:</h3>
+<h3 id='from-environment-variables' class='heading'>From Environment Variables:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">environmentVariables</span><span class="p">)</span>
 </code></pre>
 
@@ -145,11 +145,11 @@
 </code></pre>
 
 <p>You can set your preferred path separator (default <code>__</code>) string when instantiating <code>ConfigurationManager</code>.</p>
-<h3 id='from-a-data-object' class='heading'>From a Data object:</h3>
+<h3 id='from-a-data-object' class='heading'>From a Data Object:</h3>
 <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="kt">Data</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="n">data</span><span class="p">)</span>
 </code></pre>
-<h3 id='from-a-file' class='heading'>From a file:</h3>
+<h3 id='from-a-file' class='heading'>From a File:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"/path/to/file"</span><span class="p">)</span>
 </code></pre>
 
@@ -168,13 +168,13 @@
 <span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"../path/to/file"</span><span class="p">,</span> <span class="nv">relativeFrom</span><span class="p">:</span> <span class="o">.</span><span class="nf">customPath</span><span class="p">(</span><span class="s">"/path/to/somewhere/on/file/system"</span><span class="p">))</span>
 </code></pre>
 
-<p><strong>NOTE:</strong> The following <code>relativeFrom</code> options, <code>.executable</code> (default), <code>.pwd</code>, and <code>.project</code>, are meant to be used by applications that run from the command-line, and not from within Xcode. This is because the executable and present working directory are different for the application when ran inside Xcode as opposed to when it is ran from the command-line.</p>
-<h3 id='from-a-resource-url' class='heading'>From a resource URL:</h3>
+<p><strong>NOTE:</strong> The following <code>relativeFrom</code> options, <code>.executable</code> (default), <code>.pwd</code>, and <code>.project</code>, are meant to be used by applications that run from the command-line, and not from within Xcode. This is because the executable and present working directory are different for the application when ran inside Xcode as opposed to when it is ran from the command-line. Under Xcode, this package will change the paths to point to file locations as if the application is running on the command-line.</p>
+<h3 id='from-a-resource-url' class='heading'>From a Resource URL:</h3>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="n">myURL</span><span class="p">)</span>
 </code></pre>
 
 <p><strong>NOTE:</strong> The URL MUST include a scheme, i.e., <code>file://</code>, <code>http://</code>, etc.</p>
-<h3 id='from-multiple-sources' class='heading'>From multiple sources:</h3>
+<h3 id='from-multiple-sources' class='heading'>From Multiple Sources:</h3>
 
 <p>You can chain these methods to load configuration data from multiple sources all at once. If the same configuration key exists in the multiple sources, the one most recently loaded will override the ones loaded earlier. In this simple example,</p>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"bar"</span><span class="p">])</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"baz"</span><span class="p">])</span>
@@ -183,7 +183,7 @@
 <p>the value for <code>foo</code> is now <code>baz</code> because <code>[&quot;foo&quot;: &quot;baz&quot;]</code> was more recently loaded than <code>[&quot;foo&quot;: &quot;bar&quot;]</code>. The same behavior applies to all other <code>load</code> functions.</p>
 
 <p><strong>NOTE:</strong> Currently, <code>Configuration</code> only supports JSON and PLIST formats for resources loaded from data, file, or URL. You can write a custom deserializer to parse additional formats.</p>
-<h2 id='accessing-configuration-data' class='heading'>Accessing configuration data</h2>
+<h2 id='accessing-configuration-data' class='heading'>Accessing Configuration Data</h2>
 
 <p>To get individual configuration values after they have been loaded, use:</p>
 <pre class="highlight swift"><code><span class="n">manager</span><span class="p">[</span><span class="s">"path:to:configuration"</span><span class="p">]</span>
@@ -203,7 +203,7 @@
 </span><span class="p">}</span><span class="w">
 </span></code></pre>
 
-<p>The value is returned as an instance of <code>Any</code>. Therefore, it&rsquo;s important to cast the value to the datatype you want to use. For instance:</p>
+<p>The value returned is typed as <code>Any?</code>. Therefore, it&rsquo;s important to cast the value to the type you want to use. For instance:</p>
 <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">stringValue</span> <span class="o">=</span> <span class="n">manager</span><span class="p">[</span><span class="s">"VCAP_SERVICES:cloudantNoSQLDB:0:credentials:host"</span><span class="p">]</span> <span class="k">as?</span> <span class="kt">String</span>
 </code></pre>
 
@@ -228,7 +228,7 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">IBM</a>. All rights reserved. (Last updated: 2017-05-25)</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">IBM</a>. All rights reserved. (Last updated: 2017-07-13)</p>
       <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>

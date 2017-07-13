@@ -61,26 +61,31 @@ class ConfigurationManagerTest: XCTestCase {
 
     // Helper function to run shell commands
     // Tip from http://stackoverflow.com/a/26973384
-    func shell(_ args: String..., environment: [String: String] = [:]) -> (Pipe, Pipe, Int32) {
+    func shell(_ args: String...,
+        currentDirectoryPath: String = presentWorkingDirectory,
+        environment: [String: String] = [:]) -> (Pipe, Pipe, Int32) {
         // Print out the command to be executed
         var command = "/usr/bin/env"
+
         args.forEach { command.append(" " + $0) }
         print("Executing command: \(String(describing: command))")
 
         #if os(Linux) && !swift(>=3.1)
-            let process = Task()
-        #else
-            let process = Process()
+            typealias Process = Task
         #endif
 
+        // Configure the Process instance
+        let process = Process()
         let errPipe = Pipe()
         let outPipe = Pipe()
-        process.launchPath = "/usr/bin/env"
         process.arguments = args
+        process.currentDirectoryPath = currentDirectoryPath
         process.environment = environment
+        process.launchPath = "/usr/bin/env"
         process.standardError = errPipe
         process.standardOutput = outPipe
 
+        // Execute the Process instance
         process.launch()
         process.waitUntilExit()
 
@@ -189,7 +194,7 @@ class ConfigurationManagerTest: XCTestCase {
 
     func testExternalExecutable() {
         let projectFolder = URL(fileURLWithPath: #file).appendingPathComponent("../../../").standardized
-        let testProgramURL = projectFolder.appendingPathComponent(".build/debug/TestProgram").standardized
+        let testProgramURL = projectFolder.appendingPathComponent(".build/debug/ConfigurationTestExecutable").standardized
 
         var (errPipe, outPipe, exitCode): (Pipe, Pipe, Int32)
         var output: String?, error: String?
@@ -208,14 +213,16 @@ class ConfigurationManagerTest: XCTestCase {
             // Need to pass in current environment variables on local machine or it will fail with
             // `error: Unable to find executable for 'xcrun'`
             // when ran with Xcode 9 beta
-            (errPipe, outPipe, exitCode) = shell("swift", "build", "-C", projectFolder.path, environment: ProcessInfo.processInfo.environment)
+            (errPipe, outPipe, exitCode) = shell("swift", "build",
+                                                 currentDirectoryPath: projectFolder.path,
+                                                 environment: ProcessInfo.processInfo.environment)
             output = String(data: outPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
 
-            print(output ?? "No stdout from `swift build -C \(projectFolder.path)`")
+            print(output ?? "No stdout from `swift build`")
 
             guard exitCode == 0 else {
                 let error = String(data: errPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
-                XCTFail(error ?? "No stderr from `swift build -C \(projectFolder.path)`")
+                XCTFail(error ?? "No stderr from `swift build`")
                 return
             }
         #endif
