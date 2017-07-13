@@ -119,7 +119,7 @@ public class ConfigurationManager {
         return self
     }
 
-    /// Load configurations from command line arguments or environment variables.
+    /// Load configurations from command-line arguments or environment variables.
     /// For command line arguments, the configurations are parsed from arguments
     /// in this format: `<keyPrefix><path>=<value>`
     ///
@@ -130,7 +130,7 @@ public class ConfigurationManager {
         case .commandLineArguments:
             let argv = CommandLine.arguments
 
-            Log.debug("Loading commandline arguments: \(argv)")
+            Log.debug("Loading command-line arguments: \(argv)")
 
             // skip first since it's always the executable
             for index in 1..<argv.count {
@@ -167,7 +167,7 @@ public class ConfigurationManager {
     /// - Parameter data: The Data object containing configurations.
     /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
-    /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
+    /// the given format, i.e., `JSONDeserializer.shared.name`; otherwise, parser will go through a list
     /// a deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(data: Data, deserializerName: String? = nil) -> ConfigurationManager {
@@ -180,7 +180,7 @@ public class ConfigurationManager {
                 self.load(try deserializer.deserialize(data: data))
             }
             catch {
-                Log.error("Unable to deserialize data using \"\(deserializerName)\" deserializer")
+                Log.warning("Unable to deserialize data using \"\(deserializerName)\" deserializer")
             }
 
             return self
@@ -196,7 +196,7 @@ public class ConfigurationManager {
                 }
             }
 
-            Log.error("Unable to deserialize data using any known deserializer")
+            Log.warning("Unable to deserialize data using any known deserializer")
 
             return self
         }
@@ -208,7 +208,7 @@ public class ConfigurationManager {
     /// - Parameter relativeFrom: Optional. Defaults to the location of the executable.
     /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize
-    /// according to the given format, i.e., `JSONDeserializer.name`; otherwise, parser will
+    /// according to the given format, i.e., `JSONDeserializer.shared.name`; otherwise, parser will
     /// go through a list a deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(file: String,
@@ -232,27 +232,25 @@ public class ConfigurationManager {
             pathURL = URL(fileURLWithPath: relativeFrom.path).appendingPathComponent(file).standardized
         }
 
-        Log.verbose("Loading file: \(pathURL)")
-
         return self.load(url: pathURL, deserializerName: deserializerName)
     }
 
-    /// Load configurations from a remote location.
+    /// Load configurations from a URL location.
     ///
     /// - Parameter url: The URL pointing to a configuration resource.
     /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
-    /// the given format, i.e., `JSONDeserializer.name`; otherwise, parser will go through a list
+    /// the given format, i.e., `JSONDeserializer.shared.name`; otherwise, parser will go through a list
     /// a deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(url: URL, deserializerName: String? = nil) -> ConfigurationManager {
-        Log.verbose("Loading URL: \(url)")
+        Log.verbose("Loading URL: \(url.standardized.path)")
 
         do {
             try self.load(data: Data(contentsOf: url), deserializerName: deserializerName)
         }
         catch {
-            Log.error("Unable to load data from URL \(url)")
+            Log.warning("Unable to load data from URL \(url.standardized.path)")
         }
 
         return self
