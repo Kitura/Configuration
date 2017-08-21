@@ -100,11 +100,6 @@ manager.load(file: "../path/to/file", relativeFrom: .pwd)
 
 // or
 
-// Resolve path against project root folder
-manager.load(file: "../path/to/file", relativeFrom: .project)
-
-// or
-
 // Resolve path against a custom path
 manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
 ```

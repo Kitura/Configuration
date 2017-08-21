@@ -63,6 +63,9 @@ public class ConfigurationManager {
         case executable
 
         /// Relative from project directory
+        ///
+        /// **DEPRECATED**
+        @available(*, deprecated, message: "Project structure can change with a new Swift Package Manager version. Configuration will no longer provide this feature in the future.")
         case project
 
         /// Relative from present working directory (PWD)
