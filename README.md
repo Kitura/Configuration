@@ -17,6 +17,31 @@
 ## API Documentations
 Full API documentations for `Configuration` can be found [here](https://ibm-swift.github.io/Configuration/index.html).
 
+## Installation
+
+### Via Swift Package Manager
+
+Add `Configuration` to your `Package.swift`:
+
+```swift
+import PackageDescription
+
+let package = Package(
+  name: "<package-name>",
+  dependencies: [
+    .Package(url: "https://github.com/IBM-Swift/Configuration.git", majorVersion: 1, minor: 0)
+  ]
+)
+```
+
+### Via Carthage
+
+Add `Configuration` to your `Cartfile`:
+
+```
+github "IBM-Swift/Configuration"
+```
+
 ## Usage
 
 The core of the `Configuration` package is the `ConfigurationManager` class. To manage your application's configurations, first create an instance of the `ConfigurationManager` class.
@@ -103,8 +128,6 @@ manager.load(file: "../path/to/file", relativeFrom: .pwd)
 // Resolve path against a custom path
 manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
 ```
-
-**NOTE:** The following `relativeFrom` options, `.executable` (default), `.pwd`, and `.project`, are meant to be used by applications that run from the command-line, and not from within Xcode. This is because the executable and present working directory are different for the application when ran inside Xcode as opposed to when it is ran from the command-line. Under Xcode, this package will change the paths to point to file locations as if the application is running on the command-line.
 
 ### From a Resource URL:
     
