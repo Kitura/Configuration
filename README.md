@@ -42,6 +42,8 @@ Add `Configuration` to your `Cartfile`:
 github "IBM-Swift/Configuration"
 ```
 
+Make sure to add `LoggerAPI`, which `Configuration` depends on for logging statements, [to your project](https://github.com/Carthage/Carthage#nested-dependencies).
+
 ## Usage
 
 The core of the `Configuration` package is the `ConfigurationManager` class. To manage your application's configurations, first create an instance of the `ConfigurationManager` class.
@@ -65,7 +67,7 @@ let value = manager["path:to:configuration:value"]
 
 **NOTE:** In all cases, configuration key paths are case sensitive.
 
-### From a Raw Object:
+### From a Raw `Any` Object:
 
 ```swift
 manager.load([
@@ -88,7 +90,7 @@ To inject configurations via the command-line at runtime, set configuration valu
 ./myApp --path.to.configuration=value
 ```
 
-You can set your preferred argument prefix (`--`) and path separator (`.`) strings when instantiating `ConfigurationManager`.
+You can set your preferred argument prefix (default: `--`) and path separator (default: `.`) strings when instantiating `ConfigurationManager`.
 
 ### From Environment Variables:
 
@@ -102,9 +104,9 @@ Then, to use it in your application, set environment variables like so:
 PATH__TO__CONFIGURATION=value
 ```
 
-You can set your preferred path separator (default `__`) string when instantiating `ConfigurationManager`.
+You can set your preferred path separator (default: `__`) string when instantiating `ConfigurationManager`.
 
-### From a Data Object:
+### From a `Data` Object:
 
 ```swift
 let data = Data(...)
@@ -129,13 +131,16 @@ manager.load(file: "../path/to/file", relativeFrom: .pwd)
 manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
 ```
 
-### From a Resource URL:
+**NOTE:** The following `relativeFrom` options, `.executable` (default) and `.pwd`, will reference different file system locations if the application is ran from inside Xcode rather than from the command-line.
+
+### From an `URL`:
     
 ```swift
-manager.load(url: myURL)
+let url = URL(...)
+manager.load(url: url)
 ```
 
-**NOTE:** The URL MUST include a scheme, i.e., `file://`, `http://`, etc.
+**NOTE:** The `URL` MUST include a scheme, i.e., `file://`, `http://`, etc.
 
 ### From Multiple Sources:
 
@@ -147,7 +152,7 @@ manager.load(["foo": "bar"]).load(["foo": "baz"])
 
 the value for `foo` is now `baz` because `["foo": "baz"]` was more recently loaded than `["foo": "bar"]`. The same behavior applies to all other `load` functions.
 
-**NOTE:** Currently, `Configuration` only supports JSON and PLIST formats for resources loaded from data, file, or URL. You can write a custom deserializer to parse additional formats.
+**NOTE:** Currently, `Configuration` only supports JSON and PLIST formats for resources loaded from `Data`, file, or `URL`. You can write a [custom deserializer](https://ibm-swift.github.io/Configuration/Protocols/Deserializer.html) to parse additional formats.
 
 ## Accessing Configuration Data
 
