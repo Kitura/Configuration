@@ -47,7 +47,12 @@ testsExecuted += 1
 #endif
 
 // test load file relative from executable
-manager = ConfigurationManager().load(file: "../../Tests/ConfigurationTests/test.json", relativeFrom: .executable)
+#if swift(>=3.2)
+    // executable location is different on Swift 4 tools
+    manager = ConfigurationManager().load(file: "../../../Tests/ConfigurationTests/test.json", relativeFrom: .executable)
+#else
+    manager = ConfigurationManager().load(file: "../../Tests/ConfigurationTests/test.json", relativeFrom: .executable)
+#endif
 
 if manager["OAuth:configuration:state"] as? Bool == true {
     print("Test Case '-[.executable]': PASS")
