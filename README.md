@@ -34,16 +34,6 @@ let package = Package(
 )
 ```
 
-### Via Carthage
-
-Add `Configuration` to your `Cartfile`:
-
-```
-github "IBM-Swift/Configuration"
-```
-
-Make sure to add `LoggerAPI`, which `Configuration` depends on for logging statements, [to your project](https://github.com/Carthage/Carthage#nested-dependencies).
-
 ## Usage
 
 The core of the `Configuration` package is the `ConfigurationManager` class. To manage your application's configurations, first create an instance of the `ConfigurationManager` class.
