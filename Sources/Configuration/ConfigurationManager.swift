@@ -144,7 +144,11 @@ public class ConfigurationManager {
                     let path = argv[index][prefixRange.upperBound..<breakRange.lowerBound]
                         .replacingOccurrences(of: commandLineArgumentPathSeparator,
                                               with: ConfigurationNode.separator)
-                    let value = argv[index].substring(from: breakRange.upperBound)
+                    #if swift(>=3.2)
+                        let value = String(argv[index][breakRange.upperBound...])
+                    #else
+                        let value = argv[index].substring(from: breakRange.upperBound)
+                    #endif
 
                     let rawValue = parseStringToObject ? self.deserializeFrom(value) : value
                     root[path] = ConfigurationNode(rawValue)
