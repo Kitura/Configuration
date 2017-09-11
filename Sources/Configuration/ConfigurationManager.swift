@@ -141,9 +141,17 @@ public class ConfigurationManager {
                 if let prefixRange = argv[index].range(of: commandLineArgumentKeyPrefix),
                     prefixRange.lowerBound == argv[index].startIndex,
                     let breakRange = argv[index].range(of: "=") {
-                    let path = argv[index][prefixRange.upperBound..<breakRange.lowerBound]
+                    #if os(Linux) && swift(>=3.2)
+                        // https://bugs.swift.org/browse/SR-5727
+                        let path = String(argv[index][prefixRange.upperBound..<breakRange.lowerBound])
                         .replacingOccurrences(of: commandLineArgumentPathSeparator,
-                                              with: ConfigurationNode.separator)
+                        with: ConfigurationNode.separator)
+                    #else
+                        let path = argv[index][prefixRange.upperBound..<breakRange.lowerBound]
+                            .replacingOccurrences(of: commandLineArgumentPathSeparator,
+                                                  with: ConfigurationNode.separator)
+                    #endif
+
                     #if swift(>=3.2)
                         let value = String(argv[index][breakRange.upperBound...])
                     #else
