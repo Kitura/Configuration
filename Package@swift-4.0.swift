@@ -39,13 +39,9 @@ let package = Package(
             name: "Configuration",
             dependencies: ["LoggerAPI"]
         ),
-        .target(
-            name: "ConfigurationTestExecutable",
-            dependencies: ["Configuration"]
-        ),
         .testTarget(
             name: "ConfigurationTests",
-            dependencies: ["Configuration", "ConfigurationTestExecutable"]
+            dependencies: ["Configuration"]
         )
     ]
 )

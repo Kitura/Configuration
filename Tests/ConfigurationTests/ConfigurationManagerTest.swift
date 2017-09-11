@@ -26,21 +26,30 @@ class ConfigurationManagerTest: XCTestCase {
             ("testLoadEnvVar", testLoadEnvVar),
             ("testLoadData", testLoadData),
             ("testLoadFile", testLoadFile),
-            ("testLoadRelative", testLoadRelative),
-            ("testExternalExecutable", testExternalExecutable)
+            ("testLoadRelative", testLoadRelative)
         ]
     }
 
     static let testJSONURL = URL(fileURLWithPath: #file).appendingPathComponent("../test.json").standardized
 
-    static let symlinkToPWD = URL(fileURLWithPath: "test.json")
+    static let symlinkInPWD = URL(fileURLWithPath: "test.json")
+
+    static let symlinkInExecutableFolder = URL(fileURLWithPath: executableFolder).appendingPathComponent("test.json").standardized
 
     let jsonString = "{\n    \"env\": \"<default>\",\n    \"OAuth\": {\n        \"name\": \"facebook\",\n        \"configuration\": {\n            \"clientID\": \"<default>\",\n            \"clientSecret\": \"<default>\",\n            \"profileFields\": [\"displayName\", \"emails\", \"id\", \"name\"],\n            \"profileURL\": \"https://graph.facebook.com/v2.6/me\",\n            \"scope\": [\"email\"],\n            \"state\": true\n        }\n    },\n    \"port\": \"<default>\"\n}"
 
-    // Create symlink to test configuration file in PWD
+    // Create symlink to test configuration file in PWD and executable folder
     override class func setUp() {
         do {
-            try FileManager.default.createSymbolicLink(at: symlinkToPWD, withDestinationURL: testJSONURL)
+            try FileManager.default.createSymbolicLink(at: symlinkInPWD, withDestinationURL: testJSONURL)
+        }
+        catch {
+            // Nothing we can do but leave a failure message
+            XCTFail(error.localizedDescription)
+        }
+
+        do {
+            try FileManager.default.createSymbolicLink(at: symlinkInExecutableFolder, withDestinationURL: testJSONURL)
         }
         catch {
             // Nothing we can do but leave a failure message
@@ -51,45 +60,20 @@ class ConfigurationManagerTest: XCTestCase {
     // Delete test configuration file symlink created in setUp()
     override class func tearDown() {
         do {
-            try FileManager.default.removeItem(at: symlinkToPWD)
+            try FileManager.default.removeItem(at: symlinkInPWD)
         }
         catch {
             // Nothing we can do but leave a failure message
             XCTFail(error.localizedDescription)
         }
-    }
 
-    // Helper function to run shell commands
-    // Tip from http://stackoverflow.com/a/26973384
-    func shell(_ args: String...,
-        currentDirectoryPath: String = presentWorkingDirectory,
-        environment: [String: String] = [:]) -> (Pipe, Pipe, Int32) {
-        // Print out the command to be executed
-        var command = "/usr/bin/env"
-
-        args.forEach { command.append(" " + $0) }
-        print("Executing command: \(String(describing: command))")
-
-        #if os(Linux) && !swift(>=3.1)
-            typealias Process = Task
-        #endif
-
-        // Configure the Process instance
-        let process = Process()
-        let errPipe = Pipe()
-        let outPipe = Pipe()
-        process.arguments = args
-        process.currentDirectoryPath = currentDirectoryPath
-        process.environment = environment
-        process.launchPath = "/usr/bin/env"
-        process.standardError = errPipe
-        process.standardOutput = outPipe
-
-        // Execute the Process instance
-        process.launch()
-        process.waitUntilExit()
-
-        return (errPipe, outPipe, process.terminationStatus)
+        do {
+            try FileManager.default.removeItem(at: symlinkInExecutableFolder)
+        }
+        catch {
+            // Nothing we can do but leave a failure message
+            XCTFail(error.localizedDescription)
+        }
     }
 
     func testLoadArgv() {
@@ -183,59 +167,16 @@ class ConfigurationManagerTest: XCTestCase {
     func testLoadRelative() {
         var manager: ConfigurationManager
 
+        // Custom
         manager = ConfigurationManager().load(file: "../test.json", relativeFrom: .customPath(#file))
         XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
+        // PWD
         manager = ConfigurationManager().load(file: "test.json", relativeFrom: .pwd)
         XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
-        // .executable and .project are tested in TestProgram
-    }
-
-    func testExternalExecutable() {
-        let projectFolder = URL(fileURLWithPath: #file).appendingPathComponent("../../../").standardized
-        let testProgramURL = projectFolder.appendingPathComponent(".build/debug/ConfigurationTestExecutable").standardized
-
-        var (errPipe, outPipe, exitCode): (Pipe, Pipe, Int32)
-        var output: String?, error: String?
-
-        #if os(Linux)
-            guard FileManager.default.fileExists(atPath: testProgramURL.path) else {
-                XCTFail("Test executable does not exist")
-                return
-            }
-
-            // Not possible to `swift build` in project folder because this test is
-            // ran from .build directory on Linux
-        #else
-            // Force rebuild of test executable on OSX
-
-            // Need to pass in current environment variables on local machine or it will fail with
-            // `error: Unable to find executable for 'xcrun'`
-            // when ran with Xcode 9 beta
-            (errPipe, outPipe, exitCode) = shell("swift", "build",
-                                                 currentDirectoryPath: projectFolder.path,
-                                                 environment: ProcessInfo.processInfo.environment)
-            output = String(data: outPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
-
-            print(output ?? "No stdout from `swift build`")
-
-            guard exitCode == 0 else {
-                let error = String(data: errPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
-                XCTFail(error ?? "No stderr from `swift build`")
-                return
-            }
-        #endif
-
-        // Run the test executable
-        (errPipe, outPipe, exitCode) = shell(testProgramURL.path, environment: ["ENV": jsonString])
-
-        output = String(data: outPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
-        error = String(data: errPipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)
-
-        print(output ?? "No stdout from test executable")
-
-        XCTAssertEqual(exitCode, 0, "One or more external load assertions failed")
-        XCTAssertEqual(error, "", "External load test has non-empty error stream: \(String(describing: error))")
+        // Executable
+        manager = ConfigurationManager().load(file: "test.json", relativeFrom: .executable)
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
     }
 }
