@@ -121,7 +121,7 @@ manager.load(file: "../path/to/file", relativeFrom: .pwd)
 manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
 ```
 
-**NOTE:** The following `relativeFrom` options, `.executable` (default) and `.pwd`, will reference different file system locations if the application is ran from inside Xcode rather than from the command-line.
+**NOTE:** The following `relativeFrom` options, `.executable` (default) and `.pwd`, will reference different file system locations if the application is ran from inside Xcode than if it were ran from the command-line. You can set a compiler flag, i.e. `-DXCODE`, in your `xcodeproj` and use the flag to change your configuration file loading logic.
 
 ### From an `URL`:
     
