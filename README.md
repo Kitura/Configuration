@@ -12,7 +12,7 @@
 `Configuration` supports configuration keys as paths. That is, a key is a qualified path selector written in the `[parent]<separator>[child]` syntax. This allows applications to retrieve configuration objects at any level of specificity.
 
 ## Version Info
-`Configuration` runs on Swift 3, on both macOS and Ubuntu Linux.
+`Configuration` runs on Swift 4, on both macOS and Ubuntu Linux.
 
 ## API Documentations
 Full API documentations for `Configuration` can be found [here](https://ibm-swift.github.io/Configuration/index.html).
