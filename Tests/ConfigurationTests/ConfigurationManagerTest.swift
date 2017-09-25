@@ -168,7 +168,7 @@ class ConfigurationManagerTest: XCTestCase {
         XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
         // PWD
-        manager = ConfigurationManager().load(file: "Tests/ConfigurationTests/test.json", relativeFrom: .pwd)
+        manager = ConfigurationManager().load(file: "test.json", relativeFrom: .pwd)
         XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
         // Executable
