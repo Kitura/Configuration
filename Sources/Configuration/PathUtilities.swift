@@ -47,21 +47,10 @@ private let executableFolderURL = { () -> URL in
         let sourceFile = sourceFileURL.path
 
         if let range = sourceFile.range(of: "/checkouts/") {
-            // In Swift 3.1, package source code is downloaded to /<build-path>/checkouts
-            #if swift(>=3.2)
-                return URL(fileURLWithPath: sourceFile[..<range.lowerBound] + "/debug")
-            #else
-                return URL(fileURLWithPath: sourceFile.substring(to: range.lowerBound) + "/debug")
-            #endif
+            return URL(fileURLWithPath: sourceFile[..<range.lowerBound] + "/debug")
         }
         else if let range = sourceFile.range(of: "/Packages/") {
-            // In Swift 3.0-3.0.2 (or editable package in Swift 3.1), package source code is downloaded to /Packages
-            // Since we don't know /<build-path>, assume /.build instead
-            #if swift(>=3.2)
-                return URL(fileURLWithPath: sourceFile[..<range.lowerBound] + "/.build/debug")
-            #else
-                return URL(fileURLWithPath: sourceFile.substring(to: range.lowerBound) + "/.build/debug")
-            #endif
+            return URL(fileURLWithPath: sourceFile[..<range.lowerBound] + "/.build/debug")
         }
 
         Log.warning("Cannot infer /.build/debug folder location from source code structure. Using executable folder as determined from inside Xcode.")
@@ -70,27 +59,49 @@ private let executableFolderURL = { () -> URL in
     return executableURL.appendingPathComponent("..")
     }().standardized
 
+// Takes a starting directory and iterates down the tree to find package.swift (the root directory)
+private let projectHeadIterator = { (startingDir: URL) -> URL? in
+    let fileManager = FileManager()
+    var startingDir = startingDir.appendingPathComponent("dummy")
+
+    repeat {
+        startingDir.appendPathComponent("..")
+        startingDir.standardize()
+        let packageFilePath = startingDir.appendingPathComponent("Package.swift").path
+        
+        if fileManager.fileExists(atPath: packageFilePath) {
+            return startingDir
+        }
+    } while startingDir.path != "/"
+
+    return nil
+}
 /// Directory containing the Package.swift of the project (as determined by traversing
 /// up the directory structure starting at the directory containing the executable), or
 /// if no Package.swift is found then the directory containing the executable
 private let projectFolderURL = { () -> URL in
-    let fileManager = FileManager()
-    var directory = executableFolderURL.appendingPathComponent("dummy")
+    
+    guard let url = projectHeadIterator(executableFolderURL) else {
+        Log.warning("No Package.swift found. Using executable folder as project folder.")
+        return executableFolderURL
+    }
 
-    repeat {
-        directory.appendPathComponent("..")
-        directory.standardize()
-        let packageFilePath = directory.appendingPathComponent("Package.swift").path
+    return url
 
-        if fileManager.fileExists(atPath: packageFilePath) {
-            return directory
-        }
-    } while directory.path != "/"
+}().standardized
 
-    Log.warning("No Package.swift found. Using executable folder as project folder.")
+/// Directory containing the Package.swift of the project when run through XCode or XCTest
+/// Otherwise, returns the current working directory
+let presentWorkingDirectoryURL = { () -> URL in
+    if isRanInsideXcode || isRanFromXCTest, let url = projectHeadIterator(executableFolderURL) {
+        return url
+    }
 
-    return executableFolderURL
-    }().standardized
+    Log.warning("No Package.swift found. Using pwd folder as project folder.")
+
+    return URL(fileURLWithPath: "")
+    
+}().standardized
 
 /// Absolute path to the executable's folder
 let executableFolder = executableFolderURL.path
@@ -99,4 +110,4 @@ let executableFolder = executableFolderURL.path
 let projectFolder = projectFolderURL.path
 
 /// Absolute path to the present working directory (PWD)
-let presentWorkingDirectory = URL(fileURLWithPath: "").path
+let presentWorkingDirectory = presentWorkingDirectoryURL.path
