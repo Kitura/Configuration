@@ -70,27 +70,48 @@ private let executableFolderURL = { () -> URL in
     return executableURL.appendingPathComponent("..")
     }().standardized
 
+// Takes a starting directory and iterates down the tree to find package.swift (the root directory)
+private let projectHeadIterator = { (startingDir: URL) -> URL? in
+    let fileManager = FileManager()
+    var startingDir = startingDir.appendingPathComponent("dummy")
+
+    repeat {
+        startingDir.appendPathComponent("..")
+        startingDir.standardize()
+        let packageFilePath = startingDir.appendingPathComponent("Package.swift").path
+
+        if fileManager.fileExists(atPath: packageFilePath) {
+            return startingDir
+        }
+    } while startingDir.path != "/"
+
+    return nil
+}
 /// Directory containing the Package.swift of the project (as determined by traversing
 /// up the directory structure starting at the directory containing the executable), or
 /// if no Package.swift is found then the directory containing the executable
 private let projectFolderURL = { () -> URL in
-    let fileManager = FileManager()
-    var directory = executableFolderURL.appendingPathComponent("dummy")
+    guard let url = projectHeadIterator(executableFolderURL) else {
+        Log.warning("No Package.swift found. Using executable folder as project folder.")
+        return executableFolderURL
+    }
 
-    repeat {
-        directory.appendPathComponent("..")
-        directory.standardize()
-        let packageFilePath = directory.appendingPathComponent("Package.swift").path
+    return url
 
-        if fileManager.fileExists(atPath: packageFilePath) {
-            return directory
-        }
-    } while directory.path != "/"
+}().standardized
 
-    Log.warning("No Package.swift found. Using executable folder as project folder.")
+/// Directory containing the Package.swift of the project when run through XCode or XCTest
+/// Otherwise, returns the current working directory
+let presentWorkingDirectoryURL = { () -> URL in
+    guard isRanInsideXcode || isRanFromXCTest, let url = projectHeadIterator(sourceFileURL) else {
+        return URL(fileURLWithPath: "")
+    }
 
-    return executableFolderURL
-    }().standardized
+    Log.warning("Running from Xcode or XcTest. Using project folder as pwd folder.")
+
+    return url
+
+}().standardized
 
 /// Absolute path to the executable's folder
 let executableFolder = executableFolderURL.path
@@ -99,4 +120,4 @@ let executableFolder = executableFolderURL.path
 let projectFolder = projectFolderURL.path
 
 /// Absolute path to the present working directory (PWD)
-let presentWorkingDirectory = isRanInsideXcode || isRanFromXCTest ? projectFolderURL.path : URL(fileURLWithPath: "").path
+let presentWorkingDirectory = presentWorkingDirectoryURL.path
