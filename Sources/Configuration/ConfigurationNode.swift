@@ -176,7 +176,10 @@ extension String {
             return (self, nil)
         }
 
-        return (String(self[..<range.lowerBound]), String(self[range.upperBound...]))
-
+        #if swift(>=3.2)
+            return (String(self[..<range.lowerBound]), String(self[range.upperBound...]))
+        #else
+            return (self.substring(to: range.lowerBound), self.substring(from: range.upperBound))
+        #endif
     }
 }
