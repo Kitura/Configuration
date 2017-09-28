@@ -12,8 +12,7 @@
 `Configuration` supports configuration keys as paths. That is, a key is a qualified path selector written in the `[parent]<separator>[child]` syntax. This allows applications to retrieve configuration objects at any level of specificity.
 
 ## Version Info
-The latest release of `Configuration` (v2.x.x) runs on Swift 4, on both macOS and Ubuntu Linux. Support for swift 3.1.1 is available on release (v1.x.x).
-
+`Configuration` runs on `Swift 3.1.1` or newer, on both macOS and Ubuntu Linux.
 
 ## API Documentations
 Full API documentations for `Configuration` can be found [here](https://ibm-swift.github.io/Configuration/index.html).
@@ -22,17 +21,22 @@ Full API documentations for `Configuration` can be found [here](https://ibm-swif
 
 ### Via Swift Package Manager
 
-Add `Configuration` to your `Package.swift`:
+Add `Configuration` to your `Package.swift` dependencies:
+
 
 ```swift
-import PackageDescription
 
 let package = Package(
   name: "<package-name>",
   dependencies: [
-    .Package(url: "https://github.com/IBM-Swift/Configuration.git", majorVersion: 1, minor: 0)
+    // Swift 4
+    .package(url: "https://github.com/IBM-Swift/Configuration.git", .upToNextMajor(from: "2.0.0"))
+
+    // Swift 3
+    .Package(url: "https://github.com/IBM-Swift/Configuration.git", majorVersion: 2, minor: 0)
   ]
 )
+
 ```
 
 ## Usage
