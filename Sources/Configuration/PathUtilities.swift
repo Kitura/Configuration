@@ -99,4 +99,4 @@ let executableFolder = executableFolderURL.path
 let projectFolder = projectFolderURL.path
 
 /// Absolute path to the present working directory (PWD)
-let presentWorkingDirectory = URL(fileURLWithPath: "").path
+let presentWorkingDirectory = isRanInsideXcode || isRanFromXCTest ? projectFolderURL.path : URL(fileURLWithPath: "").path
