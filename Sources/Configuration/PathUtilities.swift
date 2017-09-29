@@ -47,10 +47,21 @@ private let executableFolderURL = { () -> URL in
         let sourceFile = sourceFileURL.path
 
         if let range = sourceFile.range(of: "/checkouts/") {
-            return URL(fileURLWithPath: sourceFile[..<range.lowerBound] + "/debug")
+            // In Swift 3.1, package source code is downloaded to /<build-path>/checkouts
+            #if swift(>=3.2)
+                return URL(fileURLWithPath: sourceFile[..<range.lowerBound] + "/debug")
+            #else
+                return URL(fileURLWithPath: sourceFile.substring(to: range.lowerBound) + "/debug")
+            #endif
         }
         else if let range = sourceFile.range(of: "/Packages/") {
-            return URL(fileURLWithPath: sourceFile[..<range.lowerBound] + "/.build/debug")
+            // In Swift 3.0-3.0.2 (or editable package in Swift 3.1), package source code is downloaded to /Packages
+            // Since we don't know /<build-path>, assume /.build instead
+            #if swift(>=3.2)
+                return URL(fileURLWithPath: sourceFile[..<range.lowerBound] + "/.build/debug")
+            #else
+                return URL(fileURLWithPath: sourceFile.substring(to: range.lowerBound) + "/.build/debug")
+            #endif
         }
 
         Log.warning("Cannot infer /.build/debug folder location from source code structure. Using executable folder as determined from inside Xcode.")
@@ -68,7 +79,7 @@ private let projectHeadIterator = { (startingDir: URL) -> URL? in
         startingDir.appendPathComponent("..")
         startingDir.standardize()
         let packageFilePath = startingDir.appendingPathComponent("Package.swift").path
-        
+
         if fileManager.fileExists(atPath: packageFilePath) {
             return startingDir
         }
@@ -80,7 +91,6 @@ private let projectHeadIterator = { (startingDir: URL) -> URL? in
 /// up the directory structure starting at the directory containing the executable), or
 /// if no Package.swift is found then the directory containing the executable
 private let projectFolderURL = { () -> URL in
-    
     guard let url = projectHeadIterator(executableFolderURL) else {
         Log.warning("No Package.swift found. Using executable folder as project folder.")
         return executableFolderURL
@@ -93,14 +103,14 @@ private let projectFolderURL = { () -> URL in
 /// Directory containing the Package.swift of the project when run through XCode or XCTest
 /// Otherwise, returns the current working directory
 let presentWorkingDirectoryURL = { () -> URL in
-    if isRanInsideXcode || isRanFromXCTest, let url = projectHeadIterator(executableFolderURL) {
-        return url
+    guard isRanInsideXcode || isRanFromXCTest, let url = projectHeadIterator(executableFolderURL) else {
+        return URL(fileURLWithPath: "")
     }
 
-    Log.warning("No Package.swift found. Using pwd folder as project folder.")
+    Log.warning("Running from Xcode or XcTest. Using project folder as pwd folder.")
 
-    return URL(fileURLWithPath: "")
-    
+    return url
+
 }().standardized
 
 /// Absolute path to the executable's folder

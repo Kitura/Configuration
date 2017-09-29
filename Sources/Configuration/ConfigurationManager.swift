@@ -141,7 +141,7 @@ public class ConfigurationManager {
                 if let prefixRange = argv[index].range(of: commandLineArgumentKeyPrefix),
                     prefixRange.lowerBound == argv[index].startIndex,
                     let breakRange = argv[index].range(of: "=") {
-                    #if os(Linux)
+                    #if os(Linux) && swift(>=3.2)
                         // https://bugs.swift.org/browse/SR-5727
                         let path = String(argv[index][prefixRange.upperBound..<breakRange.lowerBound])
                         .replacingOccurrences(of: commandLineArgumentPathSeparator,
@@ -152,7 +152,11 @@ public class ConfigurationManager {
                                                   with: ConfigurationNode.separator)
                     #endif
 
-                    let value = String(argv[index][breakRange.upperBound...])
+                    #if swift(>=3.2)
+                        let value = String(argv[index][breakRange.upperBound...])
+                    #else
+                        let value = argv[index].substring(from: breakRange.upperBound)
+                    #endif
 
                     let rawValue = parseStringToObject ? self.deserializeFrom(value) : value
                     root[path] = ConfigurationNode(rawValue)
@@ -229,7 +233,12 @@ public class ConfigurationManager {
         // and `expandingTildeInPath`
         let fn = NSString(string: file)
         let pathURL: URL
-        let isAbsolutePath = fn.isAbsolutePath
+
+        #if os(Linux) && !swift(>=3.1)
+            let isAbsolutePath = fn.absolutePath
+        #else
+            let isAbsolutePath = fn.isAbsolutePath
+        #endif
 
         if isAbsolutePath {
             pathURL = URL(fileURLWithPath: fn.expandingTildeInPath)
@@ -251,7 +260,7 @@ public class ConfigurationManager {
     @discardableResult
     public func load(url: URL, deserializerName: String? = nil) -> ConfigurationManager {
         Log.verbose("Loading URL: \(url.standardized.path)")
-    
+
         do {
             try self.load(data: Data(contentsOf: url), deserializerName: deserializerName)
         }
