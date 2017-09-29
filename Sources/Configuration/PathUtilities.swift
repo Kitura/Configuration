@@ -103,7 +103,7 @@ private let projectFolderURL = { () -> URL in
 /// Directory containing the Package.swift of the project when run through XCode or XCTest
 /// Otherwise, returns the current working directory
 let presentWorkingDirectoryURL = { () -> URL in
-    guard isRanInsideXcode || isRanFromXCTest, let url = projectHeadIterator(sourceFileURL) else {
+    guard isRanInsideXcode || isRanFromXCTest, let url = projectHeadIterator(executableFolderURL) else {
         return URL(fileURLWithPath: "")
     }
 
