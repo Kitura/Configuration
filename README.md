@@ -29,10 +29,10 @@ let package = Package(
   name: "<package-name>",
   dependencies: [
     // Swift 4
-    .package(url: "https://github.com/IBM-Swift/Configuration.git", .upToNextMajor(from: "2.0.0"))
+    .package(url: "https://github.com/IBM-Swift/Configuration.git", .upToNextMajor(from: "1.0.0"))
 
     // Swift 3
-    .Package(url: "https://github.com/IBM-Swift/Configuration.git", majorVersion: 2, minor: 0)
+    .Package(url: "https://github.com/IBM-Swift/Configuration.git", majorVersion: 1)
   ]
 )
 
