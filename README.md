@@ -12,7 +12,7 @@
 `Configuration` supports configuration keys as paths. That is, a key is a qualified path selector written in the `[parent]<separator>[child]` syntax. This allows applications to retrieve configuration objects at any level of specificity.
 
 ## Version Info
-The latest release of `Configuration` (v1.x.x) runs on Swift 3.1.1 and newer, on both macOS and Ubuntu Linux
+The latest release of `Configuration` (v2.x.x) runs on Swift 4.0 and newer, on both macOS and Ubuntu Linux
 
 ## API Documentations
 Full API documentations for `Configuration` can be found [here](https://ibm-swift.github.io/Configuration/index.html).
@@ -29,7 +29,7 @@ let package = Package(
   name: "<package-name>",
   dependencies: [
     // Swift 4
-    .package(url: "https://github.com/IBM-Swift/Configuration.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/IBM-Swift/Configuration.git", .upToNextMajor(from: "2.0.0"))
 
     // Swift 3
     .Package(url: "https://github.com/IBM-Swift/Configuration.git", majorVersion: 1)
@@ -57,7 +57,7 @@ let value = manager["path:to:configuration:value"]
 
 ## Loading Configuration Data
 
-`Configuration` has many methods to load configuration data. 
+`Configuration` has many methods to load configuration data.
 
 **NOTE:** In all cases, configuration key paths are case sensitive.
 
@@ -79,7 +79,7 @@ manager.load(.commandLineArguments)
 ```
 
 To inject configurations via the command-line at runtime, set configuration values when launching the executable, like so:
-    
+
 ```
 ./myApp --path.to.configuration=value
 ```
@@ -127,8 +127,9 @@ manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewh
 
 **NOTE:** The following `relativeFrom` options, `.executable` (default) and `.pwd`, will reference different file system locations if the application is ran from inside Xcode than if it were ran from the command-line. You can set a compiler flag, i.e. `-DXCODE`, in your `xcodeproj` and use the flag to change your configuration file loading logic.
 
+**NOTE:** Because BasePath.project depends on the existence of a Package.swift file somewhere in a parent folder of the executable, changing its location using `swift build --build-path` is not supported
 ### From an `URL`:
-    
+
 ```swift
 let url = URL(...)
 manager.load(url: url)
