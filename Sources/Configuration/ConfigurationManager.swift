@@ -62,10 +62,11 @@ public class ConfigurationManager {
         /// Relative from executable location
         case executable
 
-        /// Relative from project directory
-        ///
-        /// **DEPRECATED**
-        @available(*, deprecated, message: "Project structure can change with a new Swift Package Manager version. Configuration will no longer provide this feature in the future.")
+        /** Relative from project directory
+
+          Note: Because BasePath.project depends on the existence of a Package.swift file somewhere
+          in a parent folder of the executable, changing its location using `swift build --build-path` is not supported
+        */
         case project
 
         /// Relative from present working directory (PWD)
@@ -141,7 +142,7 @@ public class ConfigurationManager {
                 if let prefixRange = argv[index].range(of: commandLineArgumentKeyPrefix),
                     prefixRange.lowerBound == argv[index].startIndex,
                     let breakRange = argv[index].range(of: "=") {
-                    #if os(Linux) && swift(>=3.2)
+                    #if os(Linux)
                         // https://bugs.swift.org/browse/SR-5727
                         let path = String(argv[index][prefixRange.upperBound..<breakRange.lowerBound])
                         .replacingOccurrences(of: commandLineArgumentPathSeparator,
@@ -152,11 +153,7 @@ public class ConfigurationManager {
                                                   with: ConfigurationNode.separator)
                     #endif
 
-                    #if swift(>=3.2)
-                        let value = String(argv[index][breakRange.upperBound...])
-                    #else
-                        let value = argv[index].substring(from: breakRange.upperBound)
-                    #endif
+                    let value = String(argv[index][breakRange.upperBound...])
 
                     let rawValue = parseStringToObject ? self.deserializeFrom(value) : value
                     root[path] = ConfigurationNode(rawValue)
@@ -233,12 +230,7 @@ public class ConfigurationManager {
         // and `expandingTildeInPath`
         let fn = NSString(string: file)
         let pathURL: URL
-
-        #if os(Linux) && !swift(>=3.1)
-            let isAbsolutePath = fn.absolutePath
-        #else
-            let isAbsolutePath = fn.isAbsolutePath
-        #endif
+        let isAbsolutePath = fn.isAbsolutePath
 
         if isAbsolutePath {
             pathURL = URL(fileURLWithPath: fn.expandingTildeInPath)
@@ -317,7 +309,7 @@ public class ConfigurationManager {
                 }
             }
         }
-        
+
         // str cannot be deserialized; return it as it is
         return str
     }

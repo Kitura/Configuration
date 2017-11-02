@@ -45,7 +45,8 @@ class ConfigurationManagerTest: XCTestCase {
         }
         catch {
             // Nothing we can do but leave a failure message
-            XCTFail(error.localizedDescription)
+            print("Failed to create pwd symbolic link")
+            print(error.localizedDescription)
         }
 
         do {
@@ -53,7 +54,8 @@ class ConfigurationManagerTest: XCTestCase {
         }
         catch {
             // Nothing we can do but leave a failure message
-            XCTFail(error.localizedDescription)
+            print("Failed to create executable symbolic link")
+            print(error.localizedDescription)
         }
     }
 
@@ -156,12 +158,7 @@ class ConfigurationManagerTest: XCTestCase {
         // PLIST
         manager = ConfigurationManager().load(file: "../test.plist", relativeFrom: .customPath(#file))
 
-        #if swift(>=4)
-            // Broken on Linux due to https://bugs.swift.org/browse/SR-3681
-            XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
-        #else
-            XCTAssertEqual(manager["OAuth:configuration:scope:0"] as? String, "email")
-        #endif
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
     }
 
     func testLoadRelative() {
