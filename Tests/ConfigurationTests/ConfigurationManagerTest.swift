@@ -33,7 +33,10 @@ class ConfigurationManagerTest: XCTestCase {
 
     static let testJSONURL = URL(fileURLWithPath: #file).appendingPathComponent("../test.json").standardized
 
-    static let symlinkInPWD = URL(fileURLWithPath: "test.json")
+    static let symlinkInPWD = { () -> URL in
+        var pwd = FileResolver.presentWorkingDirectoryURL.appendingPathComponent("test.json")
+        return FileResolver.isRanInsideXcode ? pwd : URL(fileURLWithPath: "test.json")
+    }()
 
     static let symlinkInExecutableFolder = URL(fileURLWithPath: FileResolver.executableFolder).appendingPathComponent("test.json").standardized
 
