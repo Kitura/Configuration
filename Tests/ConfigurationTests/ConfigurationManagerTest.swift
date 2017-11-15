@@ -16,6 +16,7 @@
 
 import XCTest
 import Foundation
+import FileResolver
 @testable import Configuration
 
 class ConfigurationManagerTest: XCTestCase {
@@ -34,7 +35,7 @@ class ConfigurationManagerTest: XCTestCase {
 
     static let symlinkInPWD = URL(fileURLWithPath: "test.json")
 
-    static let symlinkInExecutableFolder = URL(fileURLWithPath: executableFolder).appendingPathComponent("test.json").standardized
+    static let symlinkInExecutableFolder = URL(fileURLWithPath: FileResolver.executableFolder).appendingPathComponent("test.json").standardized
 
     let jsonString = "{\n    \"env\": \"<default>\",\n    \"OAuth\": {\n        \"name\": \"facebook\",\n        \"configuration\": {\n            \"clientID\": \"<default>\",\n            \"clientSecret\": \"<default>\",\n            \"profileFields\": [\"displayName\", \"emails\", \"id\", \"name\"],\n            \"profileURL\": \"https://graph.facebook.com/v2.6/me\",\n            \"scope\": [\"email\"],\n            \"state\": true\n        }\n    },\n    \"port\": \"<default>\"\n}"
 

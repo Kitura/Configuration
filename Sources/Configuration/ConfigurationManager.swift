@@ -16,6 +16,7 @@
 
 import Foundation
 import LoggerAPI
+import FileResolver
 
 /// ConfigurationManager class
 ///
@@ -79,11 +80,11 @@ public class ConfigurationManager {
         public var path: String {
             switch self {
             case .executable:
-                return executableFolder
+                return FileResolver.executableFolder
             case .pwd:
-                return presentWorkingDirectory
+                return FileResolver.presentWorkingDirectory
             case .project:
-                return projectFolder
+                return FileResolver.projectFolder
             case .customPath(let path):
                 return path
             }
