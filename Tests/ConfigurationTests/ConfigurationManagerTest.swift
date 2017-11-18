@@ -16,6 +16,7 @@
 
 import XCTest
 import Foundation
+import FileKit
 @testable import Configuration
 
 class ConfigurationManagerTest: XCTestCase {
@@ -32,9 +33,12 @@ class ConfigurationManagerTest: XCTestCase {
 
     static let testJSONURL = URL(fileURLWithPath: #file).appendingPathComponent("../test.json").standardized
 
-    static let symlinkInPWD = URL(fileURLWithPath: "test.json")
+    static let symlinkInPWD = { () -> URL in
+        var pwd = FileKit.workingDirectoryURL.appendingPathComponent("test.json")
+        return FileKit.executableURL.path.hasSuffix("/xctest") ? pwd : URL(fileURLWithPath: "test.json")
+    }()
 
-    static let symlinkInExecutableFolder = URL(fileURLWithPath: executableFolder).appendingPathComponent("test.json").standardized
+    static let symlinkInExecutableFolder = URL(fileURLWithPath: FileKit.executableFolder).appendingPathComponent("test.json").standardized
 
     let jsonString = "{\n    \"env\": \"<default>\",\n    \"OAuth\": {\n        \"name\": \"facebook\",\n        \"configuration\": {\n            \"clientID\": \"<default>\",\n            \"clientSecret\": \"<default>\",\n            \"profileFields\": [\"displayName\", \"emails\", \"id\", \"name\"],\n            \"profileURL\": \"https://graph.facebook.com/v2.6/me\",\n            \"scope\": [\"email\"],\n            \"state\": true\n        }\n    },\n    \"port\": \"<default>\"\n}"
 
@@ -170,6 +174,10 @@ class ConfigurationManagerTest: XCTestCase {
 
         // PWD
         manager = ConfigurationManager().load(file: "test.json", relativeFrom: .pwd)
+        XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
+
+        // Project Folder
+        manager = ConfigurationManager().load(file: "test.json", relativeFrom: .project)
         XCTAssertEqual(manager["OAuth:configuration:state"] as? Bool, true)
 
         // Executable
