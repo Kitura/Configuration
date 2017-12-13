@@ -30,7 +30,6 @@ let package = Package(
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/IBM-Swift/LoggerAPI.git", .upToNextMajor(from: "1.0.0")),
         .package(url: "https://github.com/IBM-Swift/FileKit.git", .upToNextMajor(from: "0.0.1"))
     ],
     targets: [
@@ -38,7 +37,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "Configuration",
-            dependencies: ["LoggerAPI", "FileKit"]
+            dependencies: ["FileKit"]
         ),
         .testTarget(
             name: "ConfigurationTests",
