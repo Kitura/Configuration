@@ -16,17 +16,17 @@
 
 import Foundation
 
-/// Default JSON deserializer implementation
+/// Default JSON deserializer implementation.
 ///
-/// Deserializes JSON formatted data using Foundation's JSONSerialization class
+/// Deserializes JSON formatted data using Foundation's JSONSerialization class.
 public class JSONDeserializer: Deserializer {
-    /// A shared instance
+    /// A shared instance.
     public static let shared = JSONDeserializer()
 
-    /// A unique name that identifies this deserializer
+    /// A unique name that identifies this deserializer.
     public let name = "json"
 
-    /// Function that deserializes raw JSON data into a Foundation object
+    /// Function that deserializes raw JSON data into a Foundation object.
     ///
     /// - Parameter data: The raw JSON data to be deserialized
     public func deserialize(data: Data) throws -> Any {

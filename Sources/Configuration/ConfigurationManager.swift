@@ -18,11 +18,34 @@ import Foundation
 import LoggerAPI
 import FileKit
 
-/// ConfigurationManager class
+/// A one-stop shop to aggregate configuration properties from different sources, including
+/// command-line arguments, environment variables, files, URLs and raw objects into a
+/// single configuration store. Once the store has been populated configuration data
+/// can be accessed and retrieved for an individual value, or multiple values, resources
+/// can also be removed.
+/// ### Usage Example: ###
+/// ```swift
+/// import Configuration
 ///
-/// One-stop shop to aggregate configuration properties from different sources,
-/// including commandline arguments, environment variables, files, remove resources,
-/// and raw objects.
+/// let manager = ConfigurationManager()
+/// manager.load(file: "config.json").load(.environmentVariables)
+/// ```
+/// To get configuration values after they have been loaded, use:
+/// ```swift
+/// manager["path:to:configuration:value"]
+/// ```
+/// The configuration store is represented as a tree, where the path elements in keys are delimited
+/// by colons (`:`). The value returned is typed as `Any?`, therefore it's important to cast the value
+/// to the type you want to use.
+///
+/// When aggregating configuration data from multiple sources, if the same configuration key
+/// exists in multiple sources the one most recently loaded will override those loaded earlier.
+/// In the example below the value for `foo` is now `baz` because `["foo": "baz"]` was more recently
+/// loaded than `["foo": "bar"]`. The same behaviour applies to all other `load` functions.
+///
+/// ```swift
+/// manager.load(["foo": "bar"]).load(["foo": "baz"])
+/// ```
 public class ConfigurationManager {
     // URLSession.shared isn't supported on Linux yet
     private let session = URLSession(configuration: URLSessionConfiguration.default)
@@ -30,53 +53,90 @@ public class ConfigurationManager {
     /// Internal tree representation of all config values
     private var root = ConfigurationNode.dictionary([:])
 
-    /// List of known deserializers for parsing raw data (i.e., from file or HTTP requests)
+    /// List of known deserializers for parsing raw data (i.e. from file or HTTP requests)
     private var deserializers: [String: Deserializer] = [
         JSONDeserializer.shared.name: JSONDeserializer.shared,
         PLISTDeserializer.shared.name: PLISTDeserializer.shared
     ]
 
-    /// Defaults to `--`
+    /**
+     Prefix used to denote a command line argument as a configuration path-value pair. Defaults to `--`
+    
+     For example: ```./myApp --path.to.configuration=value```
+    
+     Note: This can be set to your preferred prefix when instantiating `ConfigurationManager`.
+     See: `init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)`
+    */
     public var commandLineArgumentKeyPrefix: String
 
-    /// Defaults to `.`
+    /**
+     Path separator to specify the components of a path that is passed in as a command line argument. Defaults to `.`
+     
+     For example: ```./myApp --path.to.configuration=value```
+     
+     Note: This can be set according to your preferences when instantiating `ConfigurationManager`.
+     See: `init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)`
+     */
     public var commandLineArgumentPathSeparator: String
 
-    /// Defaults to `__`
+    /**
+     Path separator to specify the components of a path that is passed in as an environment variable. Defaults to `__`
+     
+     For example: ```PATH__TO__CONFIGURATION=value```
+     
+     Note: This can be set according to your preferences when instantiating `ConfigurationManager`.
+     See: `init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)`
+    */
     public var environmentVariablePathSeparator: String
 
-    /// Defaults to `true`
+    /**
+     Used to indicate if string values in command line arguments and environment variables should be parsed to
+     array or dictionary, if possible, using a known Deserializer. Defaults to `true`
+     
+     Note: This can be set according to your preferences when instantiating `ConfigurationManager`.
+     See: `init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)`
+    */
     public var parseStringToObject: Bool
 
-    /// Enum to specify configuration source between commandline arguments
-    /// and environment variables.
+    /// Enum to specify the configuration source. The supported options are to load configuration
+    /// data from either commandline arguments or environment variables.
     public enum Source {
-        /// Flag to load configurations from commandline arguments
+        /// Load configurations from commandline arguments.
+        let manager = ConfigurationManager().load(.commandLineArguments)
+        /// Flag to load configurations from commandline arguments.
         case commandLineArguments
 
-        /// Flag to load configurations from environment variables
+        /// Load configurations from environment variables.
+        let manager = ConfigurationManager().load(.environmentVariables)
+        /// Flag to load configurations from environment variables.
         case environmentVariables
     }
 
-    /// Base paths for resolving relative paths
+    /// Base paths for resolving relative paths.
     public enum BasePath {
-        /// Relative from executable location
+        /// Relative to the directory containing the executable itself.
+        ///
+        /// For example, when executing your project from the command line `~/.build/release/myApp`.
         case executable
 
-        /** Relative from project directory
+        /** Relative to the project directory. (This is the directory containing the `Package.swift` of the project, determined by traversing up the directory structure starting at the directory containing the executable).
 
-          Note: Because BasePath.project depends on the existence of a Package.swift file somewhere
-          in a parent folder of the executable, changing its location using `swift build --build-path` is not supported
+          Note: Because `BasePath.project` depends on the existence of a `Package.swift` file somewhere
+          in a parent folder of the executable, changing its location using `swift build --build-path` is not
+          supported.
         */
         case project
 
-        /// Relative from present working directory (PWD)
+        /** Relative to the present working directory (PWD).
+        
+          Note: When running in Xcode, PWD is set to the directory containing the `Package.swift` of the project.
+        */
         case pwd
 
-        /// Relative from a custom location
+        /// Relative to a custom location passed in by `String`.
         case customPath(String)
 
-        /// Get the absolute path as denoted by self
+        /// Get the absolute path, as denoted by self.
         public var path: String {
             switch self {
             case .executable:
@@ -91,14 +151,23 @@ public class ConfigurationManager {
         }
     }
 
-    /// Constructor
+    /// Create a customized instance of `ConfigurationManager`. Used to customize the default prefix,
+    /// path separator and string parsing options.
+    ///
+    /// ### Usage Example###
+    /// ```swift
+    /// let customConfigMgr = ConfigurationManager.init(commandLineArgumentKeyPrefix: "---",
+    ///                                                 commandLineArgumentPathSeparator: "_",
+    ///                                                 environmentVariablePathSeparator: "___",
+    ///                                                 parseStringToObject: false)
+    /// ```
     ///
     /// - Parameter commandLineArgumentKeyPrefix: Optional. Used to denote an argument
-    /// as a configuration path-value pair. Defaults to `--`.
+    /// as a configuration path-value pair. Defaults to `--`
     /// - Parameter commandLineArgumentPathSeparator: Optional. Used to separate the
-    /// components of a path. Defaults to `.`.
+    /// components of a path. Defaults to `.`
     /// - Parameter environmentVariablePathSeparator: Optional. Used to separate the
-    /// components of a path. Defaults to `__`.
+    /// components of a path. Defaults to `__`
     /// - Parameter parseStringToObject: Optional. Used to indicate if string values
     /// in commandline arguments and environment variables should be parsed to array
     /// or dictionary, if possible, using a known `Deserializer`. Defaults to `true`.
@@ -112,7 +181,7 @@ public class ConfigurationManager {
         self.parseStringToObject = parseStringToObject
     }
 
-    /// Load configurations from raw object.
+    /// Load configurations from a raw object.
     ///
     /// - Parameter object: The configurations object.
     @discardableResult
@@ -126,7 +195,7 @@ public class ConfigurationManager {
 
     /// Load configurations from command-line arguments or environment variables.
     /// For command line arguments, the configurations are parsed from arguments
-    /// in this format: `<keyPrefix><path>=<value>`
+    /// in this format: `<keyPrefix><path>=<value>`.
     ///
     /// - Parameter source: Enum denoting which source to load from.
     @discardableResult
@@ -175,13 +244,13 @@ public class ConfigurationManager {
         return self
     }
 
-    /// Load configurations from a Data object
+    /// Load configurations from a Data object.
     ///
     /// - Parameter data: The Data object containing configurations.
     /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
-    /// the given format, i.e., `JSONDeserializer.shared.name`; otherwise, parser will go through a list
-    /// a deserializers and attempt to deserialize using each one.
+    /// the given format, i.e. `JSONDeserializer.shared.name`; otherwise, the parser will go through a list
+    /// of deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(data: Data, deserializerName: String? = nil) -> ConfigurationManager {
         Log.debug("Loading data: \(data)")
@@ -215,14 +284,14 @@ public class ConfigurationManager {
         }
     }
 
-    /// Load configurations from a file on system.
+    /// Load configurations from a file.
     ///
     /// - Parameter file: Path to file.
     /// - Parameter relativeFrom: Optional. Defaults to the location of the executable.
     /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize
-    /// according to the given format, i.e., `JSONDeserializer.shared.name`; otherwise, parser will
-    /// go through a list a deserializers and attempt to deserialize using each one.
+    /// according to the given format, i.e. `JSONDeserializer.shared.name`; otherwise, the parser will
+    /// go through a list of deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(file: String,
                      relativeFrom: BasePath = .executable,
@@ -248,8 +317,8 @@ public class ConfigurationManager {
     /// - Parameter url: The URL pointing to a configuration resource.
     /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
-    /// the given format, i.e., `JSONDeserializer.shared.name`; otherwise, parser will go through a list
-    /// a deserializers and attempt to deserialize using each one.
+    /// the given format, i.e. `JSONDeserializer.shared.name`; otherwise, the parser will go through a list
+    /// of deserializers and attempt to deserialize using each one.
     @discardableResult
     public func load(url: URL, deserializerName: String? = nil) -> ConfigurationManager {
         Log.verbose("Loading URL: \(url.standardized.path)")
@@ -274,12 +343,12 @@ public class ConfigurationManager {
         return self
     }
 
-    /// Get all configurations that have been merged in the manager as a raw object.
+    /// Get all configurations that have been merged into the `ConfigurationManager` as a raw object.
     public func getConfigs() -> Any {
         return root.rawValue
     }
 
-    /// Access configurations by paths.
+    /// Access configurations by path.
     ///
     /// - Parameter path: The path to a configuration value.
     public subscript(path: String) -> Any? {
@@ -295,7 +364,7 @@ public class ConfigurationManager {
         }
     }
 
-    /// Deserialize a string into an object (i.e., a JSON string into a dictionary)
+    /// Deserialize a string into an object (i.e. a JSON string into a dictionary).
     ///
     /// - Parameter str: The string to be deserialized.
     private func deserializeFrom(_ str: String) -> Any {
