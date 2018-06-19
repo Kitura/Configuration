@@ -20,7 +20,7 @@ import Foundation
 ///
 /// Deserializes PLIST formatted data using Foundation's PropertListSerialization class.
 public class PLISTDeserializer: Deserializer {
-    /// A shared instance.
+    /// A shared `PLISTDeserializer` instance.
     public static let shared = PLISTDeserializer()
 
     /// A unique name that identifies this deserializer.
