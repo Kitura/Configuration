@@ -23,7 +23,7 @@ import FileKit
 /// single configuration store. Once the store has been populated configuration data
 /// can be accessed and retrieved for an individual value, or multiple values, resources
 /// can also be removed.
-/// ### Usage Example: ###
+/// ### Usage Example ###
 /// ```swift
 /// import Configuration
 ///
@@ -152,9 +152,9 @@ public class ConfigurationManager {
     }
 
     /// Create a customized instance of `ConfigurationManager`. Used to customize the default prefix,
-    /// path separator and string parsing options.
+    /// path separators and string parsing options.
     ///
-    /// ### Usage Example###
+    /// ### Usage Example ###
     /// ```swift
     /// let customConfigMgr = ConfigurationManager.init(commandLineArgumentKeyPrefix: "---",
     ///                                                 commandLineArgumentPathSeparator: "_",
@@ -182,7 +182,15 @@ public class ConfigurationManager {
     }
 
     /// Load configurations from a raw object.
-    ///
+    /// ### Usage Example ###
+    /// ```swift
+    /// manager.load([
+    ///     "hello": "world",
+    ///     "foo": [
+    ///         "bar": "baz"
+    ///     ]
+    /// ])
+    /// ```
     /// - Parameter object: The configurations object.
     @discardableResult
     public func load(_ object: Any) -> ConfigurationManager {
@@ -197,6 +205,22 @@ public class ConfigurationManager {
     /// For command line arguments, the configurations are parsed from arguments
     /// in this format: `<keyPrefix><path>=<value>`.
     ///
+    /// ### Usage Example (for command-line arguments) ###
+    /// ```swift
+    /// manager.load(.commandLineArguments)
+    /// ```
+    /// To inject configurations via the command-line at runtime, set configuration
+    /// values when launching the executable as follows:
+    ///
+    /// `./myApp --path.to.configuration=value`
+    ///
+    /// ### Usage Example (for environment variables) ###
+    /// ```swift
+    /// manager.load(.environmentVariables)
+    /// ```
+    /// Then, to use it in your application, set environment variables as follows:
+    ///
+    /// `PATH__TO__CONFIGURATION=value`
     /// - Parameter source: Enum denoting which source to load from.
     @discardableResult
     public func load(_ source: Source) -> ConfigurationManager {
@@ -246,6 +270,12 @@ public class ConfigurationManager {
 
     /// Load configurations from a Data object.
     ///
+    /// ### Usage Example ###
+    /// ```swift
+    /// let data = Data(...)
+    /// manager.load(data: data)
+    /// ```
+    ///
     /// - Parameter data: The Data object containing configurations.
     /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
     /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
@@ -286,6 +316,30 @@ public class ConfigurationManager {
 
     /// Load configurations from a file.
     ///
+    /// ### Usage Example ###
+    /// ```swift
+    /// manager.load(file: "/path/to/file")
+    /// ```
+    ///
+    /// By default, the `file` argument is a path relative to the location of the executable (.build/debug/myApp).
+    /// If `file` is an absolute path, then it will be treated as such. You can change the relative-from path using
+    /// the optional `relativeFrom` parameter as follows:
+    /// ```swift
+    /// // Resolve path against the current working directory
+    /// manager.load(file: "../path/to/file", relativeFrom: .pwd)
+    ///
+    /// // Resolve path against a custom path
+    /// manager.load(file: "../path/to/file", relativeFrom: .customPath("/path/to/somewhere/on/file/system"))
+    /// ```
+    /// Note: The following `relativeFrom` options: `.executable` (default) and `.pwd`, will reference different file
+    /// system locations if the application is run from inside Xcode than if it is run from the command-line.
+    /// You can set a compiler flag, i.e. `-DXCODE`, in your `.xcodeproj` and use the flag to change your
+    /// configuration file loading logic.
+    ///
+    /// Note: `BasePath.project` depends on the existence of a `Package.swift` file somewhere in a
+    /// parent folder of the executable, therefore, changing its location using `swift build --build-path`
+    /// is not supported.
+    ///
     /// - Parameter file: Path to file.
     /// - Parameter relativeFrom: Optional. Defaults to the location of the executable.
     /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
@@ -313,6 +367,13 @@ public class ConfigurationManager {
     }
 
     /// Load configurations from a URL location.
+    ///
+    /// ### Usage Example ###
+    /// ```swift
+    /// let url = URL(...)
+    /// manager.load(url: url)
+    /// ```
+    /// Note: The `URL` MUST include a scheme, i.e. `file://`, `http://`, etc.
     ///
     /// - Parameter url: The URL pointing to a configuration resource.
     /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
