@@ -90,7 +90,7 @@ public class ConfigurationManager {
     public var environmentVariablePathSeparator: String
 
     /**
-     Used to indicate if string values in command line arguments and environment variables should be parsed to
+     Used to indicate if string values in command-line arguments and environment variables should be parsed to
      array or dictionary, if possible, using a known Deserializer. Defaults to `true`
      
      Note: This can be set according to your preferences when instantiating `ConfigurationManager`.
@@ -99,15 +99,11 @@ public class ConfigurationManager {
     public var parseStringToObject: Bool
 
     /// Enum to specify the configuration source. The supported options are to load configuration
-    /// data from either commandline arguments or environment variables.
+    /// data from either command-line arguments or environment variables.
     public enum Source {
-        /// Load configurations from commandline arguments.
-        let manager = ConfigurationManager().load(.commandLineArguments)
-        /// Flag to load configurations from commandline arguments.
+        /// Flag to load configurations from command-line arguments.
         case commandLineArguments
-
-        /// Load configurations from environment variables.
-        let manager = ConfigurationManager().load(.environmentVariables)
+        
         /// Flag to load configurations from environment variables.
         case environmentVariables
     }
