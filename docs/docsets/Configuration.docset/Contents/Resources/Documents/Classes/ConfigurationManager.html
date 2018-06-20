@@ -91,11 +91,32 @@
 
                 </div>
               </div>
-            <p>ConfigurationManager class</p>
+            <p>A one-stop shop to aggregate configuration properties from different sources, including
+command-line arguments, environment variables, files, URLs and raw objects into a
+single configuration store. Once the store has been populated configuration data
+can be accessed and retrieved for an individual value, or multiple values, resources
+can also be removed.</p>
+<h3 id='usage-example' class='heading'>Usage Example</h3>
+<pre class="highlight swift"><code><span class="kd">import</span> <span class="kt">Configuration</span>
 
-<p>One-stop shop to aggregate configuration properties from different sources,
-including commandline arguments, environment variables, files, remove resources,
-and raw objects.</p>
+<span class="k">let</span> <span class="nv">manager</span> <span class="o">=</span> <span class="kt">ConfigurationManager</span><span class="p">()</span>
+<span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"config.json"</span><span class="p">)</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">environmentVariables</span><span class="p">)</span>
+</code></pre>
+
+<p>To get configuration values after they have been loaded, use:</p>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="p">[</span><span class="s">"path:to:configuration:value"</span><span class="p">]</span>
+</code></pre>
+
+<p>The configuration store is represented as a tree, where the path elements in keys are delimited
+by colons (<code>:</code>). The value returned is typed as <code>Any?</code>, therefore it&rsquo;s important to cast the value
+to the type you want to use.</p>
+
+<p>When aggregating configuration data from multiple sources, if the same configuration key
+exists in multiple sources the one most recently loaded will override those loaded earlier.
+In the example below the value for <code>foo</code> is now <code>baz</code> because <code>[&quot;foo&quot;: &quot;baz&quot;]</code> was more recently
+loaded than <code>[&quot;foo&quot;: &quot;bar&quot;]</code>. The same behaviour applies to all other <code>load</code> functions.</p>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"bar"</span><span class="p">])</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span><span class="s">"foo"</span><span class="p">:</span> <span class="s">"baz"</span><span class="p">])</span>
+</code></pre>
 
           </div>
         </section>
@@ -117,7 +138,12 @@ and raw objects.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Defaults to <code>--</code></p>
+                        <p>Prefix used to denote a command line argument as a configuration path-value pair. Defaults to <code>--</code></p>
+
+<p>For example: <code>./myApp --path.to.configuration=value</code></p>
+
+<p>Note: This can be set to your preferred prefix when instantiating <code>ConfigurationManager</code>.
+See: <code><a href="../Classes/ConfigurationManager.html#/s:13Configuration0A7ManagerCACSS28commandLineArgumentKeyPrefix_SS0cdE13PathSeparatorSS019environmentVariablehI0Sb19parseStringToObjecttcfc">init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)</a></code></p>
 
                       </div>
                       <div class="declaration">
@@ -144,7 +170,12 @@ and raw objects.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Defaults to <code>.</code></p>
+                        <p>Path separator to specify the components of a path that is passed in as a command line argument. Defaults to <code>.</code></p>
+
+<p>For example: <code>./myApp --path.to.configuration=value</code></p>
+
+<p>Note: This can be set according to your preferences when instantiating <code>ConfigurationManager</code>.
+See: <code><a href="../Classes/ConfigurationManager.html#/s:13Configuration0A7ManagerCACSS28commandLineArgumentKeyPrefix_SS0cdE13PathSeparatorSS019environmentVariablehI0Sb19parseStringToObjecttcfc">init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)</a></code></p>
 
                       </div>
                       <div class="declaration">
@@ -171,7 +202,12 @@ and raw objects.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Defaults to <code>__</code></p>
+                        <p>Path separator to specify the components of a path that is passed in as an environment variable. Defaults to <code>__</code></p>
+
+<p>For example: <code>PATH__TO__CONFIGURATION=value</code></p>
+
+<p>Note: This can be set according to your preferences when instantiating <code>ConfigurationManager</code>.
+See: <code><a href="../Classes/ConfigurationManager.html#/s:13Configuration0A7ManagerCACSS28commandLineArgumentKeyPrefix_SS0cdE13PathSeparatorSS019environmentVariablehI0Sb19parseStringToObjecttcfc">init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)</a></code></p>
 
                       </div>
                       <div class="declaration">
@@ -198,7 +234,11 @@ and raw objects.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Defaults to <code>true</code></p>
+                        <p>Used to indicate if string values in command-line arguments and environment variables should be parsed to
+array or dictionary, if possible, using a known Deserializer. Defaults to <code>true</code></p>
+
+<p>Note: This can be set according to your preferences when instantiating <code>ConfigurationManager</code>.
+See: <code><a href="../Classes/ConfigurationManager.html#/s:13Configuration0A7ManagerCACSS28commandLineArgumentKeyPrefix_SS0cdE13PathSeparatorSS019environmentVariablehI0Sb19parseStringToObjecttcfc">init(commandLineArgumentKeyPrefix:commandLineArgumentPathSeparator:environmentVariablePathSeparator:parseStringToObject:)</a></code></p>
 
                       </div>
                       <div class="declaration">
@@ -225,8 +265,8 @@ and raw objects.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Enum to specify configuration source between commandline arguments
-and environment variables.</p>
+                        <p>Enum to specify the configuration source. The supported options are to load configuration
+data from either command-line arguments or environment variables.</p>
 
                         <a href="../Classes/ConfigurationManager/Source.html" class="slightly-smaller">See more</a>
                       </div>
@@ -254,7 +294,7 @@ and environment variables.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Base paths for resolving relative paths</p>
+                        <p>Base paths for resolving relative paths.</p>
 
                         <a href="../Classes/ConfigurationManager/BasePath.html" class="slightly-smaller">See more</a>
                       </div>
@@ -282,7 +322,14 @@ and environment variables.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Constructor</p>
+                        <p>Create a customized instance of <code>ConfigurationManager</code>. Used to customize the default prefix,
+path separators and string parsing options.</p>
+<h3 id='usage-example' class='heading'>Usage Example</h3>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">customConfigMgr</span> <span class="o">=</span> <span class="kt">ConfigurationManager</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">commandLineArgumentKeyPrefix</span><span class="p">:</span> <span class="s">"---"</span><span class="p">,</span>
+                                                <span class="nv">commandLineArgumentPathSeparator</span><span class="p">:</span> <span class="s">"_"</span><span class="p">,</span>
+                                                <span class="nv">environmentVariablePathSeparator</span><span class="p">:</span> <span class="s">"___"</span><span class="p">,</span>
+                                                <span class="nv">parseStringToObject</span><span class="p">:</span> <span class="kc">false</span><span class="p">)</span>
+</code></pre>
 
                       </div>
                       <div class="declaration">
@@ -309,7 +356,7 @@ and environment variables.</p>
                               <td>
                                 <div>
                                   <p>Optional. Used to denote an argument
-as a configuration path-value pair. Defaults to <code>--</code>.</p>
+as a configuration path-value pair. Defaults to <code>--</code></p>
                                 </div>
                               </td>
                             </tr>
@@ -322,7 +369,7 @@ as a configuration path-value pair. Defaults to <code>--</code>.</p>
                               <td>
                                 <div>
                                   <p>Optional. Used to separate the
-components of a path. Defaults to <code>.</code>.</p>
+components of a path. Defaults to <code>.</code></p>
                                 </div>
                               </td>
                             </tr>
@@ -335,7 +382,7 @@ components of a path. Defaults to <code>.</code>.</p>
                               <td>
                                 <div>
                                   <p>Optional. Used to separate the
-components of a path. Defaults to <code>__</code>.</p>
+components of a path. Defaults to <code>__</code></p>
                                 </div>
                               </td>
                             </tr>
@@ -372,7 +419,15 @@ or dictionary, if possible, using a known <code><a href="../Protocols/Deserializ
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Load configurations from raw object.</p>
+                        <p>Load configurations from a raw object.</p>
+<h3 id='usage-example' class='heading'>Usage Example</h3>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">([</span>
+    <span class="s">"hello"</span><span class="p">:</span> <span class="s">"world"</span><span class="p">,</span>
+    <span class="s">"foo"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s">"bar"</span><span class="p">:</span> <span class="s">"baz"</span>
+    <span class="p">]</span>
+<span class="p">])</span>
+</code></pre>
 
                       </div>
                       <div class="declaration">
@@ -420,7 +475,22 @@ or dictionary, if possible, using a known <code><a href="../Protocols/Deserializ
                       <div class="abstract">
                         <p>Load configurations from command-line arguments or environment variables.
 For command line arguments, the configurations are parsed from arguments
-in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code></p>
+in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code>.</p>
+<h3 id='usage-example-for-command-line-arguments' class='heading'>Usage Example (for command-line arguments)</h3>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">commandLineArguments</span><span class="p">)</span>
+</code></pre>
+
+<p>To inject configurations via the command-line at runtime, set configuration
+values when launching the executable as follows:</p>
+
+<p><code>./myApp --path.to.configuration=value</code></p>
+<h3 id='usage-example-for-environment-variables' class='heading'>Usage Example (for environment variables)</h3>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="o">.</span><span class="n">environmentVariables</span><span class="p">)</span>
+</code></pre>
+
+<p>Then, to use it in your application, set environment variables as follows:</p>
+
+<p><code>PATH__TO__CONFIGURATION=value</code></p>
 
                       </div>
                       <div class="declaration">
@@ -466,7 +536,11 @@ in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code></p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Load configurations from a Data object</p>
+                        <p>Load configurations from a Data object.</p>
+<h3 id='usage-example' class='heading'>Usage Example</h3>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">data</span> <span class="o">=</span> <span class="kt">Data</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span> <span class="n">data</span><span class="p">)</span>
+</code></pre>
 
                       </div>
                       <div class="declaration">
@@ -503,8 +577,8 @@ in this format: <code>&lt;keyPrefix&gt;&lt;path&gt;=&lt;value&gt;</code></p>
                                 <div>
                                   <p>Optional. Designated deserializer for the configuration
 resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to
-the given format, i.e., <code>JSONDeserializer.shared.name</code>; otherwise, parser will go through a list
-a deserializers and attempt to deserialize using each one.</p>
+the given format, i.e. <code>JSONDeserializer.shared.name</code>; otherwise, the parser will go through a list
+of deserializers and attempt to deserialize using each one.</p>
                                 </div>
                               </td>
                             </tr>
@@ -527,7 +601,29 @@ a deserializers and attempt to deserialize using each one.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Load configurations from a file on system.</p>
+                        <p>Load configurations from a file.</p>
+<h3 id='usage-example' class='heading'>Usage Example</h3>
+<pre class="highlight swift"><code><span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"/path/to/file"</span><span class="p">)</span>
+</code></pre>
+
+<p>By default, the <code>file</code> argument is a path relative to the location of the executable (.build/debug/myApp).
+If <code>file</code> is an absolute path, then it will be treated as such. You can change the relative-from path using
+the optional <code>relativeFrom</code> parameter as follows:</p>
+<pre class="highlight swift"><code><span class="c1">// Resolve path against the current working directory</span>
+<span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"../path/to/file"</span><span class="p">,</span> <span class="nv">relativeFrom</span><span class="p">:</span> <span class="o">.</span><span class="n">pwd</span><span class="p">)</span>
+
+<span class="c1">// Resolve path against a custom path</span>
+<span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">file</span><span class="p">:</span> <span class="s">"../path/to/file"</span><span class="p">,</span> <span class="nv">relativeFrom</span><span class="p">:</span> <span class="o">.</span><span class="nf">customPath</span><span class="p">(</span><span class="s">"/path/to/somewhere/on/file/system"</span><span class="p">))</span>
+</code></pre>
+
+<p>Note: The following <code>relativeFrom</code> options: <code>.executable</code> (default) and <code>.pwd</code>, will reference different file
+system locations if the application is run from inside Xcode than if it is run from the command-line.
+You can set a compiler flag, i.e. <code>-DXCODE</code>, in your <code>.xcodeproj</code> and use the flag to change your
+configuration file loading logic.</p>
+
+<p>Note: <code><a href="../Classes/ConfigurationManager/BasePath.html#/s:13Configuration0A7ManagerC8BasePathO7projectA2EmF">BasePath.project</a></code> depends on the existence of a <code>Package.swift</code> file somewhere in a
+parent folder of the executable, therefore, changing its location using <code>swift build --build-path</code>
+is not supported.</p>
 
                       </div>
                       <div class="declaration">
@@ -578,8 +674,8 @@ a deserializers and attempt to deserialize using each one.</p>
                                 <div>
                                   <p>Optional. Designated deserializer for the configuration
 resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize
-according to the given format, i.e., <code>JSONDeserializer.shared.name</code>; otherwise, parser will
-go through a list a deserializers and attempt to deserialize using each one.</p>
+according to the given format, i.e. <code>JSONDeserializer.shared.name</code>; otherwise, the parser will
+go through a list of deserializers and attempt to deserialize using each one.</p>
                                 </div>
                               </td>
                             </tr>
@@ -603,6 +699,12 @@ go through a list a deserializers and attempt to deserialize using each one.</p>
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Load configurations from a URL location.</p>
+<h3 id='usage-example' class='heading'>Usage Example</h3>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">url</span> <span class="o">=</span> <span class="kt">URL</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">manager</span><span class="o">.</span><span class="nf">load</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="n">url</span><span class="p">)</span>
+</code></pre>
+
+<p>Note: The <code>URL</code> MUST include a scheme, i.e. <code>file://</code>, <code>http://</code>, etc.</p>
 
                       </div>
                       <div class="declaration">
@@ -639,8 +741,8 @@ go through a list a deserializers and attempt to deserialize using each one.</p>
                                 <div>
                                   <p>Optional. Designated deserializer for the configuration
 resource. Defaults to <code>nil</code>. Pass a value to force the parser to deserialize according to
-the given format, i.e., <code>JSONDeserializer.shared.name</code>; otherwise, parser will go through a list
-a deserializers and attempt to deserialize using each one.</p>
+the given format, i.e. <code>JSONDeserializer.shared.name</code>; otherwise, the parser will go through a list
+of deserializers and attempt to deserialize using each one.</p>
                                 </div>
                               </td>
                             </tr>
@@ -709,7 +811,7 @@ a deserializers and attempt to deserialize using each one.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Get all configurations that have been merged in the manager as a raw object.</p>
+                        <p>Get all configurations that have been merged into the <code>ConfigurationManager</code> as a raw object.</p>
 
                       </div>
                       <div class="declaration">
@@ -736,7 +838,7 @@ a deserializers and attempt to deserialize using each one.</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Access configurations by paths.</p>
+                        <p>Access configurations by path.</p>
 
                       </div>
                       <div class="declaration">
@@ -777,7 +879,7 @@ a deserializers and attempt to deserialize using each one.</p>
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">IBM</a>. All rights reserved. (Last updated: 2018-06-11)</p>
+      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">IBM</a>. All rights reserved. (Last updated: 2018-06-20)</p>
       <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
