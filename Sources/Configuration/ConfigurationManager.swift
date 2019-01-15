@@ -256,7 +256,9 @@ public class ConfigurationManager {
                 let index = path.replacingOccurrences(of: environmentVariablePathSeparator,
                                                       with: ConfigurationNode.separator)
 
-                let rawValue = parseStringToObject ? self.deserializeFrom(value) : value
+                // Attempt to deserialize environment variables using the JSON deserializer
+                // only. Resolves: https://github.com/IBM-Swift/Configuration/issues/55
+                let rawValue = parseStringToObject ? self.deserializeFrom(value, deserializerName: JSONDeserializer.shared.name) : value
                 root[index] = ConfigurationNode(rawValue)
             }
         }
@@ -424,8 +426,25 @@ public class ConfigurationManager {
     /// Deserialize a string into an object (i.e. a JSON string into a dictionary).
     ///
     /// - Parameter str: The string to be deserialized.
-    private func deserializeFrom(_ str: String) -> Any {
-        if let data = str.data(using: .utf8) {
+    /// - Parameter deserializerName: Optional. Designated deserializer for the configuration
+    /// resource. Defaults to `nil`. Pass a value to force the parser to deserialize according to
+    /// the given format, i.e., `JSONDeserializer.shared.name`; otherwise, parser will go through a list
+    /// a deserializers and attempt to deserialize using each one.
+    private func deserializeFrom(_ str: String, deserializerName: String? = nil) -> Any {
+        guard let data = str.data(using: .utf8) else {
+            return str
+        }
+        if let deserializerName = deserializerName,
+            let deserializer = deserializers[deserializerName] {
+            do {
+                return try deserializer.deserialize(data: data)
+            }
+            catch {
+                // str cannot be deserialized; return it as it is
+                return str
+            }
+        }
+        else {
             for deserializer in deserializers.values {
                 do {
                     return try deserializer.deserialize(data: data)
@@ -436,7 +455,6 @@ public class ConfigurationManager {
                 }
             }
         }
-
         // str cannot be deserialized; return it as it is
         return str
     }
