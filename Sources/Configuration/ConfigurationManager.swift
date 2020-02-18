@@ -15,10 +15,8 @@
  */
 
 import Foundation
-#if swift(>=4.1)
-  #if canImport(FoundationNetworking)
-    import FoundationNetworking
-  #endif
+#if canImport(FoundationNetworking)
+import FoundationNetworking
 #endif
 import LoggerAPI
 import FileKit
