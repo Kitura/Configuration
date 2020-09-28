@@ -1,16 +1,16 @@
 <p align="center">
-    <a href="http://kitura.io/">
-        <img src="https://raw.githubusercontent.com/IBM-Swift/Kitura/master/Sources/Kitura/resources/kitura-bird.svg?sanitize=true" height="100" alt="Kitura">
+    <a href="http://kitura.dev/">
+        <img src="https://raw.githubusercontent.com/Kitura/Kitura/master/Sources/Kitura/resources/kitura-bird.svg?sanitize=true" height="100" alt="Kitura">
     </a>
 </p>
 
 
 <p align="center">
-    <a href="https://ibm-swift.github.io/Configuration/index.html">
+    <a href="https://kitura.github.io/Configuration/index.html">
     <img src="https://img.shields.io/badge/apidoc-Configuration-1FBCE4.svg?style=flat" alt="APIDoc">
     </a>
-    <a href="https://travis-ci.org/IBM-Swift/Configuration">
-    <img src="https://travis-ci.org/IBM-Swift/Configuration.svg?branch=master" alt="Build Status - Master">
+    <a href="https://travis-ci.org/Kitura/Configuration">
+    <img src="https://travis-ci.org/Kitura/Configuration.svg?branch=master" alt="Build Status - Master">
     </a>
     <img src="https://img.shields.io/badge/os-macOS-green.svg?style=flat" alt="macOS">
     <img src="https://img.shields.io/badge/os-linux-green.svg?style=flat" alt="Linux">
@@ -34,10 +34,10 @@ The latest release of `Configuration` (v3.x.x) runs on Swift 4.0 and newer, on b
 
 ### Add dependencies
 
-Add `Configuration` to the dependencies within your application's `Package.swift` file. Substitute `"x.x.x"` with the latest `Configuration` [release](https://github.com/IBM-Swift/Configuration/releases).
+Add `Configuration` to the dependencies within your application's `Package.swift` file. Substitute `"x.x.x"` with the latest `Configuration` [release](https://github.com/Kitura/Configuration/releases).
 
 ```swift
-.package(url: "https://github.com/IBM-Swift/Configuration.git", from: "x.x.x")
+.package(url: "https://github.com/Kitura/Configuration.git", from: "x.x.x")
 ```
 Add `Configuration` to your target's dependencies:
 
@@ -155,7 +155,7 @@ manager.load(["foo": "bar"]).load(["foo": "baz"])
 
 the value for `foo` is now `baz` because `["foo": "baz"]` was more recently loaded than `["foo": "bar"]`. The same behavior applies to all other `load` functions.
 
-**NOTE:** Currently, `Configuration` only supports JSON and PLIST formats for resources loaded from `Data`, file, or `URL`. You can write a [custom deserializer](https://ibm-swift.github.io/Configuration/Protocols/Deserializer.html) to parse additional formats.
+**NOTE:** Currently, `Configuration` only supports JSON and PLIST formats for resources loaded from `Data`, file, or `URL`. You can write a [custom deserializer](https://kitura.github.io/Configuration/Protocols/Deserializer.html) to parse additional formats.
 
 ## Accessing Configuration Data
 
@@ -201,7 +201,7 @@ The return value is a raw representation of all configuration values currently i
 `Configuration` was inspired by [`nconf`](https://github.com/indexzero/nconf), a popular NodeJS hierarchical configuration manager.
 
 ## API Documentation
-For more information visit our [API reference](https://ibm-swift.github.io/Configuration/index.html).
+For more information visit our [API reference](https://kitura.github.io/Configuration/index.html).
 
 ## License
-This library is licensed under Apache 2.0. Full license text is available in [LICENSE](https://github.com/IBM-Swift/Configuration/blob/master/LICENSE).
+This library is licensed under Apache 2.0. Full license text is available in [LICENSE](https://github.com/Kitura/Configuration/blob/master/LICENSE).
