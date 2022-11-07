@@ -27,7 +27,7 @@
 `Configuration` supports configuration keys as paths. That is, a key is a qualified path selector written in the `[parent]<separator>[child]` syntax. This allows applications to retrieve configuration objects at any level of specificity.
 
 ## Version
-The latest release of `Configuration` (v3.x.x) runs on Swift 4.0 and newer, on both macOS and Ubuntu Linux.
+The latest release of `Configuration` (v3.x.x) runs on Swift 5.2 and newer, on both macOS and Ubuntu Linux.
 
 
 ## Usage
